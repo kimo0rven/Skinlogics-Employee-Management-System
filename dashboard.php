@@ -1,6 +1,73 @@
 <?php
 session_start();
-if (isset($_SESSION["employee_id"]) && isset($_SESSION['email'])) {
+
+
+
+if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
+    $user_account_id = $_SESSION["user_account_id"];
+
+    $accountType = $_SESSION["account_type"];
+
+    if ($accountType === "member") {
+        echo '<style>.admin { display: none; }</style>';
+    } elseif ($accountType === "admin") {
+        echo '<style>.member { display: none; }</style>';
+    } else {
+        // Handle other account types or unset session variable.
+        // Optionally, display neither or some default.
+        echo '<style>.admin, .member { display: none; }</style>'; // Or display both if no specific action desired.
+    }
+
+
+    include 'js_php/database.php';
+    include 'config.php';
+
+    try {
+        $sql = "SELECT * FROM employee WHERE user_account_id = :user_account_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':user_account_id', $user_account_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $employeeCount = "SELECT COUNT(*) AS total_records FROM employee";
+        $employeeCount = $pdo->prepare($employeeCount);
+        $employeeCount->execute();
+        $employeeCount = $employeeCount->fetch(PDO::FETCH_ASSOC);
+        $employeeCount = $employeeCount["total_records"];
+
+        $activeCount = "SELECT COUNT(*) AS total_active FROM employee WHERE status = 'Active'";
+        $activeCount = $pdo->prepare($activeCount);
+        $activeCount->execute();
+        $activeCount = $activeCount->fetch(PDO::FETCH_ASSOC);
+        $activeCount = $activeCount["total_active"];
+
+        $resignedCount = "SELECT COUNT(*) AS total_resigned FROM employee WHERE status = 'Resigned'";
+        $resignedCount = $pdo->prepare($resignedCount);
+        $resignedCount->execute();
+        $resignedCount = $resignedCount->fetch(PDO::FETCH_ASSOC);
+        $resignedCount = $resignedCount["total_resigned"];
+
+
+        $terminatedCount = "SELECT COUNT(*) AS total_terminated FROM employee WHERE status = 'Terminated'";
+        $terminatedCount = $pdo->prepare($terminatedCount);
+        $terminatedCount->execute();
+        $terminatedCount = $terminatedCount->fetch(PDO::FETCH_ASSOC);
+        $terminatedCount = $terminatedCount["total_terminated"];
+        if ($rows) {
+
+            foreach ($rows as $row) {
+                $first_name = $row['first_name'];
+                $last_name = $row['last_name'];
+            }
+        } else {
+            echo "No records found for user account ID: " . $user_account_id;
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+} else {
+    header("Location: index.php");
 }
 ?>
 
@@ -10,11 +77,35 @@ if (isset($_SESSION["employee_id"]) && isset($_SESSION['email'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title><?php echo $title; ?> | Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
 </head>
 
 <body>
-    <h1>Hello <?php echo $_SESSION['gender'] ?></h1>
+    <div id="admin">
+        <?php include('components/dashboard-admin.php'); ?>
+    </div>
+
+    <div id="member">
+        <?php include('components/dashboard-user.php'); ?>
+    </div>
 </body>
+<script>
+
+
+    let accountType = <?php echo json_encode($accountType); ?>;
+    console.log(accountType)
+    adminBody = document.getElementById('admin');
+    memberBody = document.getElementById('member')
+
+    if (accountType == "Admin") {
+        adminBody.classList.remove('hidden');
+        memberBody.classList.add('hidden');
+    } else if (accountType == "User") {
+        memberBody.classList.remove('hidden');
+        adminBody.classList.add('hidden');
+    }
+</script>
 
 </html>

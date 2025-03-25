@@ -2,14 +2,15 @@
 session_start();
 include("js_php/database.php");
 
+echo $_POST["submit"];
 if (isset($_POST["submit"])) {
-    $email = $_POST["email"];
-    $pass = $_POST["password"];
+    $username = $_POST["username"];
+    $pass = $_POST["pass"];
 
     try {
-        $sql = "SELECT * FROM employee WHERE email = :email AND pass = :pass";
+        $sql = "SELECT * FROM user_account WHERE username = :username AND pass = :pass";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':username', $username);
         $stmt->bindParam(':pass', $pass);
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
