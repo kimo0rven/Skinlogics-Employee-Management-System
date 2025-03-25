@@ -1,5 +1,7 @@
 <?php
-include '../../config.php';
+
+include 'config.php';
+include 'js_php/database.php';
 
 date_default_timezone_set('Asia/Manila');
 $currentHour = date('G');
@@ -11,6 +13,7 @@ if ($currentHour >= 5 && $currentHour < 12) {
 } else {
   $greeting = "Good Evening!";
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -19,7 +22,7 @@ if ($currentHour >= 5 && $currentHour < 12) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo $title; ?> | Login</title>
-  <?php include '../../tailwind_config.php'; ?>
+  <?php include 'tailwind_config.php'; ?>
 </head>
 
 <body class="bg-base-200">
@@ -147,12 +150,13 @@ if ($currentHour >= 5 && $currentHour < 12) {
         <h1 class="text-2xl font-semibold mb-6 color-base-content text-center"><?php echo $greeting; ?> Welcome Back
         </h1>
 
-        <form action="#" method="POST" class="space-y-4">
+        <!-- <form action="../../dashboard" method="POST" class="space-y-4"> -->
+        <form action="login.php" method="POST" class="space-y-4">
+
 
           <div>
-            <label for="username" class="block text-sm font-medium color-base-content">Username</label>
-            <input type="text" id="username" name="username"
-              class="input input-primary mt-1 p-2 w-full border rounded-md" />
+            <label for="email" class="block text-sm font-medium color-base-content">Email</label>
+            <input type="text" id="email" name="email" class="input input-primary mt-1 p-2 w-full border rounded-md" />
           </div>
 
           <div>
@@ -161,7 +165,8 @@ if ($currentHour >= 5 && $currentHour < 12) {
               class="input input-primary mt-1 p-2 w-full border rounded-md">
           </div>
           <div>
-            <button type="submit" class="w-full btn btn-primary text-white p-2 rounded-md">Log In</button>
+            <button type="submit" name="submit" value="login"
+              class="w-full btn btn-primary text-white p-2 rounded-md">Log In</button>
           </div>
         </form>
 

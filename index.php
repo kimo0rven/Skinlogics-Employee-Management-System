@@ -1,22 +1,50 @@
 <?php
+
 include 'config.php';
+include 'js_php/database.php';
+
+date_default_timezone_set('Asia/Manila');
+$currentHour = date('G');
+
+if ($currentHour >= 5 && $currentHour < 12) {
+  $greeting = "Good Morning!";
+} elseif ($currentHour >= 12 && $currentHour < 18) {
+  $greeting = "Good Afternoon!";
+} else {
+  $greeting = "Good Evening!";
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Document</title>
-	<?php include 'tailwind_config.php'; ?>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?php echo $title; ?> | Login</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-	<div class="flex flex-row min-h-screen justify-center items-center font-neues-grotesque text-white/40">
-		<p>This text is using Neues Grotesque!</p>
-		<p>test</p>
-	</div>
+  <div class="background font-regular">
+    <div class="container">
+      <div class="left-section">
 
+      </div>
+      <div class="right-section">
+        <img src="./assets/images/logo.png" height="40%" width="40%" alt="">
+        <h2><?php echo $greeting; ?> Welcome Back</h2>
+
+        <form action="login.php" method="POST">
+          <label for="username">Email</label>
+          <input type="email" id="email" name="email" required>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+          <button type="submit" name="submit" value="login">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
