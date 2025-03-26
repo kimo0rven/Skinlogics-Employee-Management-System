@@ -1,7 +1,7 @@
 <?php
 
 include 'config.php';
-include 'js_php/database.php';
+include 'includes/database.php';
 
 date_default_timezone_set('Asia/Manila');
 $currentHour = date('G');
@@ -37,10 +37,10 @@ if ($currentHour >= 5 && $currentHour < 12) {
 
         <form action="login.php" method="POST">
           <label for="username">Username</label>
-          <input type="text" id="username" name="username" required>
+          <input class="login-fields" type="text" id="username" name="username" required>
           <label for="pass">Password</label>
-          <input type="password" id="pass" name="pass" required>
-          <button type="submit" name="submit" value="login">Login</button>
+          <input class="login-fields" type="password" id="pass" name="pass" required>
+          <button class="login-btn" type="submit" name="submit" value="login">Login</button>
         </form>
       </div>
     </div>

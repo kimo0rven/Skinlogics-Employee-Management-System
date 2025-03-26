@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("js_php/database.php");
+include("includes/database.php");
 
 echo $_POST["submit"];
 if (isset($_POST["submit"])) {
@@ -21,6 +21,7 @@ if (isset($_POST["submit"])) {
             foreach ($user as $key => $value) {
                 $_SESSION[$key] = $value;
             }
+            $_SESSION['loggedin'] = true;
 
             header("Location: dashboard.php");
             exit();
