@@ -1,8 +1,6 @@
 <?php
 session_start();
 
-
-
 if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     $user_account_id = $_SESSION["user_account_id"];
 
@@ -13,13 +11,12 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     } elseif ($accountType === "admin") {
         echo '<style>.member { display: none; }</style>';
     } else {
-        // Handle other account types or unset session variable.
-        // Optionally, display neither or some default.
+
         echo '<style>.admin, .member { display: none; }</style>'; // Or display both if no specific action desired.
     }
 
 
-    include 'js_php/database.php';
+    include 'includes/database.php';
     include 'config.php';
 
     try {
@@ -29,31 +26,6 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
         $stmt->execute();
 
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $employeeCount = "SELECT COUNT(*) AS total_records FROM employee";
-        $employeeCount = $pdo->prepare($employeeCount);
-        $employeeCount->execute();
-        $employeeCount = $employeeCount->fetch(PDO::FETCH_ASSOC);
-        $employeeCount = $employeeCount["total_records"];
-
-        $activeCount = "SELECT COUNT(*) AS total_active FROM employee WHERE status = 'Active'";
-        $activeCount = $pdo->prepare($activeCount);
-        $activeCount->execute();
-        $activeCount = $activeCount->fetch(PDO::FETCH_ASSOC);
-        $activeCount = $activeCount["total_active"];
-
-        $resignedCount = "SELECT COUNT(*) AS total_resigned FROM employee WHERE status = 'Resigned'";
-        $resignedCount = $pdo->prepare($resignedCount);
-        $resignedCount->execute();
-        $resignedCount = $resignedCount->fetch(PDO::FETCH_ASSOC);
-        $resignedCount = $resignedCount["total_resigned"];
-
-
-        $terminatedCount = "SELECT COUNT(*) AS total_terminated FROM employee WHERE status = 'Terminated'";
-        $terminatedCount = $pdo->prepare($terminatedCount);
-        $terminatedCount->execute();
-        $terminatedCount = $terminatedCount->fetch(PDO::FETCH_ASSOC);
-        $terminatedCount = $terminatedCount["total_terminated"];
         if ($rows) {
 
             foreach ($rows as $row) {
@@ -84,11 +56,11 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
 
 <body>
     <div id="admin">
-        <?php include('components/dashboard-admin.php'); ?>
+        <?php include('includes/dashboard-admin.php'); ?>
     </div>
 
     <div id="member">
-        <?php include('components/dashboard-user.php'); ?>
+        <?php include('includes/dashboard-user.php'); ?>
     </div>
 </body>
 <script>
@@ -106,6 +78,8 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
         memberBody.classList.remove('hidden');
         adminBody.classList.add('hidden');
     }
+
+
 </script>
 
 </html>

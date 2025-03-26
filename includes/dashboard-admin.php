@@ -1,10 +1,10 @@
 <?php
-if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
+if (isset($_SESSION['loggedin']) || $_SESSION['loggedin'] == true) {
     $user_account_id = $_SESSION["user_account_id"];
 
     $accountType = $_SESSION["account_type"];
 
-    include 'js_php/database.php';
+    include 'includes/database.php';
     include 'config.php';
 
     try {
@@ -88,15 +88,14 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     <div class="dashboard-background">
         <div class="dashboard-container">
             <div class="dashboard-navigation">
-                <div class=".navigation-container ">
-                    <div class="navigation-button">1</div>
-                    <div class="navigation-button">2</div>
-                    <div class="navigation-button">3</div>
-                    <div class="navigation-button">4</div>
-                    <div class="navigation-button">5</div>
-                    <div class="navigation-button">6
-
+                <div class="navigation-container ">
+                    <div class="active"><a href="#"><img src="assets/images/icons/dashboard-icon.png" alt=""></a></div>
+                    <div><a href="employees.php"><img src="assets/images/icons/employee-icon.png" alt=""></a>
                     </div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
                 </div>
 
             </div>

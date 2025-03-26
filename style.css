@@ -239,9 +239,7 @@ input {
 	color: #555;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+.login-fields {
 	width: 100%;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -254,12 +252,15 @@ input[type="password"] {
 button {
 	background-color: var(--color-primary);
 	color: white;
-	padding: 12px 20px;
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
 	font-size: 16px;
+	
+}
+.login-btn {
 	width: 100%;
+	padding: 12px 20px;
 }
 
 button:hover {
@@ -395,19 +396,35 @@ button:hover {
 	
 }
 
-.navigation-button {
-	border: 1px solid red;
-	border-radius: 100px;
-	padding: 20px;
-	margin: 10px;;
-	flex-grow: 0;
-	
+.navigation-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	gap: 20px;
 }
-.navigation-button:hover {
-	background-color: #0056b3;
+
+.dashboard-navigation .navigation-container > div {
+    padding: 10px;
+    border: 2px solid var(--color-base-300);
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
+    background-color: var(--color-base-100);
 }
-.navigation-button:active {
-	background-color: black;
+
+.dashboard-navigation .navigation-container > div.active {
+    color: var(--color-primary-content);
+    font-weight: bold;
+	border-radius: 50%;
+	border:1px black solid; 
+}
+.dashboard-navigation .navigation-container > img {
+    height: 32px;
+	width: 32px;
+}
+
+.dashboard-navigation .navigation-container > div:hover {
+	background-color: var(--color-error);
 }
 
 .flex {
@@ -424,3 +441,145 @@ button:hover {
 .align-center {
 	align-items: center;
 }
+
+.employee-main-content {
+	flex: 0;
+    height: 100%;
+    flex-basis: 100%;
+    display: flex;
+    flex-direction: column;
+	background: var(--color-base-100);
+	border: 1px solid var(--color-base-300);
+	border-radius: 8px;
+
+}
+.employee-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end; 
+	align-items: center;
+    gap: 10px;
+}
+
+.employee-main-content .employee-header > button {
+    padding: 10px;
+	text-transform:capitalize;
+	margin: 15 15 0 0;
+}
+ 
+.employee-display {
+	background: var(--color-base-100);
+	border: 1px solid var(--color-base-300);
+	border-radius: 8px;
+	margin: 20px;
+	flex-basis: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.text-center {
+	text-align: center;
+}
+
+.employee-display-list {
+	border: #0056b3 solid 1px;
+}
+	 
+.employee-display-list:hover {
+	background-color: var(--color-base-200);
+}
+.employee-display-list > img {
+	height: 32px;
+	width: 32px;
+	border-radius: 50%;
+	margin-top: 10px;
+
+}
+.employee-display table thead tr th {
+	padding: 10px 20px;
+}
+.employee-display-list td {
+	padding: 10px 20px;
+	
+}
+.employee-display-list td img {
+	height: 32px;
+	width:32px;
+	border-radius: 50%;
+}
+.employee-display-list td img:hover {
+	cursor:pointer;
+}
+
+/* The Modal (background) */
+.modal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content/Box */
+  .modal-content {
+	background-color: #fefefe;
+	margin: 15% auto; /* 15% from the top and centered */
+	padding: 20px;
+	border: 1px solid #888;
+	width: 80%; /* Could be more or less, depending on screen size */
+  }
+  
+  /* The Close Button */
+  .close {
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
+  }
+
+  /* Modal Header */
+.modal-header {
+	padding: 2px 16px;
+	background-color: #5cb85c;
+	color: white;
+  }
+  
+  /* Modal Body */
+  .modal-body {padding: 2px 16px;}
+  
+  /* Modal Footer */
+  .modal-footer {
+	padding: 2px 16px;
+	background-color: #5cb85c;
+	color: white;
+  }
+  
+  /* Modal Content */
+  .modal-content {
+	position: relative;
+	background-color: #fefefe;
+	margin: auto;
+	padding: 0;
+	border: 1px solid #888;
+	width: 80%;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+	animation-name: animatetop;
+	animation-duration: 0.4s
+  }
+  
+  /* Add Animation */
+  @keyframes animatetop {
+	from {top: -300px; opacity: 0}
+	to {top: 0; opacity: 1}
+  }
