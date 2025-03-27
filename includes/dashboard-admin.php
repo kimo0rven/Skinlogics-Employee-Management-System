@@ -88,7 +88,7 @@ if (isset($_SESSION['loggedin']) || $_SESSION['loggedin'] == true) {
     <div class="dashboard-background">
         <div class="dashboard-container">
             <div class="dashboard-navigation">
-                <div class="navigation-container ">
+                <div class="navigation-container">
                     <div class="active"><a href="#"><img src="assets/images/icons/dashboard-icon.png" alt=""></a></div>
                     <div><a href="employees.php"><img src="assets/images/icons/employee-icon.png" alt=""></a>
                     </div>
