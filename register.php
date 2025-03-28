@@ -31,6 +31,22 @@ if (isset($_POST['registration'])) {
 
         if ($stmt->rowCount() > 0) {
             echo "User account created successfully!";
+            $lastInsertId = $pdo->lastInsertId();
+            $_SESSION['employee_id'] = $lastInsertId;
+
+            $sql2 = "INSERT INTO employee (user_account_id, first_name, last_name, dob, email, mobile, gender) VALUES (:user_account_id, :first_name, :last_name, :dob, :email, :mobile, :gender)";
+            $stmt2 = $pdo->prepare($sql2);
+            $stmt2->bindParam(':user_account_id', $lastInsertId);
+            $stmt2->bindParam('first_name', $first_name);
+            $stmt2->bindParam('last_name', $last_name);
+            $stmt2->bindParam(':dob', $birth_date);
+            $stmt2->bindParam('email', $email);
+            $stmt2->bindParam('mobile', $mobile);
+            $stmt2->bindParam('gender', $gender);
+
+
+            $stmt2->execute();
+
         } else {
             echo "Failed to create user account.";
         }
