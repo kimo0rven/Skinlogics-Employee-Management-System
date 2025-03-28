@@ -169,7 +169,7 @@ body {
     padding: 0;
 }
 
-input {
+input, select {
 	border: 1px var(--color-base-300) solid;
 	border-radius: 8px;
 	padding: 10px
@@ -575,58 +575,84 @@ dialog {
 	border: 1px solid var(--color-base-300);
 	border-radius: 8px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	padding: 20px;
 
-	
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
-	padding: 20px 100px;
+	gap: 20px;
+	max-width: 450px;
+
 }
 
-#regForm {
-	background-color: #ffffff00;
+.setup-container form {
+	justify-self: self-start;
 }
 
-
-#regForm input {
-	padding: 10px;
-	font-size: 17px;
-	font-family: Raleway;
-	border: 1px solid #aaaaaa;
+.setup-container p, h1 {
+	margin: 0;
+}
+.setup-container input, select {
+	width: 450px;
+	padding: 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	box-sizing: border-box;
+	margin: 5px 0;
+	font-size: 16px;
+}
+.setup-container-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
 }
 
-#regForm button {
-	padding: 10px;
+#setupForm p {
+	padding: 5px 0;
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
 }
 
-/* Mark input boxes that gets an error on validation: */
-input.invalid {
-background-color: #ffdddd;
+.setup-container select {
+	background-color: var(--color-base-100);
+}
+.test:checked {
+	background-color: var(--color-base-100);
 }
 
-/* Hide all steps by default: */
 .tab {
-display: none;
+	display: none;
 }
-
-/* Make circles that indicate the steps of the form: */
+.tab:first-child {
+    display: block;
+}
+.setup-nav-buttons {
+	margin-top: 5px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+.setup-nav-buttons button {
+	padding: 10px 25px;
+}
 .step {
-height: 15px;
-width: 15px;
-margin: 0 2px;
-background-color: #bbbbbb;
-border: none;
-border-radius: 50%;
-display: inline-block;
-opacity: 0.5;
+	height: 15px;
+	width: 15px;
+	margin: 0px 2px;
+	background-color: var(--color-base-200);
+	border: none;
+	border-radius: 50%;
+	display: inline-block;
+	/* border: 1px solid var(--color-base-300); */
 }
 
-/* Mark the active step: */
 .step.active {
-opacity: 1;
+	/* opacity: 1; */
+	background-color: var(--color-primary);
+	
 }
 
-/* Mark the steps that are finished and valid: */
 .step.finish {
-background-color: #04AA6D;
+	background-color: var(--color-success);
 }
