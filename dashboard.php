@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     $user_account_id = $_SESSION["user_account_id"];
 
