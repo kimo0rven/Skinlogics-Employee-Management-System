@@ -2,7 +2,6 @@
 session_start();
 include("includes/database.php");
 
-echo $_POST["submit"];
 if (isset($_POST["submit"])) {
     $username = $_POST["username"];
     $pass = $_POST["pass"];
@@ -15,15 +14,25 @@ if (isset($_POST["submit"])) {
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
         if ($user && $pass === $user['pass']) {
 
             foreach ($user as $key => $value) {
                 $_SESSION[$key] = $value;
             }
             $_SESSION['loggedin'] = true;
+            $sql = "SELECT * FROM employee WHERE user_account_id = :user_account_id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(":user_account_id", $user['user_account_id']);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            header("Location: dashboard.php");
+            if ($result) {
+                header("Location: dashboard.php");
+            } else {
+                header("Location: setup.php");
+            }
+
+            // header("Location: dashboard.php");
             exit();
 
         } else {
