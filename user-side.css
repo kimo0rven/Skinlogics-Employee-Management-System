@@ -1,0 +1,59 @@
+.user-timer-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center the elements vertically */
+    align-items: center; /* Center the elements horizontally */
+    height: 100%;
+    gap: 20px; /* Slightly increase the space between items */
+}
+
+.user-timer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Space elements evenly across the row */
+    align-items: center; /* Align items in the center vertically */
+    width: 100%; /* Ensure the row spans full width */
+    gap: 20px; /* Adjust spacing between buttons */
+}
+
+.user-timer > div {
+    padding: 10px 20px;
+    text-align: center; /* Center text in each div */
+    flex: 1; /* Allow all divs to be equally sized */
+}
+
+.user-timer:first-child {
+    flex-basis: auto; /* Automatically size based on content */
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center-align the content */
+    justify-content: center;
+    gap: 0;
+    margin: 0;
+}
+
+.user-timer-form {
+    display: flex;
+    flex-direction: row; /* Arrange buttons horizontally */
+    justify-content: center; /* Center the form elements */
+    align-items: center;
+    gap: 15px; /* Add space between the buttons */
+    margin: 0;
+    padding: 0;
+    width: 100%; /* Ensure the form spans full width */
+}
+
+.user-timer-button {
+    padding: 20px 30px; 
+    border: 1px solid #007BFF; /* Add a border with a primary color */
+    background-color: #007BFF; /* Primary color for background */
+    border-radius: 5px; /* Add rounded corners for better appearance */
+    cursor: pointer; /* Add a pointer cursor for interactivity */
+    transition: all 0.3s ease; /* Smooth transition effect */
+}
+
+.user-timer-button:hover {
+    background-color: #0056b3; /* Darker blue for hover state */
+    border-color: #0056b3; /* Match border color to hover state */
+}

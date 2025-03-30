@@ -43,8 +43,6 @@ if (isset($_POST['registration'])) {
             $stmt2->bindParam('email', $email);
             $stmt2->bindParam('mobile', $mobile);
             $stmt2->bindParam('gender', $gender);
-
-
             $stmt2->execute();
 
         } else {

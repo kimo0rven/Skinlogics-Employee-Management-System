@@ -1,98 +1,118 @@
 <?php
-if (isset($_SESSION['loggedin']) || $_SESSION['loggedin'] == true) {
-    $user_account_id = $_SESSION["user_account_id"];
-
-    $accountType = $_SESSION["account_type"];
-
-    include 'includes/database.php';
-    include 'config.php';
-
-    try {
-        $sql = "SELECT * FROM employee WHERE user_account_id = :user_account_id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':user_account_id', $user_account_id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $employeeCount = "SELECT COUNT(*) AS total_records FROM employee";
-        $employeeCount = $pdo->prepare($employeeCount);
-        $employeeCount->execute();
-        $employeeCount = $employeeCount->fetch(PDO::FETCH_ASSOC);
-        $employeeCount = $employeeCount["total_records"];
-
-        $activeCount = "SELECT COUNT(*) AS total_active FROM employee WHERE status = 'Active'";
-        $activeCount = $pdo->prepare($activeCount);
-        $activeCount->execute();
-        $activeCount = $activeCount->fetch(PDO::FETCH_ASSOC);
-        $activeCount = $activeCount["total_active"];
-
-        $resignedCount = "SELECT COUNT(*) AS total_resigned FROM employee WHERE status = 'Resigned'";
-        $resignedCount = $pdo->prepare($resignedCount);
-        $resignedCount->execute();
-        $resignedCount = $resignedCount->fetch(PDO::FETCH_ASSOC);
-        $resignedCount = $resignedCount["total_resigned"];
-
-
-        $terminatedCount = "SELECT COUNT(*) AS total_terminated FROM employee WHERE status = 'Terminated'";
-        $terminatedCount = $pdo->prepare($terminatedCount);
-        $terminatedCount->execute();
-        $terminatedCount = $terminatedCount->fetch(PDO::FETCH_ASSOC);
-        $terminatedCount = $terminatedCount["total_terminated"];
-        if ($rows) {
-
-            foreach ($rows as $row) {
-                $first_name = $row['first_name'];
-                $last_name = $row['last_name'];
-            }
-        } else {
-            echo "No records found for user account ID: " . $user_account_id;
-        }
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-    }
-} else {
+if (empty($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: index.php");
+    exit;
+}
+
+$user_account_id = $_SESSION['user_account_id'];
+$accountType = $_SESSION['account_type'];
+
+include 'includes/database.php';
+include 'config.php';
+
+try {
+
+    $stmt = $pdo->prepare("SELECT * FROM employee WHERE user_account_id = :user_account_id LIMIT 1");
+    $stmt->execute([':user_account_id' => $user_account_id]);
+    $employee = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($employee) {
+        $first_name = $employee['first_name'];
+        $last_name = $employee['last_name'];
+    } else {
+        echo "No records found for user account ID: $user_account_id";
+    }
+
+
+    $stmt = $pdo->query("
+        SELECT 
+            COUNT(*) AS total_records,
+            SUM(status = 'Active') AS total_active,
+            SUM(status = 'Resigned') AS total_resigned,
+            SUM(status = 'Terminated') AS total_terminated
+        FROM employee
+    ");
+    $counts = $stmt->fetch(PDO::FETCH_ASSOC);
+    $employeeCount = $counts['total_records'];
+    $activeCount = $counts['total_active'];
+    $resignedCount = $counts['total_resigned'];
+    $terminatedCount = $counts['total_terminated'];
+
+
+    $today = new DateTime('now', new DateTimeZone('Asia/Manila'));
+    $currentDate = $today->format('Y-m-d');
+
+
+    $stmt = $pdo->prepare("
+        SELECT status, COUNT(*) AS count 
+        FROM attendance 
+        WHERE date = :date 
+        GROUP BY status
+    ");
+    $stmt->execute([':date' => $currentDate]);
+    $attendanceData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $statusCounts = ['Present' => 0, 'Absent' => 0, 'Late' => 0, 'On Leave' => 0];
+    foreach ($attendanceData as $row) {
+        if (isset($statusCounts[$row['status']])) {
+            $statusCounts[$row['status']] = $row['count'];
+        }
+    }
+
+
+    $currentMonthDay = $today->format('m-d');
+    $stmt = $pdo->prepare("
+        SELECT e.first_name, e.last_name, e.user_account_id, u.avatar
+        FROM employee e
+        JOIN user_account u ON e.user_account_id = u.user_account_id
+        WHERE DATE_FORMAT(e.dob, '%m-%d') = :currentMonthDay
+    ");
+    $stmt->execute([':currentMonthDay' => $currentMonthDay]);
+    $employeesWithBirthdaysToday = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+    $weekStart = (clone $today)->modify('last sunday');
+    $weekEnd = (clone $weekStart)->modify('+6 days');
+    $weekStartDate = $weekStart->format('Y-m-d');
+    $weekEndDate = $weekEnd->format('Y-m-d');
+
+
+    $stmt = $pdo->prepare("
+        SELECT lr.employee_id, e.first_name, e.last_name, e.user_account_id, ua.avatar,
+               lr.start_date, lr.end_date, lr.reason
+        FROM leave_request lr
+        JOIN employee e ON lr.employee_id = e.employee_id
+        JOIN user_account ua ON e.user_account_id = ua.user_account_id
+        WHERE lr.start_date <= :week_end 
+          AND lr.end_date >= :week_start 
+          AND lr.tl_approval = 'Approved'
+          AND lr.hr_manager_approval = 'Approved'
+        ORDER BY lr.start_date DESC
+    ");
+    $stmt->execute([
+        ':week_start' => $weekStartDate,
+        ':week_end' => $weekEndDate
+    ]);
+    $weeklyLeaves = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    echo "Database error: " . $e->getMessage();
+    exit;
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+    exit;
 }
 ?>
-<style>
-    .profile-dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-        right: 0;
-        margin-top: 200px;
-        margin-right: 25px;
-    }
 
-    .profile-dropdown-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-    }
 
-    .profile-dropdown-content a:hover {
-        background-color: #f1f1f1;
-    }
-
-    .profile-dropdown-container.show .profile-dropdown-content {
-        display: block;
-    }
-</style>
 
 <div id="admin">
     <div class="dashboard-background">
         <div class="dashboard-container">
             <div class="dashboard-navigation">
-                <div class="navigation-container">
+                <div class="navigation-container font-medium">
                     <div class="active"><a href="#"><img src="assets/images/icons/dashboard-icon.png" alt=""></a></div>
-                    <div><a href="employees.php"><img src="assets/images/icons/employee-icon.png" alt=""></a>
-                    </div>
-                    <div>3</div>
+                    <div><a href="employees.php"><img src="assets/images/icons/employee-icon.png" alt=""></a></div>
+                    <div><a href="payroll.php"><img src="assets/images/icons/payroll-icon.png" alt=""></a></div>
                     <div>4</div>
                     <div>5</div>
                     <div>6</div>
@@ -108,11 +128,6 @@ if (isset($_SESSION['loggedin']) || $_SESSION['loggedin'] == true) {
                         <p><?php echo $first_name . " " . $last_name ?></p>
                         <img class="dashboard-content-header-img profile-dropdown-trigger"
                             src="assets/images/avatars/<?php echo $_SESSION['avatar'] ?>" alt="">
-                        <div class="profile-dropdown-content">
-                            <a href="#">Profile Settings</a>
-                            <a href="#">Account Details</a>
-                            <a href="logout.php">Logout</a>
-                        </div>
                     </div>
                 </div>
                 <div class="dashboard-content-item2">
@@ -151,7 +166,102 @@ if (isset($_SESSION['loggedin']) || $_SESSION['loggedin'] == true) {
                             1
                         </div>
                     </div>
-                    <div class="dashboard-other-info"></div>
+                    <div class="dashboard-other-info">
+
+                        <div class="card attendance-container font-medium">
+                            <div>
+                                <h4>Present</h4>
+                                <p><?php echo $statusCounts['Present'] ?></p>
+                            </div>
+                            <div>
+                                <h4>Late</h4>
+                                <p><?php echo $statusCounts['Late'] ?></p>
+                            </div>
+                            <div>
+                                <h4>Absent</h4>
+                                <p><?php echo $statusCounts['Absent'] ?></p>
+                            </div>
+
+                        </div>
+                        <div class="today-events-container">
+                            <div class="font-bold">
+                                <div>
+                                    Today's Event
+                                </div>
+                            </div><?php if ($employeesWithBirthdaysToday) {
+                                foreach ($employeesWithBirthdaysToday as $employee) {
+                                    $avatar = !empty($employee['avatar']) ? $employee['avatar'] : 'default-avatar.png';
+                                    ?>
+                                    <div class="card today-event-layout font-medium">
+                                        <div>
+                                            <img class="img-resize"
+                                                src="assets/images/avatars/<?php echo htmlspecialchars($avatar); ?>"
+                                                alt="<?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>">
+                                        </div>
+                                        <div class="today-event-details">
+
+                                            <div class="font-regular">
+                                                <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>'s
+                                                Birthday
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
+                            } else {
+                                echo '<div class=" no-events">
+                                <div class="today-event-details font-medium">
+                                    <div>No birthdays today</div>
+                                </div></div>';
+                            } ?>
+                        </div>
+
+                        <div class="card today-on-leave-container  font-medium">
+                            <div class="font-bold">
+                                <div>Employees On Leave This Week</div>
+                            </div>
+                            <?php if (empty($weeklyLeaves)): ?>
+                                <div class="today-on-leave-details">
+                                    <div>No employees on leave This Week</div>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($weeklyLeaves as $employee): ?>
+                                    <?php
+                                    $startDate = new DateTime($employee['start_date']);
+                                    $endDate = new DateTime($employee['end_date']);
+                                    $today = new DateTime();
+
+                                    if ($startDate->format('Y-m-d') == $endDate->format('Y-m-d')) {
+                                        $dateRange = $startDate->format('M j');
+
+                                        if ($startDate->format('Y-m-d') == $today->format('Y-m-d')) {
+                                            $dateRange = 'Only Today';
+                                        }
+                                    } else {
+                                        $dateRange = $startDate->format('M j') . ' - ' . $endDate->format('M j');
+                                    }
+                                    $avatar = !empty($employee['avatar']) ? 'assets/images/avatars/' . $employee['avatar'] : 'assets/images/avatars/default.jpg';
+                                    ?>
+                                    <div class="today-on-leave-details">
+                                        <div class="image-resize">
+                                            <img class="img-resize" src="<?= htmlspecialchars($avatar) ?>" alt="">
+                                        </div>
+                                        <div class="today-on-leave-details2">
+                                            <div class="today-on-leave-details3">
+                                                <div>
+                                                    <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']) ?>
+                                                </div>
+                                                <div class="today-on-leave-details-date"><?= $dateRange ?></div>
+                                            </div>
+                                            <div class="today-on-leave-details-reason">
+                                                <?= htmlspecialchars($employee['reason']) ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
