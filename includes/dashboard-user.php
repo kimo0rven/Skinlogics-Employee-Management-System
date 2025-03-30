@@ -1,3 +1,38 @@
+<?php
+$message = '';
+date_default_timezone_set('Asia/Manila');
+$currentTime = date('Y-m-d h:i:s A'); // Use 'h' for 12-hour format and 'A' for AM/PM
+
+// Check if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['clock_in'])) {
+        // Handle clock in
+        $_SESSION['clock_in_time'] = $currentTime;
+        $message = "Clocked in successfully at " . $_SESSION['clock_in_time'];
+    } elseif (isset($_POST['clock_out'])) {
+        // Handle clock out
+        if (isset($_SESSION['clock_in_time'])) {
+            $clockInTime = $_SESSION['clock_in_time'];
+            $clockOutTime = $currentTime;
+
+            // Calculate time worked (in seconds for this example)
+            $timeWorked = strtotime($clockOutTime) - strtotime($clockInTime);
+            $hours = floor($timeWorked / 3600);
+            $minutes = floor(($timeWorked % 3600) / 60);
+            $seconds = $timeWorked % 60;
+
+            $message = "Clocked out successfully at $clockOutTime. Time worked: $hours hours, $minutes minutes, $seconds seconds";
+
+            // Clear the clock in time
+            unset($_SESSION['clock_in_time']);
+        } else {
+            $message = "You need to clock in first!";
+        }
+    }
+}
+?>
+
+
 <div>
     <div class="dashboard-background">
         <div class="dashboard-container">
@@ -23,11 +58,7 @@
                         <p><?php echo $first_name . " " . $last_name ?></p>
                         <img class="dashboard-content-header-img profile-dropdown-trigger"
                             src="assets/images/avatars/<?php echo $_SESSION['avatar'] ?>" alt="">
-                        <div class="profile-dropdown-content">
-                            <a href="#">Profile Settings</a>
-                            <a href="#">Account Details</a>
-                            <a href="logout.php">Logout</a>
-                        </div>
+
                     </div>
                 </div>
                 <div class="dashboard-content-item2">
@@ -62,7 +93,28 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="dashboard-chart">1</div>
+                        <div class="dashboard-chart user-timer-container">
+                            <div class="user-timer" class="">Current Time: <p id="timeDisplay" class="font-size-32"></p>
+                            </div>
+                            <form class="user-timer-form" action="" method="POST">
+                                <div class="user-timer user-timer-container">
+
+                                    <div><button type="submit" class="user-timer-button user-timer-button-start"
+                                            name="clock_in" type="button">Clock
+                                            In</button></div>
+
+                                    <div><button type="submit" class="user-timer-button user-timer-button-end"
+                                            name="clock_out" type="button">Clock
+                                            Out</button>
+                                    </div>
+
+                                    <div>
+                                        <p><?php echo htmlspecialchars($message); ?></p>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     <div class="dashboard-other-info"></div>
                 </div>
@@ -72,9 +124,23 @@
 </div>
 
 <script>
-    document.getElementById("logout-user").addEventListener("click", function () {
-        window.location.href = "logout.php";
-    });
+    function displayCurrentTime12Hour() {
+        const now = new Date();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+
+        const timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
+
+        document.getElementById('timeDisplay').textContent = timeString;
+    }
+
+    displayCurrentTime12Hour();
+    setInterval(displayCurrentTime12Hour, 1000);
 
     document.addEventListener('DOMContentLoaded', function () {
         const dropdownContainer = document.querySelector('.profile-dropdown-container');
