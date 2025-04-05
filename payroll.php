@@ -13,21 +13,6 @@ include 'includes/database.php';
 include 'config.php';
 
 
-try {
-    $sql = "SELECT first_name, last_name FROM employee WHERE user_account_id = :user_account_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':user_account_id' => $user_account_id]);
-    $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($userInfo) {
-        $first_name = $userInfo['first_name'];
-        $last_name = $userInfo['last_name'];
-    }
-} catch (PDOException $e) {
-    echo "Error fetching user information: " . $e->getMessage();
-}
-
-
 ?>
 
 
@@ -44,17 +29,7 @@ try {
         <div class="dashboard-background">
             <div class="dashboard-container">
                 <div class="dashboard-navigation">
-                    <div class="navigation-container ">
-                        <div><a href="/dashboard.php"><img src="assets/images/icons/dashboard-icon.png" alt=""></a>
-                        </div>
-                        <div><a href="employees.php"><img src="assets/images/icons/employee-icon.png" alt=""></a>
-                        </div>
-                        <div class="active"><a href="#"><img src="assets/images/icons/payroll-icon.png" alt=""></a>
-                        </div>
-                        <div>4</div>
-                        <div>5</div>
-                        <div>6</div>
-                    </div>
+                    <?php include('includes/navigation.php') ?>
                 </div>
                 <div class="dashboard-content">
                     <div class="dashboard-content-item1">
@@ -62,9 +37,7 @@ try {
                             <h1>PAYROLL</h1>
                         </div>
                         <div id="logout-admin" class="dashboard-content-header font-medium">
-                            <p><?php echo htmlspecialchars($first_name) . " " . htmlspecialchars($last_name); ?></p>
-                            <img class="dashboard-content-header-img profile-dropdown-trigger"
-                                src="assets/images/avatars/<?php echo $_SESSION['avatar'] ?? 'default.png'; ?>" alt="">
+                            <?php include('includes/header-avatar.php') ?>
                         </div>
                     </div>
 
@@ -132,10 +105,5 @@ try {
 
 
 </body>
-
-
-<script>
-
-</script>
 
 </html>

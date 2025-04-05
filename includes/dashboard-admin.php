@@ -109,14 +109,7 @@ try {
     <div class="dashboard-background">
         <div class="dashboard-container">
             <div class="dashboard-navigation">
-                <div class="navigation-container font-medium">
-                    <div class="active"><a href="#"><img src="assets/images/icons/dashboard-icon.png" alt=""></a></div>
-                    <div><a href="employees.php"><img src="assets/images/icons/employee-icon.png" alt=""></a></div>
-                    <div><a href="payroll.php"><img src="assets/images/icons/payroll-icon.png" alt=""></a></div>
-                    <div>4</div>
-                    <div>5</div>
-                    <div>6</div>
-                </div>
+                <?php include('includes/navigation.php') ?>
 
             </div>
             <div class="dashboard-content">
@@ -125,9 +118,7 @@ try {
                         <h1>DASHBOARD</h1>
                     </div>
                     <div id="logout-admin" class="dashboard-content-header font-medium">
-                        <p><?php echo $first_name . " " . $last_name ?></p>
-                        <img class="dashboard-content-header-img profile-dropdown-trigger"
-                            src="assets/images/avatars/<?php echo $_SESSION['avatar'] ?>" alt="">
+                        <?php include('includes/header-avatar.php') ?>
                     </div>
                 </div>
                 <div class="dashboard-content-item2">
@@ -269,11 +260,6 @@ try {
 </div>
 
 <script>
-    document.getElementById("logout-admin").addEventListener("click", function () {
-        window.location.href = "logout.php";
-    });
-
-
     document.addEventListener('DOMContentLoaded', function () {
         const dropdownContainer = document.querySelector('.profile-dropdown-container');
         const dropdownTrigger = document.querySelector('.profile-dropdown-trigger');

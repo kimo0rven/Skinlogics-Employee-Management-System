@@ -12,26 +12,6 @@ $accountType = $_SESSION["account_type"] ?? '';
 include 'includes/database.php';
 include 'config.php';
 
-
-$first_name = '';
-$last_name = '';
-
-try {
-    $sql = "SELECT first_name, last_name FROM employee WHERE user_account_id = :user_account_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':user_account_id' => $user_account_id]);
-    $userInfo = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($userInfo) {
-        $first_name = $userInfo['first_name'];
-        $last_name = $userInfo['last_name'];
-    } else {
-        echo "No records found for user account ID: " . htmlspecialchars($user_account_id);
-    }
-} catch (PDOException $e) {
-    echo "Error fetching user information: " . $e->getMessage();
-}
-
 $employees = [];
 try {
     $sql_employees = "SELECT
@@ -148,8 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addEmployee'])) {
 
     if (!empty($username) && !empty($password) && !empty($email)) {
         try {
-
-            // Insert into user_account
             $sql_insert_user = "INSERT INTO user_account (username, pass, email, account_type) 
                                 VALUES (:username, :password, :email, :account_type)";
             $stmt_user = $pdo->prepare($sql_insert_user);
@@ -160,10 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addEmployee'])) {
                 ':account_type' => 'User'
             ]);
 
-            // Retrieve the last inserted user_account_id
             $user_account_id = $pdo->lastInsertId();
 
-            // Gather and sanitize employee details
             $first_name = trim($_POST['first_name'] ?? '');
             $middle_name = trim($_POST['middle_name'] ?? '');
             $last_name = trim($_POST['last_name'] ?? '');
@@ -188,7 +164,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addEmployee'])) {
             $emergency_contact_number = trim($_POST['emergency_contact_number'] ?? '');
             $emergency_contact_relationship = trim($_POST['emergency_contact_relationship'] ?? '');
 
-            // Insert into employee
             $sql_create_user = "INSERT INTO employee (
                 email, first_name, middle_name, last_name, gender, mobile, 
                 street, barangay, city, province, status, 
@@ -292,17 +267,7 @@ if (isset($_GET['search'])) {
         <div class="dashboard-background">
             <div class="dashboard-container">
                 <div class="dashboard-navigation">
-                    <div class="navigation-container ">
-                        <div><a href="/dashboard.php"><img src="assets/images/icons/dashboard-icon.png" alt=""></a>
-                        </div>
-                        <div class="active"><a href="#"><img src="assets/images/icons/employee-icon.png" alt=""></a>
-                        </div>
-                        <div><a href="payroll.php"><img src="assets/images/icons/payroll-icon.png" alt=""></a>
-                        </div>
-                        <div>4</div>
-                        <div>5</div>
-                        <div>6</div>
-                    </div>
+                    <?php include('includes/navigation.php') ?>
                 </div>
                 <div class="dashboard-content">
                     <div class="dashboard-content-item1">
@@ -310,9 +275,7 @@ if (isset($_GET['search'])) {
                             <h1>EMPLOYEES</h1>
                         </div>
                         <div id="logout-admin" class="dashboard-content-header font-medium">
-                            <p><?php echo htmlspecialchars($first_name) . " " . htmlspecialchars($last_name); ?></p>
-                            <img class="dashboard-content-header-img profile-dropdown-trigger"
-                                src="assets/images/avatars/<?php echo $_SESSION['avatar'] ?? 'default.png'; ?>" alt="">
+                            <?php include('includes/header-avatar.php') ?>
                         </div>
                     </div>
 
@@ -325,7 +288,8 @@ if (isset($_GET['search'])) {
                                         placeholder="Search employees..."
                                         value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
                                     <button type="submit" style="margin: 0px">
-                                        <img src="assets/images/icons/search-icon.png" alt="Search">
+                                        <img class="img-resize" height="32px" width="32px"
+                                            src="assets/images/icons/search-icon.png" alt="Search">
                                     </button>
                                     <div> <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
                                             <a href="employees.php" class="clear-search">Clear Search</a>
@@ -337,21 +301,6 @@ if (isset($_GET['search'])) {
                                 <div><button class="employee-button" onClick="openAddEmployeeModal()">add
                                         employee</button></div>
                             </div>
-                            <!-- <div class="search-container">
-                                <form method="GET" action="employees.php">
-                                    <div>
-                                        <input type="text" name="search" placeholder="Search employees..."
-                                            value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
-                                    </div>
-                                    <div>
-                                        <button type="submit">asdasd
-                                            <img class="img-resize" src="assets/images/icons/search-icon.png"
-                                                alt="Search">
-                                        </button>
-                                    </div>
-                                </form>
-                            </div> -->
-                            <!-- <div><button onClick="openAddEmployeeModal()">add employee</button></div> -->
                         </div>
 
                         <div class="employee-display">
@@ -725,38 +674,25 @@ if (isset($_GET['search'])) {
 </body>
 
 <script>
-    // Retrieve the modal elements from the DOM
     const modal = document.getElementById('myModal');
     const addEmployeeModal = document.getElementById('add_employee_modal');
 
-    // Logout button handler
-    document.getElementById("logout-admin").addEventListener("click", () => {
-        window.location.href = "logout.php";
-    });
-
-    // (Optional) Log the addEmployeeModal element for debugging
-    console.log(addEmployeeModal);
-
-    // Close the add employee modal if clicking outside its content
     addEmployeeModal.addEventListener('click', (e) => {
         if (e.target === addEmployeeModal) {
             closeAddEmployeeModal();
         }
     });
 
-    // Function to open the add employee modal
     function openAddEmployeeModal() {
         addEmployeeModal.showModal();
     }
 
-    // Close the main modal if clicking outside its content
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeModal();
         }
     });
 
-    // Function to open the main modal and populate its fields based on row data
     function openModal(id) {
         const currentRow = document.querySelector(`#row-${id}`);
         if (!currentRow) {
@@ -772,7 +708,6 @@ if (isset($_GET['search'])) {
             return;
         }
 
-        // Populate input fields with data
         Object.keys(data).forEach(key => {
             const inputElement = document.querySelector(`input[name="${key}"]`);
             if (inputElement) {
@@ -780,7 +715,6 @@ if (isset($_GET['search'])) {
             }
         });
 
-        // Populate select elements if available
         const statusSelect = document.querySelector(`select[name="status"]`);
         if (statusSelect && data.status) {
             statusSelect.value = data.status;
@@ -799,12 +733,10 @@ if (isset($_GET['search'])) {
         modal.showModal();
     }
 
-    // Function to close the main modal
     function closeModal() {
         modal.close();
     }
 
-    // Function to close the add employee modal
     function closeAddEmployeeModal() {
         addEmployeeModal.close();
     }
