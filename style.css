@@ -194,7 +194,6 @@ input, select {
 	min-height: 100vh;
 	background-color: var(--color-base-300);
 }
-
 .login-container {
 	background-color: #000;
 	font-family: Arial, sans-serif;
