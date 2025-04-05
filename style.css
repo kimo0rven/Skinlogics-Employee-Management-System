@@ -199,6 +199,9 @@ input, select {
 	padding: 0;
 	box-sizing: border-box;
 }
+.wow{
+	display:block;
+}
 
 .login-container {
 	background-color: #000;
