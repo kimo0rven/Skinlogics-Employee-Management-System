@@ -194,11 +194,6 @@ input, select {
 	min-height: 100vh;
 	background-color: var(--color-base-300);
 }
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
 
 .login-container {
 	background-color: #000;
