@@ -56,13 +56,33 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
 </head>
 
 <body>
-    <div id="admin">
-        <?php include('includes/dashboard-admin.php'); ?>
+    <div class="dashboard-background">
+        <div class="dashboard-container">
+            <div class="dashboard-navigation">
+                <?php include('includes/navigation.php') ?>
+
+            </div>
+            <div class="dashboard-content">
+                <div class="dashboard-content-item1">
+                    <div class="dashboard-content-header font-black">
+                        <h1>DASHBOARD</h1>
+                    </div>
+                    <div id="logout-admin" class="dashboard-content-header font-medium">
+                        <?php include('includes/header-avatar.php') ?>
+                    </div>
+                </div>
+                <div id="admin">
+                    <?php include('includes/dashboard-admin.php'); ?>
+                </div>
+
+                <div id="member">
+                    <?php include('includes/dashboard-user.php'); ?>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="member">
-        <?php include('includes/dashboard-user.php'); ?>
-    </div>
+
 </body>
 <script>
 

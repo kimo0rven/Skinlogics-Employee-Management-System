@@ -105,159 +105,142 @@ try {
 
 
 
-<div id="admin">
-    <div class="dashboard-background">
-        <div class="dashboard-container">
-            <div class="dashboard-navigation">
-                <?php include('includes/navigation.php') ?>
 
-            </div>
-            <div class="dashboard-content">
-                <div class="dashboard-content-item1">
-                    <div class="dashboard-content-header font-black">
-                        <h1>DASHBOARD</h1>
-                    </div>
-                    <div id="logout-admin" class="dashboard-content-header font-medium">
-                        <?php include('includes/header-avatar.php') ?>
-                    </div>
+
+<div class="dashboard-content-item2">
+    <div class="dashboard-main-content">
+        <div class="dashboard-kpi font-medium">
+            <div class="kpi-item">
+                <p class="kpi-label">Total Employees</p>
+                <div class="kpi-value-container">
+                    <p class="kpi-value"><?php echo $employeeCount; ?></p>
+                    <img src="./assets/images/employee.png" class="kpi-icon" alt="Employee Icon">
                 </div>
-                <div class="dashboard-content-item2">
-                    <div class="dashboard-main-content">
-                        <div class="dashboard-kpi font-medium">
-                            <div class="kpi-item">
-                                <p class="kpi-label">Total Employees</p>
-                                <div class="kpi-value-container">
-                                    <p class="kpi-value"><?php echo $employeeCount; ?></p>
-                                    <img src="./assets/images/employee.png" class="kpi-icon" alt="Employee Icon">
-                                </div>
-                            </div>
-                            <div class="kpi-item">
-                                <p class="kpi-label">Active Employees</p>
-                                <div class="kpi-value-container">
-                                    <p class="kpi-value"><?php echo $activeCount; ?></p>
-                                    <img src="./assets/images/active.png" class="kpi-icon" alt="Employee Icon">
-                                </div>
-                            </div>
-                            <div class="kpi-item">
-                                <p class="kpi-label">Resigned Employees</p>
-                                <div class="kpi-value-container">
-                                    <p class="kpi-value"><?php echo $resignedCount; ?></p>
-                                    <img src="./assets/images/resign.png" class="kpi-icon" alt="Employee Icon">
-                                </div>
-                            </div>
-                            <div class="kpi-item">
-                                <p class="kpi-label">Terminated Employees</p>
-                                <div class="kpi-value-container">
-                                    <p class="kpi-value"><?php echo $terminatedCount; ?></p>
-                                    <img src="./assets/images/terminated.png" class="kpi-icon" alt="Employee Icon">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="dashboard-chart">
-                            1
-                        </div>
-                    </div>
-                    <div class="dashboard-other-info">
-
-                        <div class="card attendance-container font-medium">
-                            <div>
-                                <h4>Present</h4>
-                                <p><?php echo $statusCounts['Present'] ?></p>
-                            </div>
-                            <div>
-                                <h4>Late</h4>
-                                <p><?php echo $statusCounts['Late'] ?></p>
-                            </div>
-                            <div>
-                                <h4>Absent</h4>
-                                <p><?php echo $statusCounts['Absent'] ?></p>
-                            </div>
-
-                        </div>
-                        <div class="today-events-container">
-                            <div class="font-bold">
-                                <div>
-                                    Today's Event
-                                </div>
-                            </div><?php if ($employeesWithBirthdaysToday) {
-                                foreach ($employeesWithBirthdaysToday as $employee) {
-                                    $avatar = !empty($employee['avatar']) ? $employee['avatar'] : 'default-avatar.png';
-                                    ?>
-                                    <div class="card today-event-layout font-medium">
-                                        <div>
-                                            <img class="img-resize"
-                                                src="assets/images/avatars/<?php echo htmlspecialchars($avatar); ?>"
-                                                alt="<?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>">
-                                        </div>
-                                        <div class="today-event-details">
-
-                                            <div class="font-regular">
-                                                <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>'s
-                                                Birthday
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php
-                                }
-                            } else {
-                                echo '<div class=" no-events">
-                                <div class="today-event-details font-medium">
-                                    <div>No birthdays today</div>
-                                </div></div>';
-                            } ?>
-                        </div>
-
-                        <div class="card today-on-leave-container  font-medium">
-                            <div class="font-bold">
-                                <div>Employees On Leave This Week</div>
-                            </div>
-                            <?php if (empty($weeklyLeaves)): ?>
-                                <div class="today-on-leave-details">
-                                    <div>No employees on leave This Week</div>
-                                </div>
-                            <?php else: ?>
-                                <?php foreach ($weeklyLeaves as $employee): ?>
-                                    <?php
-                                    $startDate = new DateTime($employee['start_date']);
-                                    $endDate = new DateTime($employee['end_date']);
-                                    $today = new DateTime();
-
-                                    if ($startDate->format('Y-m-d') == $endDate->format('Y-m-d')) {
-                                        $dateRange = $startDate->format('M j');
-
-                                        if ($startDate->format('Y-m-d') == $today->format('Y-m-d')) {
-                                            $dateRange = 'Only Today';
-                                        }
-                                    } else {
-                                        $dateRange = $startDate->format('M j') . ' - ' . $endDate->format('M j');
-                                    }
-                                    $avatar = !empty($employee['avatar']) ? 'assets/images/avatars/' . $employee['avatar'] : 'assets/images/avatars/default.jpg';
-                                    ?>
-                                    <div class="today-on-leave-details">
-                                        <div class="image-resize">
-                                            <img class="img-resize" src="<?= htmlspecialchars($avatar) ?>" alt="">
-                                        </div>
-                                        <div class="today-on-leave-details2">
-                                            <div class="today-on-leave-details3">
-                                                <div>
-                                                    <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']) ?>
-                                                </div>
-                                                <div class="today-on-leave-details-date"><?= $dateRange ?></div>
-                                            </div>
-                                            <div class="today-on-leave-details-reason">
-                                                <?= htmlspecialchars($employee['reason']) ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+            </div>
+            <div class="kpi-item">
+                <p class="kpi-label">Active Employees</p>
+                <div class="kpi-value-container">
+                    <p class="kpi-value"><?php echo $activeCount; ?></p>
+                    <img src="./assets/images/active.png" class="kpi-icon" alt="Employee Icon">
+                </div>
+            </div>
+            <div class="kpi-item">
+                <p class="kpi-label">Resigned Employees</p>
+                <div class="kpi-value-container">
+                    <p class="kpi-value"><?php echo $resignedCount; ?></p>
+                    <img src="./assets/images/resign.png" class="kpi-icon" alt="Employee Icon">
+                </div>
+            </div>
+            <div class="kpi-item">
+                <p class="kpi-label">Terminated Employees</p>
+                <div class="kpi-value-container">
+                    <p class="kpi-value"><?php echo $terminatedCount; ?></p>
+                    <img src="./assets/images/terminated.png" class="kpi-icon" alt="Employee Icon">
                 </div>
             </div>
         </div>
+        <div class="dashboard-chart">
+            1
+        </div>
+    </div>
+    <div class="dashboard-other-info">
+
+        <div class="card attendance-container font-medium">
+            <div>
+                <h4>Present</h4>
+                <p><?php echo $statusCounts['Present'] ?></p>
+            </div>
+            <div>
+                <h4>Late</h4>
+                <p><?php echo $statusCounts['Late'] ?></p>
+            </div>
+            <div>
+                <h4>Absent</h4>
+                <p><?php echo $statusCounts['Absent'] ?></p>
+            </div>
+
+        </div>
+        <div class="today-events-container">
+            <div class="font-bold">
+                <div>
+                    Today's Event
+                </div>
+            </div><?php if ($employeesWithBirthdaysToday) {
+                foreach ($employeesWithBirthdaysToday as $employee) {
+                    $avatar = !empty($employee['avatar']) ? $employee['avatar'] : 'default-avatar.png';
+                    ?>
+                    <div class="card today-event-layout font-medium">
+                        <div>
+                            <img class="img-resize" src="assets/images/avatars/<?php echo htmlspecialchars($avatar); ?>"
+                                alt="<?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>">
+                        </div>
+                        <div class="today-event-details">
+
+                            <div class="font-regular">
+                                <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>'s
+                                Birthday
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                }
+            } else {
+                echo '<div class=" no-events">
+                                <div class="today-event-details font-medium">
+                                    <div>No birthdays today</div>
+                                </div></div>';
+            } ?>
+        </div>
+
+        <div class="card today-on-leave-container  font-medium">
+            <div class="font-bold">
+                <div>Employees On Leave This Week</div>
+            </div>
+            <?php if (empty($weeklyLeaves)): ?>
+                <div class="today-on-leave-details">
+                    <div>No employees on leave This Week</div>
+                </div>
+            <?php else: ?>
+                <?php foreach ($weeklyLeaves as $employee): ?>
+                    <?php
+                    $startDate = new DateTime($employee['start_date']);
+                    $endDate = new DateTime($employee['end_date']);
+                    $today = new DateTime();
+
+                    if ($startDate->format('Y-m-d') == $endDate->format('Y-m-d')) {
+                        $dateRange = $startDate->format('M j');
+
+                        if ($startDate->format('Y-m-d') == $today->format('Y-m-d')) {
+                            $dateRange = 'Only Today';
+                        }
+                    } else {
+                        $dateRange = $startDate->format('M j') . ' - ' . $endDate->format('M j');
+                    }
+                    $avatar = !empty($employee['avatar']) ? 'assets/images/avatars/' . $employee['avatar'] : 'assets/images/avatars/default.jpg';
+                    ?>
+                    <div class="today-on-leave-details">
+                        <div class="image-resize">
+                            <img class="img-resize" src="<?= htmlspecialchars($avatar) ?>" alt="">
+                        </div>
+                        <div class="today-on-leave-details2">
+                            <div class="today-on-leave-details3">
+                                <div>
+                                    <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']) ?>
+                                </div>
+                                <div class="today-on-leave-details-date"><?= $dateRange ?></div>
+                            </div>
+                            <div class="today-on-leave-details-reason">
+                                <?= htmlspecialchars($employee['reason']) ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
