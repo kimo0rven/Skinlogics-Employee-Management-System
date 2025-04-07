@@ -10,6 +10,7 @@ if ($accountType == 'Admin') {
         'employees.php' => 'Employees',
         'payroll.php' => 'Payroll',
         'timer.php' => 'Timer',
+        'work.php' => 'Work',
     ];
 } else if ($accountType == 'User') {
     $navigationItems = [
@@ -24,7 +25,8 @@ if ($accountType == 'Admin') {
     <?php foreach ($navigationItems as $file => $label): ?>
         <div class="<?php echo ($currentPage === $file) ? 'active' : ''; ?>">
             <a href="/<?php echo $file; ?>">
-                <img src="assets/images/icons/<?php echo strtolower($label); ?>-icon.png" alt="<?php echo $label; ?>">
+                <img src="assets/images/icons/<?php echo strtolower($label); ?>-icon.png" height="32px" width="32px"
+                    alt="<?php echo $label; ?>">
             </a>
         </div>
 

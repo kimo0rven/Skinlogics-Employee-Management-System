@@ -1318,20 +1318,49 @@ display: block;
 	display: inline-block;
 	line-height: 30px;
 }
-
-.timer-remarks {
-	padding: 10px;
-	width: 420px;
-	height: 150px;
-	resize: none;
-	border-radius: 8px;
-}
-.timer-remarks:focus {
-	border: var(--color-base-300) solid 1.5px;
-	outline: none;
-	border-radius: 8px;
+.clock-buttons:hover {
+    filter: brightness(1.1);
+    cursor: pointer;
 }
 
-.timer-remarks:hover {
-	border: var(--color-base-300) solid 1.5px;
+.clock-buttons:active {
+    transform: scale(0.98);
+}
+
+#ClockIn {
+	background-color: var(--color-accent);
+}
+
+#ClockIn:hover {
+    filter: brightness(1.1);
+    cursor: pointer;
+}
+
+#ClockIn:active {
+    transform: scale(0.98);
+}
+
+#ClockIn:disabled {
+    background-color: var(--color-base-300);
+	filter: none;
+	cursor: not-allowed;
+}
+
+#ClockOut {
+	background-color: var(--color-error);
+}
+
+#ClockOut:hover {
+    filter: brightness(1.1);
+    cursor: pointer;
+}
+
+#ClockOut:active {
+    transform: scale(0.98);
+}
+
+#ClockOut:disabled {
+    background-color: var(--color-base-300);
+	filter: none;
+	cursor: not-allowed;
 }

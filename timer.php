@@ -6,17 +6,13 @@ if (empty($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-include 'includes/database.php';
-include 'config.php';
-
+require_once 'includes/database.php';
+require_once 'config.php';
 
 date_default_timezone_set('Asia/Manila');
-
 $day = date('j');
 $month = date('M');
 $year = date('Y');
-$dayOfWeekNumber = date('w');
-$dayOfWeekText = date('l');
 $daysOfWeek = array(
     0 => 'Sunday',
     1 => 'Monday',
@@ -27,77 +23,117 @@ $daysOfWeek = array(
     6 => 'Saturday'
 );
 $dayOfWeekFromArr = $daysOfWeek[date('w')];
-
-$hour = date('h');
-$minutes = date('i');
-$seconds = date('s');
-$amPm = date('A');
 $currentDate = date('Y-m-d');
+$yesterday = date('Y-m-d', strtotime($currentDate . ' -1 day'));
 
-$attendanceRecord = "";
-try {
-
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+function fetchAttendanceRecord($pdo, $date)
+{
     $stmt = $pdo->prepare('SELECT * FROM attendance WHERE employee_id = :employee_id AND date = :date');
-    $stmt->bindParam(':employee_id', $_SESSION['employee_id']);
-    $stmt->bindParam(':date', $currentDate);
-    $stmt->execute();
-    $attendanceRecord = $stmt->fetch(PDO::FETCH_ASSOC);
-    print_r($attendanceRecord);
+    $stmt->execute([':employee_id' => $_SESSION['employee_id'], ':date' => $date]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
+$attendanceRecord = [];
+try {
+    $attendanceRecord = fetchAttendanceRecord($pdo, $currentDate);
 } catch (PDOException $e) {
-    echo '' . $e->getMessage() . '';
+    echo "Error: " . $e->getMessage();
+}
+
+try {
+    $yesterdayAttendance = fetchAttendanceRecord($pdo, $yesterday);
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
 }
 
 $clockInTimeFormatted = "";
 $clockOutTimeFormatted = "";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['clock-in'])) {
-        $clockInTime = date('h:i:s');
-        $clockInTimeFormatted = date('h:i A');
-        $status = '';
+        $clockInTime = date('Y-m-d H:i:s');
 
-        try {
+        if (!$yesterdayAttendance) {
+            $sql = 'INSERT INTO attendance (employee_id, date, status, worked_hours) 
+                        VALUES (:employee_id, :date, :status, :worked_hours)';
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':employee_id' => $_SESSION['employee_id'],
+                ':date' => $yesterday,
+                ':status' => 'Absent',
+                'worked_hours' => 0
+            ]);
+        }
 
-            if (!$attendanceRecord) {
-                // No attendance record exists; proceed to insert
-                $clockInTime = date('H:i:s');
-                $clockInTimeFormatted = date('h:i A');
+        if (!$attendanceRecord) {
+            try {
+                $cutOffStartTimestamp = strtotime($currentDate . ' 09:00:00');
+                $clockInTimestamp = strtotime($clockInTime);
 
-                $clockInTimeDate = $currentDate . ' ' . $clockInTime;
+                $status = ($clockInTimestamp <= $cutOffStartTimestamp) ? 'Present' : 'Late';
 
-                $cutOffStartTime = $currentDate . ' 09:00:00';
-                $cutOffEndTime = $currentDate . ' 18:00:00';
-
-                $clockInTimestamp = strtotime($clockInTimeDate);
-                $cutOffStartTimestamp = strtotime($cutOffStartTime);
-                $cutOffEndTimestamp = strtotime($cutOffEndTime);
-
-                if ($clockInTimestamp <= $cutOffStartTimestamp) {
-                    $status = 'Present';
-                } elseif ($clockInTimestamp > $cutOffStartTimestamp && $clockInTimestamp <= $cutOffEndTimestamp) {
-                    $status = 'Late';
-                } else {
-                    $status = 'Absent';
-                }
-
-                $sql = 'INSERT INTO attendance (employee_id, date, clock_in_time, status) VALUES (:employee_id, :date, :clock_in_time, :status)';
+                $sql = 'INSERT INTO attendance (employee_id, date, clock_in_time, status) 
+                        VALUES (:employee_id, :date, :clock_in_time, :status)';
                 $stmt = $pdo->prepare($sql);
-                $stmt->bindParam(':employee_id', $employee_id);
-                $stmt->bindParam(':date', $currentDate);
-                $stmt->bindParam(':clock_in_time', $clockInTime);
-                $stmt->bindParam(':status', $status);
+                $stmt->execute([
+                    ':employee_id' => $_SESSION['employee_id'],
+                    ':date' => $currentDate,
+                    ':clock_in_time' => $clockInTime,
+                    ':status' => $status
+                ]);
 
-                $stmt->execute();
-            } else {
-                echo "Attendance record already exists for today.";
+                $attendanceRecord = fetchAttendanceRecord($pdo, $currentDate);
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
             }
+        }
+    }
 
+    if (isset($_POST["clock-out"])) {
+        try {
+            $attendanceRecord = fetchAttendanceRecord($pdo, $currentDate);
+
+            if ($attendanceRecord && (empty($attendanceRecord['clock_out_time']) || $attendanceRecord['clock_out_time'] == "0000-00-00 00:00:00")) {
+                $clockOutTime = date('Y-m-d H:i:s');
+
+                $clockInTimestamp = strtotime($attendanceRecord['clock_in_time']);
+                $clockOutTimestamp = strtotime($clockOutTime);
+                $differenceInSeconds = $clockOutTimestamp - $clockInTimestamp;
+                $workedHours = number_format($differenceInSeconds / 3600, 2);
+
+                $sql = 'UPDATE attendance 
+                        SET clock_out_time = :clock_out_time, worked_hours = :worked_hours 
+                        WHERE employee_id = :employee_id AND date = :date';
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    ':clock_out_time' => $clockOutTime,
+                    ':worked_hours' => $workedHours,
+                    ':employee_id' => $_SESSION['employee_id'],
+                    ':date' => $currentDate
+                ]);
+            }
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
     }
+}
+$clockIn = false;
+$clockOut = false;
 
+if ($attendanceRecord) {
+    if ($attendanceRecord['clock_in_time']) {
+        $clockIn = true;
+        $dateTime = new DateTime($attendanceRecord['clock_in_time']);
+        $clockInTimeFormatted = $dateTime->format('h:i A');
+    }
+
+    if ($attendanceRecord['clock_out_time']) {
+        $clockOut = true;
+        $dateTime = new DateTime($attendanceRecord['clock_out_time']);
+        $clockOutTimeFormatted = $dateTime->format('h:i A');
+    }
 }
 
 ?>
@@ -111,7 +147,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="style.css" />
 </head>
 
-
 <body class="font-medium">
     <div id="admin">
         <div class="dashboard-background">
@@ -120,6 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php include('includes/navigation.php') ?>
                 </div>
                 <div class="dashboard-content">
+
                     <div class="dashboard-content-item1">
                         <div class="dashboard-content-header font-black">
                             <h1>CLOCK IN & OUT</h1>
@@ -148,54 +184,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                 </div>
                                 <div class="">
-
                                     <div class="flex flex-column justify-center align-center gap-20">
-
-                                        <?php
-                                        if ($clockInTimeFormatted) {
-                                            echo '<div> Clock In Time: <strong>' . $clockInTimeFormatted . '</strong></div>';
-                                        } else {
-                                            echo '<div style="opacity: 0">1</div>';
-                                        }
-                                        ?>
+                                        <div class="flex flex-row gap-20">
+                                            <?php
+                                            if ($clockIn) {
+                                                echo '<div> Clock In Time: <strong>' . $clockInTimeFormatted . '</strong></div>';
+                                            } else {
+                                                echo '<div style="opacity: 0">1</div>';
+                                            }
+                                            if ($clockOut) {
+                                                echo '<div> Clock Out Time: <strong>' . $clockOutTimeFormatted . '</strong></div>';
+                                            } else {
+                                                echo '<div style="opacity: 0">1</div>';
+                                            }
+                                            ?>
+                                        </div>
                                         <div class="flex flex-row justify-center gap-20">
                                             <div>
                                                 <form id="clockInForm" action="/timer.php" method="POST">
                                                     <?php
                                                     if ($attendanceRecord) {
-                                                        echo 1;
+                                                        echo '<button id="ClockIn" name="clock-in" type="submit"
+                                                        class="clock-buttons" onclick="getCurrentTime()" disabled>Clock
+                                                        In!</button>';
                                                     } else {
-                                                        echo 2;
+                                                        echo '<button id="ClockIn" name="clock-in" type="submit"
+                                                        class="clock-buttons" onclick="getCurrentTime()">Clock
+                                                        In!</button>';
                                                     }
-                                                    // <button id="ClockIn" name="clock-in" type="submit"
-                                                    //     class="clock-buttons" style="background-color: #5cb85b;"
-                                                    //     onclick="getCurrentTime()">Clock
-                                                    //     In</button>
                                                     ?>
                                                 </form>
                                             </div>
-                                            <form action="#"></form>
-                                            <div><button id="ClockOut" class="clock-buttons"
-                                                    style="background-color: #d9534f;" onclick="getCurrentTime()">Clock
-                                                    Out</button></div>
-                                        </div>
-                                        <div class="flex flex-column flex-start">
-                                            <p style="text-align: start; margin:0">Comment:</p>
-                                            <div><textarea class="timer-remarks"></textarea>
-                                            </div>
+                                            <form id="clockOutForm" action="/timer.php" method="POST">
+                                                <?php
+                                                if ($attendanceRecord) {
+                                                    echo '<button id="ClockOut" name="clock-out" type="submit"
+                                                    class="clock-buttons" onclick="getCurrentTime()">Clock Out</button>';
+                                                } else {
+                                                    echo '<button id="ClockOut" name="clock-out" type="submit"
+                                                    class="clock-buttons" disabled>Clock Out</button>';
+                                                }
+                                                ?>
+
                                             </form>
                                         </div>
-
                                     </div>
-
                                 </div>
+
                             </div>
                         </div>
                     </div>
-
                 </div>
+
             </div>
         </div>
+    </div>
 
     </div>
 
