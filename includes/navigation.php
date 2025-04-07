@@ -9,11 +9,13 @@ if ($accountType == 'Admin') {
         'dashboard.php' => 'Dashboard',
         'employees.php' => 'Employees',
         'payroll.php' => 'Payroll',
+        'timer.php' => 'Timer',
     ];
 } else if ($accountType == 'User') {
     $navigationItems = [
         'dashboard.php' => 'Dashboard',
-        'test.php' => 'test'
+        'timer.php' => 'Timer',
+
     ];
 }
 ?>

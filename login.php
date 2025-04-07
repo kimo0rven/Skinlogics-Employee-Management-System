@@ -7,17 +7,20 @@ if (isset($_SESSION["user_account_id"], $_SESSION['username'])) {
     $_SESSION['loggedin'] = true;
 
     try {
-        $sql = "SELECT setup FROM employee WHERE user_account_id = :user_account_id";
+        $sql = "SELECT setup,employee_id FROM employee WHERE user_account_id = :user_account_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(":user_account_id", $_SESSION['user_account_id']);
         $stmt->execute();
-        $setup = $stmt->fetchColumn();
+        $setup = $stmt->fetch(PDO::FETCH_ASSOC);
 
         echo "Value of \$setup: ";
         var_dump($setup); // Or print_r($setup);
         echo "<br>";
 
-        if ($setup == 1) {
+        $_SESSION['employee_id'] = $setup['employee_id'];
+        echo $_SESSION['employee_id'];
+
+        if ($setup['setup'] == 1) {
             header("Location: dashboard.php");
         } else {
             header("Location: setup.php");
@@ -46,13 +49,16 @@ if (isset($_POST["submit"])) {
             $_SESSION = $user;
             $_SESSION['loggedin'] = true;
 
-            $sql = "SELECT setup FROM employee WHERE user_account_id = :user_account_id";
+            $sql = "SELECT setup,employee_id FROM employee WHERE user_account_id = :user_account_id";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(":user_account_id", $user['user_account_id']);
             $stmt->execute();
-            $setup = $stmt->fetchColumn();
+            $setup = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($setup == 1) {
+            $_SESSION['employee_id'] = $setup['employee_id'];
+            echo $_SESSION['employee_id'];
+
+            if ($setup['setup'] == 1) {
                 header("Location: dashboard.php");
             } else {
                 header("Location: setup.php");

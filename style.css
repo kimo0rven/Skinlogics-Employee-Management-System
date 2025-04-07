@@ -8,7 +8,7 @@
 	--color-secondary: #61738D;
 	--color-secondary-content: #fff;
 	--color-accent: #009689;
-	--color-accent-content: #000;
+	--color-accent-content: #ffffff;
 	--color-neutral: #000;
 	--color-neutral-content: #fff;
 	--color-info: #0090B5;
@@ -236,7 +236,7 @@ input, select {
 .login-input {
 	width: 100%;
 	padding: 12px;
-	border-radius: 5px;
+	border-radius: 8px;
 	background: #1c1c1e;
 	border: 1px solid #333;
 	color: #fff;
@@ -252,7 +252,7 @@ input, select {
 	padding: 10px 14px;
 	background-color: #4385f4;
 	border: none;
-	border-radius: 5px;
+	border-radius: 8px;
 	color: white;
 	font-size: 1rem;
 	cursor: pointer;
@@ -350,7 +350,7 @@ input, select {
 	padding: 10px;
 	margin-bottom: 20px;
 	border: 1px solid #ddd;
-	border-radius: 4px;
+	border-radius: 8px;
 	box-sizing: border-box;
 }
 
@@ -359,7 +359,7 @@ button {
 	background-color: var(--color-primary);
 	color: white;
 	border: none;
-	border-radius: 4px;
+	border-radius: 8px;
 	cursor: pointer;
 	font-size: 16px;
 	
@@ -387,7 +387,7 @@ button:hover {
 	width: 100%;
 	max-width: 100%;
 	overflow-y: auto;
-	padding: 25px;
+	padding: 20px;
 	gap: 20px;
 }
 
@@ -396,6 +396,7 @@ button:hover {
     flex-basis:80%;
 	display: flex;
 	flex-direction: column;
+	gap: 20px;
 }
 .dashboard-content-item1 {
 	flex-grow: 0;
@@ -404,7 +405,6 @@ button:hover {
 	justify-content: space-between; 
 	align-items: flex-end; 
 	flex-wrap: nowrap;
-	margin: 20px 0;
 }
 .dashboard-content-header {
 	text-align: center;
@@ -432,8 +432,7 @@ button:hover {
 }
 
 .dashboard-main-content {
-    flex: 0;
-    height: 100%;
+    max-height: 100%;
     flex-basis: 75%;
     display: flex;
     flex-direction: column;
@@ -457,7 +456,6 @@ button:hover {
 	justify-content: flex-start;
 	gap: 20px;
 	overflow: hidden;
-	height: 100%;
 }
 
 .dashboard-other-info > div {
@@ -511,7 +509,7 @@ button:hover {
 
 .today-events-container::-webkit-scrollbar-thumb {
     background: var(--color-primary);
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 .today-events-container::-webkit-scrollbar-thumb:hover {
@@ -606,8 +604,9 @@ button:hover {
 	background: var(--color-base-100);
 	border: 1px solid var(--color-base-300);
     border-radius: 8px;
-	height: 100%;
+	max-height: 100%;
 	width: 100%;
+	overflow-y: auto;
 }
 .kpi-container {
 	display: flex;
@@ -682,6 +681,9 @@ button:hover {
 .gap-20 {
 	gap: 20px;
 }
+.gap-10 {
+	gap: 10px;
+}
 .space-evenly {
 	justify-content: space-evenly;
 }
@@ -690,6 +692,12 @@ button:hover {
 }
 .flex-start {
 	justify-content: flex-start;
+}
+.flex-end {
+	justify-content: flex-end;
+}
+.justify-center {
+	justify-content: center;
 }
 .flex-wrap {
 	flex-wrap: wrap;
@@ -759,7 +767,7 @@ button:hover {
 .employee-header-div form input {
     height: 40px;
     border: 1px solid var(--color-base-300);
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 0 10px;
     flex-grow: 1;
 }
@@ -952,7 +960,7 @@ dialog[open] {
 	width: 450px;
 	padding: 12px;
 	border: 1px solid #ddd;
-	border-radius: 4px;
+	border-radius: 8px;
 	box-sizing: border-box;
 	margin: 5px 0;
 	font-size: 16px;
@@ -1013,13 +1021,6 @@ dialog[open] {
 	background-color: var(--color-success);
 }
 
-dialog {
-	transform: scale(0.9);
-	transition: 
-	opacity 0.3s ease-out,
-	transform 0.3s ease-out,
-	display 0.3s ease-out allow-discrete;
-}
 
 .payroll-range-container {
 	display: flex;
@@ -1035,30 +1036,61 @@ dialog {
     position: relative;
 }
 
+#profile-dropdown-trigger:hover {
+	cursor: pointer;
+}
+.profile-dropdown {
+    position: relative;
+    border: 1px solid var(--color-base-300);
+}
+
+.profile-dropdown::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 85%;
+    transform: translateX(-50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid var(--color-base-100);
+}
+
 .profile-dropdown ul {
-    list-style-type: none; 
+    list-style-type: none;
     margin: 0;
-	padding: 0;
-	border-radius: 8px;
+    padding: 0;
+    border-radius: 8px;
+    background-color: var(--color-base-100);
 }
 
 .profile-dropdown ul li {
     padding: 10px 20px;
-    border-bottom: 1px solid var(--color-base-300); 
+    border-bottom: 1px solid var(--color-base-300);
+    border-radius: 0px;
 }
 
 .profile-dropdown ul li:last-child {
-    border-bottom: none; 
+    border-bottom: none;
 }
 
 .profile-dropdown ul li a {
-    text-decoration: none; 
-    color: var(--color-base-content); 
+    text-decoration: none;
+    color: var(--color-base-content);
 }
 
 .profile-dropdown ul li:hover {
-    background-color: var(--color-primary); 
-    color: var(--color-primary); 
+    background-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.profile-dropdown ul li:first-of-type {
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+}
+
+.profile-dropdown ul li:last-of-type {
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
 }
 
 .profile-main-content {
@@ -1205,7 +1237,7 @@ display: block;
     right: 0;
     background-color: var(--color-base-100);
 	border-color: var(--color-base-300);
-    border-radius: 5px;
+    border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
     z-index: 100; 
 }
@@ -1252,4 +1284,54 @@ display: block;
 .personal_information_form > div label {
 	display: block;
 	margin-bottom: 5px;
+}
+.timer-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 100vh
+}
+
+
+.timer-container > div:first-child {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+	background-color: var(--color-accent);
+	flex-basis: 15%;
+}
+
+.timer-container > div:last-child {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+	flex-basis: 80%;
+}
+
+.clock-buttons {
+	padding: 20px 30px; 
+	width: 200px;
+	height: 80px; 
+	text-align: center;
+	display: inline-block;
+	line-height: 30px;
+}
+
+.timer-remarks {
+	padding: 10px;
+	width: 420px;
+	height: 150px;
+	resize: none;
+	border-radius: 8px;
+}
+.timer-remarks:focus {
+	border: var(--color-base-300) solid 1.5px;
+	outline: none;
+	border-radius: 8px;
+}
+
+.timer-remarks:hover {
+	border: var(--color-base-300) solid 1.5px;
 }

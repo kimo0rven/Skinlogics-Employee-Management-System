@@ -33,82 +33,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 
-<div>
-    <div class="dashboard-background">
-
-        <div class="dashboard-navigation">
-            <?php include('navigation.php') ?>
+<div class="dashboard-content-item2">
+    <div class="dashboard-main-content">
+        <div class="dashboard-kpi font-medium">
+            <div class="kpi-item">
+                <p class="kpi-label">Vacation Leaves</p>
+                <div class="kpi-value-container">
+                    <p class="kpi-value"><?php echo $employeeCount; ?></p>
+                    <img src="./assets/images/employee.png" class="kpi-icon" alt="Employee Icon">
+                </div>
+            </div>
+            <div class="kpi-item">
+                <p class="kpi-label">Sick Leaves</p>
+                <div class="kpi-value-container">
+                    <p class="kpi-value"><?php echo $activeCount; ?></p>
+                    <img src="./assets/images/active.png" class="kpi-icon" alt="Employee Icon">
+                </div>
+            </div>
+            <div class="kpi-item">
+                <p class="kpi-label">Lates</p>
+                <div class="kpi-value-container">
+                    <p class="kpi-value"><?php echo $resignedCount; ?></p>
+                    <img src="./assets/images/resign.png" class="kpi-icon" alt="Employee Icon">
+                </div>
+            </div>
+            <div class="kpi-item">
+                <p class="kpi-label">Absents</p>
+                <div class="kpi-value-container">
+                    <p class="kpi-value"><?php echo $terminatedCount; ?></p>
+                    <img src="./assets/images/terminated.png" class="kpi-icon" alt="Employee Icon">
+                </div>
+            </div>
         </div>
+        <div class="dashboard-chart">
 
-        <div class="dashboard-content">
-            <div class="dashboard-content-item1">
-                <div class="dashboard-content-header font-black">
-                    <h1>DASHBOARD</h1>
-                </div>
-                <div id="logout-user" class="dashboard-content-header font-medium profile-dropdown-container">
-                    <?php include('includes/header-avatar.php') ?>
-                </div>
-            </div>
-            <div class="dashboard-content-item2">
-                <div class="dashboard-main-content">
-                    <div class="dashboard-kpi font-medium">
-                        <div class="kpi-item">
-                            <p class="kpi-label">Vacation Leaves</p>
-                            <div class="kpi-value-container">
-                                <p class="kpi-value"><?php echo $employeeCount; ?></p>
-                                <img src="./assets/images/employee.png" class="kpi-icon" alt="Employee Icon">
-                            </div>
-                        </div>
-                        <div class="kpi-item">
-                            <p class="kpi-label">Sick Leaves</p>
-                            <div class="kpi-value-container">
-                                <p class="kpi-value"><?php echo $activeCount; ?></p>
-                                <img src="./assets/images/active.png" class="kpi-icon" alt="Employee Icon">
-                            </div>
-                        </div>
-                        <div class="kpi-item">
-                            <p class="kpi-label">Lates</p>
-                            <div class="kpi-value-container">
-                                <p class="kpi-value"><?php echo $resignedCount; ?></p>
-                                <img src="./assets/images/resign.png" class="kpi-icon" alt="Employee Icon">
-                            </div>
-                        </div>
-                        <div class="kpi-item">
-                            <p class="kpi-label">Absents</p>
-                            <div class="kpi-value-container">
-                                <p class="kpi-value"><?php echo $terminatedCount; ?></p>
-                                <img src="./assets/images/terminated.png" class="kpi-icon" alt="Employee Icon">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-chart user-timer-container">
-                        <div class="user-timer" class="">Current Time: <p id="timeDisplay" class="font-size-32"></p>
-                        </div>
-                        <form class="user-timer-form" action="" method="POST">
-                            <div class="user-timer user-timer-container">
-
-                                <div><button type="submit" class="user-timer-button user-timer-button-start"
-                                        name="clock_in" type="button">Clock
-                                        In</button></div>
-
-                                <div><button type="submit" class="user-timer-button user-timer-button-end"
-                                        name="clock_out" type="button">Clock
-                                        Out</button>
-                                </div>
-
-                                <div>
-                                    <p><?php echo htmlspecialchars($message); ?></p>
-                                </div>
-
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="dashboard-other-info"></div>
-            </div>
+            <br>
         </div>
     </div>
-</div>
+    <div class="dashboard-other-info border-red">
+
+        1
+    </div>
 </div>
 
 <script>

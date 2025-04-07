@@ -12,9 +12,28 @@ $accountType = $_SESSION["account_type"] ?? '';
 include 'includes/database.php';
 include 'config.php';
 
+try {
+    $sql = 'SELECT * FROM payroll';
+    $stmt_payroll = $pdo->prepare($sql);
+    $stmt_payroll->execute();
+    $payrolls = $stmt_payroll->fetch(PDO::FETCH_ASSOC);
+
+    print_r($payrolls);
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $payrollStart = isset($_POST['payroll_start']) ? $_POST['payroll_start'] : null;
+    $payrollEnd = isset($_POST['payroll_end']) ? $_POST['payroll_end'] : null;
+
+} else {
+    echo "Invalid request method. Please submit the form.";
+}
+
 
 ?>
-
+<html>
 
 <head>
     <meta charset="UTF-8">
@@ -45,7 +64,6 @@ include 'config.php';
                         <div class="employee-header">
                             <div class="employee-header-div">
                                 <form method="GET" action="employees.php">
-
                                     <input type="text" id="employee_search" type="employee_search" name="search"
                                         placeholder="Search employees..."
                                         value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
@@ -62,18 +80,17 @@ include 'config.php';
                             <div class="employee-header-div"
                                 style="display: flex; flex-direction: row; justify-content: center;">
                                 <div class="payroll-range-container">
-                                    <form id="payrollForm">
+                                    <form id="payrollForm" action="#" method="POST">
                                         <div>
-                                            <input type="date" id="payroll_start" name="payroll_start" value="">
+                                            <input type="date" id="payroll_start" name="payroll_start"
+                                                value="<?php echo $payrollStart ?>">
                                         </div>
                                         <div>
                                             <p style="margin: 0; text-align: center;"> - </p>
                                         </div>
                                         <div>
-                                            <input type="date" id="payroll_end" name="payroll_end" value="">
-                                        </div>
-                                        <div>
-                                            <button type="button" id="queryPayrollButton">Query Payroll</button>
+                                            <input type="date" id="payroll_end" name="payroll_end"
+                                                value="<?php echo $payrollEnd ?>">
                                         </div>
                                     </form>
                                 </div>
@@ -103,6 +120,64 @@ include 'config.php';
         </dialog>
     </div>
 
+    <script>
+        const payrollStart = document.getElementById('payroll_start');
+        const payrollEnd = document.getElementById('payroll_end');
+        const form = document.getElementById('payrollForm');
+
+        function validateDates() {
+            const startDate = payrollStart.value;
+            const endDate = payrollEnd.value;
+
+            if (!startDate && endDate) {
+                alert('Please select a start date before selecting an end date.');
+                return false;
+            }
+
+            if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+                alert('Start date must be earlier than the end date.');
+                return false;
+            }
+
+            return true;
+        }
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            if (validateDates()) {
+                const formData = new FormData(form);
+
+                fetch('your_php_script.php', {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then((response) => response.text())
+                    .then((data) => {
+                        console.log('Server response:', data);
+                        alert('Form successfully submitted!');
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('There was an error submitting the form.');
+                    });
+            }
+        });
+
+        payrollStart.addEventListener('change', () => {
+            if (validateDates() && payrollEnd.value) {
+                form.submit();
+            }
+        });
+
+        payrollEnd.addEventListener('change', () => {
+            if (validateDates()) {
+                console.log('End date selected:', payrollEnd.value);
+                form.submit();
+            }
+        });
+
+    </script>
 
 </body>
 

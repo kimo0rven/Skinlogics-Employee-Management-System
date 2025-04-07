@@ -18,10 +18,18 @@ try {
 }
 
 ?>
+<div id="profile-dropdown-trigger" class="flex flex-row flex-end gap-10 ">
 
-<p><?php echo $first_name . " " . $last_name ?></p>
-<img class="dashboard-content-header-img profile-dropdown-trigger"
-    src="assets/images/avatars/<?php echo $_SESSION['avatar'] ?>" alt="">
+    <img class="dashboard-content-header-img" src="assets/images/avatars/<?php echo $_SESSION['avatar'] ?>" alt="">
+    <div class="flex flex-row justify-center align-center gap-10">
+        <div>
+            <p><?php echo $first_name ?>
+        </div>
+        <div><img height="20px" width="20px" src="assets/images/icons/arrow-down-icon.png" alt=""></div>
+    </div>
+
+    </p>
+</div>
 <div class="profile-dropdown" id="profileDropdown">
     <ul>
         <li><a href="profile.php">View Profile</a></li>
@@ -29,8 +37,10 @@ try {
     </ul>
 </div>
 
+
+
 <script>
-    const profileTrigger = document.querySelector('.profile-dropdown-trigger');
+    const profileTrigger = document.getElementById('profile-dropdown-trigger');
     const profileDropdown = document.getElementById('profileDropdown');
 
     profileTrigger.addEventListener('click', function () {
@@ -38,7 +48,9 @@ try {
     });
 
     document.addEventListener('click', function (event) {
+
         if (!profileTrigger.contains(event.target) && !profileDropdown.contains(event.target)) {
+
             profileDropdown.style.display = 'none';
         }
     });
