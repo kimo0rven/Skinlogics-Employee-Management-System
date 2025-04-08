@@ -2,7 +2,6 @@
 session_start();
 include("includes/database.php");
 
-// Check if user is already logged in
 if (isset($_SESSION["user_account_id"], $_SESSION['username'])) {
     $_SESSION['loggedin'] = true;
 
@@ -14,7 +13,7 @@ if (isset($_SESSION["user_account_id"], $_SESSION['username'])) {
         $setup = $stmt->fetch(PDO::FETCH_ASSOC);
 
         echo "Value of \$setup: ";
-        var_dump($setup); // Or print_r($setup);
+        var_dump($setup);
         echo "<br>";
 
         $_SESSION['employee_id'] = $setup['employee_id'];
@@ -32,7 +31,6 @@ if (isset($_SESSION["user_account_id"], $_SESSION['username'])) {
     }
 }
 
-// Handle login form submission
 if (isset($_POST["submit"])) {
     $username = $_POST["username"];
     $pass = $_POST["pass"];
