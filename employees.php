@@ -254,6 +254,7 @@ if (isset($_GET['search'])) {
 ?>
 
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -750,7 +751,7 @@ if (isset($_GET['search'])) {
         const table = document.querySelector('.employee-display table');
         const rows = table.getElementsByTagName('tr');
 
-        for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+        for (let i = 1; i < rows.length; i++) {
             let found = false;
             const cells = rows[i].getElementsByTagName('td');
 
