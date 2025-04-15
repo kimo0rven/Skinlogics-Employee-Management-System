@@ -1289,6 +1289,7 @@ display: block;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	height: 100%;
 }
 
 
@@ -1488,13 +1489,17 @@ display: block;
 	flex-direction: column;
 	justify-content: space-between;
 	padding: 20px;
-	width: 275px;
+	width: 280px;
 	height: 250px;
+
 }
 .job-record:hover {
-	background-color: var(--color-base-300);
+	/* background-color: var(--color-base-300); */
 	border: 1px solid var(--color-base-content);
-}
+	-webkit-box-shadow:0px 0px .5px .5px rgb(0, 0, 0);
+	-moz-box-shadow: 0px 0px .5px .5px rgb(0, 0, 0);
+	box-shadow: 0px 0px .5px .5px rgb(0, 0, 0);
+	}
 
 .job-status-active {
 	padding: 0px 10px;

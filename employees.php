@@ -304,7 +304,7 @@ if (isset($_GET['search'])) {
                             </div>
                         </div>
 
-                        <div class="employee-display">
+                        <div class="employee-display" style="overflow: auto;">
                             <table>
                                 <thead class="font-bold">
                                     <tr>

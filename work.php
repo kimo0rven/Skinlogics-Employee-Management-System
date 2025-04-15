@@ -227,14 +227,17 @@ try {
                                         </form>
 
                                         <div class="font-bold font-size-20">
-                                            <?php echo isset($jobs) ? count($jobs) : 0; ?> Jobs
+                                            <?php
+                                            $jobCount = isset($jobs) ? count($jobs) : 0;
+                                            echo $jobCount . " Job" . ($jobCount != 1 ? "s" : "");
+                                            ?>
                                         </div>
 
                                         <div><button id="add-job-btn" onclick="addJobModal()">Add Job</button></div>
 
                                     </div>
                                     <div class="jobs-list-container">
-                                        <div class="jobs-list">
+                                        <div id="search-results" class="jobs-list">
                                             <?php
                                             foreach ($jobs as $job) {
                                                 ?>
