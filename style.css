@@ -206,18 +206,21 @@ input, select {
 .login-container-div {
 	display: flex;
 	align-items: center;
-	width: 80%;
+	width: 85%;
 	max-width: 1100px;
+	gap: 100px;
 }
 
 .text-section {
-	width: 45%;
+	width: 80%;
 }
 
 .text-section-title {
-	font-size: 2.5rem;
+	font-size: 80px;
+	letter-spacing: -0.04em;
 	color: #4385f4;
 	margin-bottom: 10px;
+	line-height: 85px;
 }
 
 .subtext{
@@ -233,11 +236,17 @@ input, select {
 }
 
 .login-input {
-	width: 100%;
+	width: 50%;
 	padding: 12px;
 	border-radius: 8px;
-	border: 1px solid var(--color-base-300);
+	/* border: 1px solid var(--color-base-300); */
+	border: transparent;
 	color: var(--color-base-content);
+}
+
+.login-input:focus {
+	border: 1px solid var(--color-base-300);
+	outline: none;
 }
 
 .login-button-container {
