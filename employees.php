@@ -254,12 +254,13 @@ if (isset($_GET['search'])) {
 ?>
 
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($title) ? $title : 'Admin'; ?> | Employees</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 
 <body class="font-medium">
@@ -303,7 +304,7 @@ if (isset($_GET['search'])) {
                             </div>
                         </div>
 
-                        <div class="employee-display">
+                        <div class="employee-display" style="overflow: auto;">
                             <table>
                                 <thead class="font-bold">
                                     <tr>
@@ -750,7 +751,7 @@ if (isset($_GET['search'])) {
         const table = document.querySelector('.employee-display table');
         const rows = table.getElementsByTagName('tr');
 
-        for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+        for (let i = 1; i < rows.length; i++) {
             let found = false;
             const cells = rows[i].getElementsByTagName('td');
 

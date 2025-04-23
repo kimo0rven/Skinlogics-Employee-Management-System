@@ -45,7 +45,7 @@ try {
     $stmt = $pdo->prepare("
         SELECT status, COUNT(*) AS count 
         FROM attendance 
-        WHERE date = :date 
+        WHERE date_created = :date 
         GROUP BY status
     ");
     $stmt->execute([':date' => $currentDate]);
@@ -102,10 +102,6 @@ try {
     exit;
 }
 ?>
-
-
-
-
 
 <div class="dashboard-content-item2">
     <div class="dashboard-main-content">

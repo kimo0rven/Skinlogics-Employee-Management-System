@@ -29,7 +29,7 @@ $yesterday = date('Y-m-d', strtotime($currentDate . ' -1 day'));
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 function fetchAttendanceRecord($pdo, $date)
 {
-    $stmt = $pdo->prepare('SELECT * FROM attendance WHERE employee_id = :employee_id AND date = :date');
+    $stmt = $pdo->prepare('SELECT * FROM attendance WHERE employee_id = :employee_id AND date_created = :date');
     $stmt->execute([':employee_id' => $_SESSION['employee_id'], ':date' => $date]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $clockInTime = date('Y-m-d H:i:s');
 
         if (!$yesterdayAttendance) {
-            $sql = 'INSERT INTO attendance (employee_id, date, status, worked_hours) 
+            $sql = 'INSERT INTO attendance (employee_id, date_created, status, worked_hours) 
                         VALUES (:employee_id, :date, :status, :worked_hours)';
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $status = ($clockInTimestamp <= $cutOffStartTimestamp) ? 'Present' : 'Late';
 
-                $sql = 'INSERT INTO attendance (employee_id, date, clock_in_time, status) 
+                $sql = 'INSERT INTO attendance (employee_id, date_created, clock_in_time, status) 
                         VALUES (:employee_id, :date, :clock_in_time, :status)';
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $sql = 'UPDATE attendance 
                         SET clock_out_time = :clock_out_time, worked_hours = :worked_hours 
-                        WHERE employee_id = :employee_id AND date = :date';
+                        WHERE employee_id = :employee_id AND date_created = :date';
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
                     ':clock_out_time' => $clockOutTime,
@@ -145,6 +145,7 @@ if ($attendanceRecord) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($title) ? $title : 'Admin'; ?> | Clock</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 
 <body class="font-medium">
