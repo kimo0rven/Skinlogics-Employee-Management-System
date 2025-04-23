@@ -145,6 +145,7 @@ if ($attendanceRecord) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($title) ? $title : 'Admin'; ?> | Clock</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 
 <body class="font-medium">

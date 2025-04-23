@@ -14,7 +14,7 @@ if (isset($_SESSION["user_account_id"], $_SESSION['username'])) {
         $setup = $stmt->fetch(PDO::FETCH_ASSOC);
 
         echo "Value of \$setup: ";
-        var_dump($setup); // Or print_r($setup);
+        var_dump($setup);
         echo "<br>";
 
         $_SESSION['employee_id'] = $setup['employee_id'];
@@ -49,7 +49,7 @@ if (isset($_POST["submit"])) {
             $_SESSION = $user;
             $_SESSION['loggedin'] = true;
 
-            $sql = "SELECT setup,employee_id FROM employee WHERE user_account_id = :user_account_id";
+            $sql = "SELECT setup,employee_id,manager_id,team_leader_id FROM employee WHERE user_account_id = :user_account_id";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(":user_account_id", $user['user_account_id']);
             $stmt->execute();
@@ -57,6 +57,23 @@ if (isset($_POST["submit"])) {
 
             $_SESSION['employee_id'] = $setup['employee_id'];
             echo $_SESSION['employee_id'];
+
+            $_SESSION['isTeamLeader'] = false;
+            $_SESSION['isHRManager'] = false;
+
+            if ($setup['team_leader_id'] == $_SESSION['employee_id']) {
+                $_SESSION['isTeamLeader'] = true;
+            }
+
+            if ($setup['manager_id'] == $_SESSION['employee_id'] && $user['account_type']) {
+                $_SESSION['isHRManager'] = true;
+            }
+
+            if ($setup['setup'] == 1) {
+                header("Location: dashboard.php");
+            } else {
+                header("Location: setup.php");
+            }
 
             if ($setup['setup'] == 1) {
                 header("Location: dashboard.php");
