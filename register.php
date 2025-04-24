@@ -1,8 +1,7 @@
 <?php
 include('includes/database.php');
-if (isset($_POST['registration'])) {
-    print_r($_POST);
 
+if (isset($_POST['registration'])) {
     $first_name = $_POST['firstName'];
     $last_name = $_POST['lastName'];
     $email = $_POST['email'];
@@ -11,153 +10,158 @@ if (isset($_POST['registration'])) {
     $gender = $_POST['gender'];
     $mobile = $_POST['mobile'];
     $username = $_POST['username'];
-    $accountType = 'User';
 
-    $sql = "INSERT INTO user_account (username, email, pass, account_type) VALUES (:username, :email, :password, :accountType)";
-
-    try {
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':username', $username);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $password);
-        $stmt->bindParam(':accountType', $accountType);
-
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $accountType = 'User';
-
-        $stmt->execute();
-
-        if ($stmt->rowCount() > 0) {
-            echo "User account created successfully!";
-            $lastInsertId = $pdo->lastInsertId();
-            $_SESSION['employee_id'] = $lastInsertId;
-
-            $sql2 = "INSERT INTO employee (user_account_id, first_name, last_name, dob, email, mobile, gender) VALUES (:user_account_id, :first_name, :last_name, :dob, :email, :mobile, :gender)";
-            $stmt2 = $pdo->prepare($sql2);
-            $stmt2->bindParam(':user_account_id', $lastInsertId);
-            $stmt2->bindParam('first_name', $first_name);
-            $stmt2->bindParam('last_name', $last_name);
-            $stmt2->bindParam(':dob', $birth_date);
-            $stmt2->bindParam('email', $email);
-            $stmt2->bindParam('mobile', $mobile);
-            $stmt2->bindParam('gender', $gender);
-            $stmt2->execute();
-
-        } else {
-            echo "Failed to create user account.";
-        }
-
-    } catch (PDOException $e) {
-        die("PDO Error: " . $e->getMessage());
-    }
+    $sql = "INSERT INTO user_account (username, email, pass)
+            VALUES ('$username', '$email', '$pass')";
+    // Removed exec($sql);
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+    <title>Registration Form</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
+        body {
+            margin: 0;
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
+        input,
+        select {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .gender-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .gender-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .gender-option input {
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            background-color: #1a73e8;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0f5ac6;
+        }
+    </style>
+</head>
 <body>
 
+<div class="form-wrapper">
     <form action="" method="post">
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" placeholder="username"><br><br>
+        <!-- First Name + Last Name -->
+        <div class="row">
+            <input type="text" name="firstName" placeholder="First Name" required>
+            <input type="text" name="lastName" placeholder="Last Name" required>
+        </div>
 
-        <label for="firstName">First Name:</label><br>
-        <input type="text" id="firstName" name="firstName" placeholder="first name"><br><br>
+        <!-- Username -->
+        <input type="text" name="username" placeholder="Username" required>
 
-        <label for="lastName">Last Name:</label><br>
-        <input type="text" id="lastName" name="lastName" placeholder="last name"><br><br>
+        <!-- Email + Confirm Email -->
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="email" name="confirm_email" placeholder="Confirm Email" required>
 
-        <label for="month">Month:</label>
-        <select id="month" name="month">
-            <option value="">-- Select Month --</option>
-            <option value="1">January</option>
-            <option value="2">February</option>
-            <option value="3">March</option>
-            <option value="4">April</option>
-            <option value="5">May</option>
-            <option value="6">June</option>
-            <option value="7">July</option>
-            <option value="8">August</option>
-            <option value="9">September</option>
-            <option value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
-        </select><br><br>
+        <!-- Password + Confirm Password -->
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
 
-        <label for="day">Day:</label>
-        <select id="day" name="day">
-            <option value="">-- Select Day --</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-            <option value="13">13</option>
-            <option value="14">14</option>
-            <option value="15">15</option>
-            <option value="16">16</option>
-            <option value="17">17</option>
-            <option value="18">18</option>
-            <option value="19">19</option>
-            <option value="20">20</option>
-            <option value="21">21</option>
-            <option value="22">22</option>
-            <option value="23">23</option>
-            <option value="24">24</option>
-            <option value="25">25</option>
-            <option value="26">26</option>
-            <option value="27">27</option>
-            <option value="28">28</option>
-            <option value="29">29</option>
-            <option value="30">30</option>
-            <option value="31">31</option>
-        </select><br><br>
+        <!-- Birthday -->
+        <div class="row">
+            <input type="number" name="year" placeholder="Year (e.g. 2000)" min="1900" max="2100" required>
+            <select name="month" required>
+                <option value="">Month</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+            <input type="number" name="day" placeholder="Day (1-31)" min="1" max="31" required>
+        </div>
 
-        <label for="year">Year:</label>
-        <input type="number" id="year" name="year" min="1900" max="2100"><br><br>
+        <!-- Mobile -->
+        <input type="text" name="mobile" placeholder="Mobile" required>
 
-        <fieldset>
-            <legend>Gender</legend>
+        <!-- Gender -->
+        <div class="gender-row">
+            <label class="gender-option">
+                <input type="radio" name="gender" value="male" required> Male
+            </label>
+            <label class="gender-option">
+                <input type="radio" name="gender" value="female"> Female
+            </label>
+            <label class="gender-option">
+                <input type="radio" name="gender" value="other"> Other
+            </label>
+        </div>
 
-            <input type="radio" id="male" name="gender" value="male">
-            <label for="male">Male</label><br>
-
-            <input type="radio" id="female" name="gender" value="female">
-            <label for="female">Female</label><br>
-
-            <input type="radio" id="other" name="gender" value="other">
-            <label for="other">Other</label>
-
-        </fieldset> <br><br>
-
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" placeholder="email"><br><br>
-
-        <label for="mobile">Mobile:</label><br>
-        <input type="text" id="mobile" name="mobile" placeholder="mobile"><br><br>
-
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" placeholder="password"><br><br>
-
-        <button type="submit" value="Submit" name="registration">submit</button>
+        <button type="submit" name="registration">Submit</button>
     </form>
+</div>
 
 </body>
-
 </html>
