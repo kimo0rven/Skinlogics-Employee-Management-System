@@ -2,7 +2,7 @@
 session_start();
 
 if (empty($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -15,15 +15,16 @@ include 'config.php';
 $employees = [];
 try {
     $sql_employees = "SELECT
-            e.*,
-            j.job_name,
-            d.department_name,
-            d.branch AS department_branch,
-            ua.avatar
-        FROM employee e
-        LEFT JOIN job j ON e.job_id = j.job_id
-        LEFT JOIN department d ON e.department_id = d.department_id
-        LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id";
+    e.*,
+    j.job_name,
+    d.department_name,
+    d.department_id,
+    d.branch AS department_branch,
+    ua.avatar
+FROM employee e
+LEFT JOIN job j ON e.job_id = j.job_id
+LEFT JOIN department d ON j.department_id = d.department_id
+LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id;";
     $stmt_employees = $pdo->prepare($sql_employees);
     $stmt_employees->execute();
     $employees = $stmt_employees->fetchAll(PDO::FETCH_ASSOC);
@@ -34,30 +35,39 @@ try {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
     $employee_id = isset($_POST["employee_id"]) ? (int) $_POST["employee_id"] : 0;
-    $updated_first_name = isset($_POST["first_name"]) ? trim($_POST["first_name"]) : '';
-    $updated_middle_name = isset($_POST["middle_name"]) ? trim($_POST["middle_name"]) : '';
-    $updated_last_name = isset($_POST["last_name"]) ? trim($_POST["last_name"]) : '';
-    $updated_gender = isset($_POST["gender"]) ? trim($_POST["gender"]) : '';
-    $updated_mobile = isset($_POST["mobile"]) ? trim($_POST["mobile"]) : '';
-    $updated_street = isset($_POST["street"]) ? trim($_POST["street"]) : '';
-    $updated_barangay = isset($_POST["barangay"]) ? trim($_POST["barangay"]) : '';
-    $updated_city = isset($_POST["city"]) ? trim($_POST["city"]) : '';
-    $updated_province = isset($_POST["province"]) ? trim($_POST["province"]) : '';
-    $updated_status = isset($_POST["status"]) ? trim($_POST["status"]) : '';
-    $updated_email = isset($_POST["email"]) ? trim($_POST["email"]) : '';
-    $updated_dob = isset($_POST["dob"]) ? trim($_POST["dob"]) : '';
-    $updated_hire_date = isset($_POST["hire_date"]) ? trim($_POST["hire_date"]) : '';
-    $updated_civil_status = isset($_POST["civil_status"]) ? trim($_POST["civil_status"]) : '';
-    $updated_sss_number = isset($_POST["sss_number"]) ? trim($_POST["sss_number"]) : '';
-    $updated_philhealth_number = isset($_POST["philhealth_number"]) ? trim($_POST["philhealth_number"]) : '';
-    $updated_pagibig_number = isset($_POST["pagibig_number"]) ? trim($_POST["pagibig_number"]) : '';
-    $updated_tin_number = isset($_POST["tin_number"]) ? trim($_POST["tin_number"]) : '';
-    $updated_emergency_contact_name = isset($_POST["emergency_contact_name"]) ? trim($_POST["emergency_contact_name"]) : '';
-    $updated_emergency_contact_number = isset($_POST["emergency_contact_number"]) ? trim($_POST["emergency_contact_number"]) : '';
-    $updated_emergency_contact_relationship = isset($_POST["emergency_contact_relationship"]) ? trim($_POST["emergency_contact_relationship"]) : '';
+    $fields = [
+        "employee_id",
+        "first_name",
+        "middle_name",
+        "last_name",
+        "gender",
+        "mobile",
+        "street",
+        "barangay",
+        "city",
+        "province",
+        "status",
+        "email",
+        "dob",
+        "hire_date",
+        "civil_status",
+        "sss_number",
+        "philhealth_number",
+        "pagibig_number",
+        "tin_number",
+        "emergency_contact_name",
+        "emergency_contact_number",
+        "emergency_contact_relationship",
+        "job_id"
+    ];
 
+    $formattedUpdate = [];
+    foreach ($fields as $field) {
+        $formattedUpdate["$field"] = isset($_POST[$field]) ? trim($_POST[$field]) : ($field === "employee_id" ? 0 : '');
+    }
+    extract($formattedUpdate);
 
-    if ($employee_id > 0 && !empty($updated_last_name)) {
+    if ($formattedUpdate['employee_id'] > 0 && !empty($formattedUpdate['last_name'])) {
         try {
             $sql_update = "UPDATE employee 
             SET 
@@ -82,33 +92,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
             emergency_contact_name = :emergency_contact_name,
             emergency_contact_number = :emergency_contact_number,
             emergency_contact_relationship = :emergency_contact_relationship,
+            job_id = :job_id,
             date_modified = NOW()
             WHERE 
             employee_id = :employee_id";
             $stmt_update = $pdo->prepare($sql_update);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $stmt_update->execute([
-                ':first_name' => $updated_first_name,
-                ':middle_name' => $updated_middle_name,
-                ':last_name' => $updated_last_name,
-                ':gender' => $updated_gender,
-                ':mobile' => $updated_mobile,
-                ':street' => $updated_street,
-                ':barangay' => $updated_barangay,
-                ':city' => $updated_city,
-                ':province' => $updated_province,
-                ':status' => $updated_status,
-                ':email' => $updated_email,
-                ':dob' => $updated_dob,
-                ':hire_date' => $updated_hire_date,
-                ':civil_status' => $updated_civil_status,
-                ':sss_number' => $updated_sss_number,
-                ':philhealth_number' => $updated_philhealth_number,
-                ':pagibig_number' => $updated_pagibig_number,
-                ':tin_number' => $updated_tin_number,
-                ':emergency_contact_name' => $updated_emergency_contact_name,
-                ':emergency_contact_number' => $updated_emergency_contact_number,
-                ':emergency_contact_relationship' => $updated_emergency_contact_relationship,
-                ':employee_id' => $employee_id
+                ':first_name' => $formattedUpdate['first_name'],
+                ':middle_name' => $formattedUpdate['middle_name'],
+                ':last_name' => $formattedUpdate['last_name'],
+                ':gender' => $formattedUpdate['gender'],
+                ':mobile' => $formattedUpdate['mobile'],
+                ':street' => $formattedUpdate['street'],
+                ':barangay' => $formattedUpdate['barangay'],
+                ':city' => $formattedUpdate['city'],
+                ':province' => $formattedUpdate['province'],
+                ':status' => $formattedUpdate['status'],
+                ':email' => $formattedUpdate['email'],
+                ':dob' => $formattedUpdate['dob'],
+                ':hire_date' => $formattedUpdate['hire_date'],
+                ':civil_status' => $formattedUpdate['civil_status'],
+                ':sss_number' => $formattedUpdate['sss_number'],
+                ':philhealth_number' => $formattedUpdate['philhealth_number'],
+                ':pagibig_number' => $formattedUpdate['pagibig_number'],
+                ':tin_number' => $formattedUpdate['tin_number'],
+                ':emergency_contact_name' => $formattedUpdate['emergency_contact_name'],
+                ':emergency_contact_number' => $formattedUpdate['emergency_contact_number'],
+                ':emergency_contact_relationship' => $formattedUpdate['emergency_contact_relationship'],
+                ':job_id' => $formattedUpdate['job_id'],
+                ':employee_id' => $formattedUpdate['employee_id']
             ]);
             header("Location: employees.php");
             exit();
@@ -221,27 +234,27 @@ if (isset($_GET['search'])) {
 
     try {
         $sql_employees = "SELECT
-        e.*,
-        j.job_name,
-        d.department_name,
-        d.branch AS department_branch,
-        ua.avatar
-    FROM employee e
-    LEFT JOIN job j ON e.job_id = j.job_id
-    LEFT JOIN department d ON e.department_id = d.department_id
-    LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id
-    WHERE e.first_name LIKE :search OR 
-          e.last_name LIKE :search OR
-          e.email LIKE :search OR
-          e.mobile LIKE :search OR
-          e.status LIKE :search OR
-          e.barangay LIKE :search OR
-          e.street LIKE :search OR
-          e.city LIKE :search OR
-          e.status LIKE :search OR
-          e.province LIKE :search OR
-          j.job_name LIKE :search OR
-          d.department_name LIKE :search";
+                            e.*,
+                            j.job_name,
+                            d.department_name,
+                            d.department_id,
+                            d.branch AS department_branch,
+                            ua.avatar
+                        FROM employee e
+                        LEFT JOIN job j ON e.job_id = j.job_id
+                        LEFT JOIN department d ON j.department_id = d.department_id
+                        LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id
+                        WHERE e.first_name LIKE :search OR 
+                            e.last_name LIKE :search OR
+                            e.email LIKE :search OR
+                            e.mobile LIKE :search OR
+                            e.status LIKE :search OR
+                            e.barangay LIKE :search OR
+                            e.street LIKE :search OR
+                            e.city LIKE :search OR
+                            e.province LIKE :search OR
+                            j.job_name LIKE :search OR
+                            d.department_name LIKE :search";
 
         $stmt_employees = $pdo->prepare($sql_employees);
         $stmt_employees->execute([':search' => $searchTerm]);
@@ -249,6 +262,24 @@ if (isset($_GET['search'])) {
     } catch (PDOException $e) {
         echo "Error searching employees: " . $e->getMessage();
     }
+}
+
+try {
+    $sql = "SELECT * FROM department";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $departments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    die("" . $e->getMessage());
+}
+
+try {
+    $sql = "SELECT * FROM job";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    die("" . $e->getMessage());
 }
 
 ?>
@@ -305,7 +336,7 @@ if (isset($_GET['search'])) {
                         </div>
 
                         <div class="employee-display" style="overflow: auto;">
-                            <table>
+                            <table class="employee-table">
                                 <thead class="font-bold">
                                     <tr>
                                         <th>Avatar</th>
@@ -319,14 +350,14 @@ if (isset($_GET['search'])) {
                                         <th>Edit</th>
                                     </tr>
                                 </thead>
-                                <tbody font-medium>
+                                <tbody class="font-medium">
                                     <?php if (!empty($employees)): ?>
                                         <?php foreach ($employees as $employee): ?>
-                                            <tr id="row-<?php echo $employee['employee_id'] ?>"
+                                            <tr id="row-<?php echo $employee['employee_id'] ?>" style="white-space: nowrap;"
                                                 data-user='<?php echo json_encode($employee); ?>'
                                                 class="employee-display-list text-center"
                                                 onclick="openModal(<?php echo $employee['employee_id'] ?>)">
-                                                <td>
+                                                <td style="text-align: center;">
                                                     <img class="margin-right: 10px"
                                                         src="assets/images/avatars/<?php echo !empty($employee['avatar']) ? htmlspecialchars($employee['avatar']) : 'default.png'; ?>"
                                                         alt="">
@@ -337,10 +368,40 @@ if (isset($_GET['search'])) {
                                                 <td><?php echo htmlspecialchars($employee['job_name']); ?></td>
                                                 <td><?php echo htmlspecialchars($employee['department_name']); ?></td>
                                                 <td><?php echo htmlspecialchars($employee['department_branch']); ?></td>
-                                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                                <td>
+                                                    <p><a id="mailto"
+                                                            href="mailto:<?php echo htmlspecialchars($employee['email']); ?>"><?php echo htmlspecialchars($employee['email']); ?></a>
+                                                    </p>
+                                                </td>
+
                                                 <td><?php echo htmlspecialchars($employee['mobile']); ?></td>
-                                                <td><?php echo htmlspecialchars($employee['status']); ?></td>
-                                                <td><img class="edit-icon" src="assets/images/icons/edit-icon2.png" alt=""
+                                                <!-- <td><?php echo htmlspecialchars($employee['status']); ?></td> -->
+                                                <td>
+                                                    <?php
+                                                    $status = htmlspecialchars($employee['status']); // Get the status from the PHP variable
+                                            
+                                                    switch ($status) {
+                                                        case 'Active':
+                                                            echo "<div class='employee-status employee-status-active'>Active</div>";
+                                                            break;
+                                                        case 'Inactive':
+                                                            echo "<div class='employee-status employee-status-inactive'>Inactive</div>";
+                                                            break;
+                                                        case 'Resigned':
+                                                            echo "<div class='employee-status employee-status-resigned'>Resigned</div>";
+                                                            break;
+                                                        case 'Terminated':
+                                                            echo "<div class='employee-status employee-status-terminated'>Terminated</div>";
+                                                            break;
+                                                        default:
+                                                            echo "<div>Unknown Status</div>";
+                                                            break;
+                                                    }
+                                                    ?>
+                                                </td>
+
+                                                <td style="text-align: center;"><img class="edit-icon"
+                                                        src="assets/images/icons/edit-icon2.png" alt=""
                                                         onclick="openModal(<?php echo $employee['employee_id'] ?>)">
                                                 </td>
 
@@ -380,7 +441,7 @@ if (isset($_GET['search'])) {
                     <div class="employee-detail-container-group font-medium">
                         <div class="employee-detail-fields">
                             <label for="employee_id">Employee ID</label>
-                            <input type="text" name="employee_id">
+                            <input type="text" name="employee_id" readonly>
                         </div>
 
                         <div class="employee-detail-fields">
@@ -453,7 +514,7 @@ if (isset($_GET['search'])) {
                         </div>
 
                         <div class="employee-detail-fields">
-                            <label for="hire_date">Hire_Date</label>
+                            <label for="hire_date">Hire Date</label>
                             <input type="date" name="hire_date">
                         </div>
 
@@ -497,14 +558,33 @@ if (isset($_GET['search'])) {
                             <input type="text" name="emergency_contact_relationship">
                         </div>
 
+                        <div class="employee-detail-fields">
+                            <label for="job_id" style="display:block; margin-bottom: 5px;">Job</label>
+                            <select name="job_id" id="job_id">
+                                <?php
+                                foreach ($jobs as $job) {
+                                    echo '<option value="' . htmlspecialchars($job['job_id']) . '">' . htmlspecialchars($job['job_name']) . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <!-- <div class="employee-detail-fields">
+                            <label for="department_id" style="display:block; margin-bottom: 5px;">Department</label>
+                            <select name="department_id" id="department_id">
+                                <?php
+                                foreach ($departments as $department) {
+                                    echo '<option value="' . htmlspecialchars($department['department_id']) . '">' . htmlspecialchars($department['department_name']) . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div> -->
 
                     </div>
                     <div class="employee-detail-edit-button-container">
 
                         <div><button class="employee-detail-edit-button" type="submit" name="editEmployee">Edit Employee
                             </button></div>
-                        <!-- <div><button class="employee-detail-edit-button close-button"
-                                onclick="closeModal()">Close</button></div> -->
                     </div>
                 </div>
             </form>
@@ -611,7 +691,7 @@ if (isset($_GET['search'])) {
                         </div>
 
                         <div class="employee-detail-fields">
-                            <label for="hire_date">Hire_Date</label>
+                            <label for="hire_date">Hire Date</label>
                             <input type="date" name="hire_date">
                         </div>
 
@@ -656,9 +736,34 @@ if (isset($_GET['search'])) {
                             <input type="text" name="emergency_contact_relationship">
                         </div>
 
+                        <div class="employee-detail-fields">
+                            <label for="job_id" style="display:block; margin-bottom: 5px;">Job</label>
+                            <select name="job_id" id="job_id">
+                                <option value="-Select-">-Select-</option>
+                                <?php
+                                foreach ($jobs as $job) {
+                                    echo '<option value="' . htmlspecialchars($job['job_id']) . '">' . htmlspecialchars($job['job_name']) . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
 
+                        <!-- <div class="employee-detail-fields">
+                            <label for="department_id" style="display:block; margin-bottom: 5px;">Department</label>
+                            <select name="department_id" id="department_id">
+                                <option value="-Select-">-Select-</option>
+                                <?php
+
+                                $defaultDepartmentId = isset($jobs[0]['department_id']) ? $jobs[0]['department_id'] : null;
+
+                                foreach ($departments as $department) {
+                                    echo '<option value="' . htmlspecialchars($department['department_id']) . '">' . htmlspecialchars($department['department_name']) . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div> -->
                     </div>
-                    <div class="employee-detail-edit-button-container">
+                    <div class=" employee-detail-edit-button-container">
 
                         <div><button class="employee-detail-edit-button" type="submit" name="addEmployee">Create
                                 Employee
@@ -696,6 +801,7 @@ if (isset($_GET['search'])) {
 
     function openModal(id) {
         const currentRow = document.querySelector(`#row-${id}`);
+        console.log(currentRow)
         if (!currentRow) {
             console.error(`Row with id row-${id} not found`);
             return;
@@ -730,6 +836,16 @@ if (isset($_GET['search'])) {
         if (genderSelect && data.gender) {
             genderSelect.value = data.gender;
         }
+
+        const jobSelect = document.querySelector(`select[name="job_id"]`);
+        if (jobSelect && data.job_name) {
+            jobSelect.value = data.job_id;
+        }
+
+        // const departmentSelect = document.querySelector(`select[name="department_id"]`);
+        // if (departmentSelect && data.department_name) {
+        //     departmentSelect.value = data.department_id;
+        // }
 
         modal.showModal();
     }
@@ -773,6 +889,7 @@ if (isset($_GET['search'])) {
             }
         }
     }
+
 </script>
 
 

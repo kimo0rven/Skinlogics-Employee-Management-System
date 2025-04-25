@@ -9,8 +9,8 @@ if ($accountType == 'Admin') {
         'dashboard.php' => 'Dashboard',
         'employees.php' => 'Employees',
         'payroll.php' => 'Payroll',
-        'timer.php' => 'Timer',
         'work.php' => 'Work',
+        'departments.php' => 'Departments'
     ];
 } else if ($accountType == 'User') {
     $navigationItems = [
@@ -39,9 +39,5 @@ if ($_SESSION['isTeamLeader']) {
         </div>
     <?php endforeach; ?>
 
-    <!-- <div>
-        <a href="logout.php">
-            <img height="32px" width="32px" src="assets/images/icons/logout-icon.png">
-        </a>
-    </div> -->
+
 </div>

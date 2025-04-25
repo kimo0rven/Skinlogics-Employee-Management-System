@@ -33,7 +33,7 @@ if ($currentHour >= 5 && $currentHour < 12) {
   <div class="login-container">
     <div class="login-container-div">
       <div class="text-section">
-        <h1 class="text-section-title">A place To Unlock Your Team's Potential</h1>
+        <h1 class="text-section-title">A Place To Unlock Your Team's Potential</h1>
         <p class="subtext"><?php echo $greeting; ?> Empower your team with efficient management tools. Manage
           performance, foster growth, and achieve your goals.</p>
         <form class="login-form" method="POST" action="login.php">
@@ -52,6 +52,7 @@ if ($currentHour >= 5 && $currentHour < 12) {
         <img src="assets/images/office-mockup.png" alt="Messenger Mockup">
       </div>
     </div>
+
   </div>
 </body>
 
