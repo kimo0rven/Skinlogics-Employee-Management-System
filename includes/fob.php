@@ -32,21 +32,30 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <img src="assets/images/icons/menu-icon.png" alt="Menu Icon">
         </div>
 
-        <div class="floating-sub-button" id="leaveRequestModalBtn">
-            <img src="assets/images/icons/leave-request-icon2.png" alt="">
+        <div class="floating-sub-container">
+            <div class="floating-sub-button" id="leaveRequestModalBtn">
+                <img src="assets/images/icons/leave-request-icon2.png" alt="">
+            </div>
         </div>
 
-        <div class="floating-sub-button" id="overtimeRequestModalBtn">
-            <img src="assets/images/icons/overtime-icon.png" alt="">
+        <div class="floating-sub-container">
+            <div class="floating-sub-button" id="overtimeRequestModalBtn">
+                <img src="assets/images/icons/overtime-icon.png" alt="">
+            </div>
         </div>
     </div>
 
+
     <dialog id="leaveRequestModal" class="font-medium">
+        <div id="leaveSuccessMessage" class="success-message"
+            style="display: none; text-align: center; color: green; margin-top: 10px;">
+            Leave Request Submitted Successfully!
+        </div>
         <form id="leaveForm" class="flex flex-column gap-20" method="POST" action="#">
             <div class="flex flex-column gap-20">
                 <div class="flex flex-row flex-start">
 
-                    <p class="font-bold">SUBMIT LEAVE REQUEST</p>
+                    <p class="font-bold">FILE A LEAVE REQUEST</p>
 
                     <div id="leaveRequestCloseBtn" style="position: absolute; top: 10px; right: 10px; cursor: pointer;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <div class="flex flex-row gap-20 space-around">
                     <div>
                         <label class="profile-label" for="leave_type">Type of Leave</label>
-                        <select name="leave_type" id="">
+                        <select name="leave_type" id="leave_type">
                             <option value="Vacation">Vacation</option>
                             <option value="Sick">Sick</option>
                             <option value="Personal">Personal</option>
@@ -98,13 +107,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <button type="submit" name="leave_request" style="padding: 10px 20px">Submit Request</button>
             </div>
         </form>
+
     </dialog>
 
     <dialog id="overtimeRequeustModal" class="font-medium">
+        <div id="overtimeSuccessMessage" class="success-message"
+            style="display: none; text-align: center; color: green; margin-top: 10px;">
+            Overtime Request Submitted Successfully!
+        </div>
         <form id="overtimeForm" class="flex flex-column gap-20" method="POST" action="#">
             <div class="flex flex-row space-between">
                 <div>
-                    <p class="font-bold">OVERTIME REQUEST</p>
+                    <p class="font-bold">FILE AN OVERTIME REQUEST</p>
                 </div>
                 <div id="overtimeRequestCloseBtn" style="position: absolute; top: 10px; right: 10px; cursor: pointer;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,9 +150,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             </div>
 
-            <div id=" dateError" class="font-medium" style="color: red; display: none;">
+            <div id="timeError" class="font-medium" style="color: red; display: none;">
             </div>
 
+            <div id="timeError" style="display: none;color: red; font-weight: bold; margin-top: 10px;"></div>
             <div class="flex flex-row gap-20 space-between">
                 <div style="width:100%">
                     <label class="profile-label" for="start_time">Start Time</label>
@@ -151,10 +166,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
             </div>
 
+
             <div class="flex flex-row gap-20 space-around">
                 <div>
                     <label class="profile-label" for="overtime_type">Type of Overtime</label>
-                    <select name="overtime_type" id="">
+                    <select name="overtime_type" id="overtime_type">
                         <option value="Weekday">Weekday</option>
                         <option value="Weekend">Weekend</option>
                         <option value="Holiday">Holiday</option>
@@ -184,50 +200,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         document.getElementById('floatingWrapper').classList.toggle('active');
     });
 
-    const leaveRequestdialog = document.getElementById('leaveRequestModal');
-    const openDialogBtn = document.getElementById('leaveRequestModalBtn');
+    const leaveRequestDialog = document.getElementById('leaveRequestModal');
+    const openLeaveDialogBtn = document.getElementById('leaveRequestModalBtn');
+    const leaveSuccessMessage = document.getElementById('leaveSuccessMessage');
 
-    openDialogBtn.addEventListener('click', () => {
-        if (leaveRequestdialog.showModal) {
-            leaveRequestdialog.showModal();
+    openLeaveDialogBtn.addEventListener('click', () => {
+        if (leaveRequestDialog.showModal) {
+            leaveRequestDialog.showModal();
         }
     });
 
     const closeLeaveRequestBtn = document.getElementById('leaveRequestCloseBtn');
     closeLeaveRequestBtn.addEventListener('click', () => {
-        leaveRequestdialog.close();
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const startDateInput = document.querySelector('input[name="start_date"]');
-        const endDateInput = document.querySelector('input[name="end_date"]');
-        const errorDiv = document.getElementById('dateError');
-
-        function checkDates() {
-            errorDiv.textContent = '';
-
-            if (!startDateInput.value || !endDateInput.value) {
-                errorDiv.style.display = 'none';
-                return;
-            }
-
-            const startDate = new Date(startDateInput.value);
-            const endDate = new Date(endDateInput.value);
-
-            if (startDate > endDate) {
-                errorDiv.textContent = "Start date cannot be later than End date.";
-                errorDiv.style.display = 'block';
-            } else {
-                errorDiv.style.display = 'none';
-            }
-        }
-
-        startDateInput.addEventListener('change', checkDates);
-        endDateInput.addEventListener('change', checkDates);
+        leaveRequestDialog.close();
     });
 
     const overtimeRequestDialog = document.getElementById('overtimeRequeustModal');
     const openOvertimeDialogBtn = document.getElementById('overtimeRequestModalBtn');
+    const overtimeSuccessMessage = document.getElementById('overtimeSuccessMessage');
 
     openOvertimeDialogBtn.addEventListener('click', () => {
         if (overtimeRequestDialog.showModal) {
@@ -238,7 +228,84 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     const closeOvertimeRequestBtn = document.getElementById('overtimeRequestCloseBtn');
     closeOvertimeRequestBtn.addEventListener('click', () => {
         overtimeRequestDialog.close();
-    })
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const startDateInput = document.querySelector('input[name="start_date"]');
+        const endDateInput = document.querySelector('input[name="end_date"]');
+        const errorDiv = document.getElementById('dateError');
+
+        function checkDates() {
+            errorDiv.textContent = '';
+            if (!startDateInput.value || !endDateInput.value) {
+                errorDiv.style.display = 'none';
+                return;
+            }
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            if (startDate > endDate) {
+                errorDiv.textContent = "Start date cannot be later than End date.";
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+        }
+        startDateInput.addEventListener('change', checkDates);
+        endDateInput.addEventListener('change', checkDates);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const startTimeInput = document.querySelector('input[name="start_time"]');
+        const endTimeInput = document.querySelector('input[name="end_time"]');
+        const timeErrorDiv = document.getElementById('timeError');
+
+        function checkTimeValidation() {
+            // Clear the error by default
+            timeErrorDiv.textContent = '';
+
+            // Only run validation if both times are entered
+            if (!startTimeInput.value || !endTimeInput.value) {
+                return;
+            }
+
+            // Split the time values ("HH:MM" format)
+            const [startHour, startMinute] = startTimeInput.value.split(':');
+            const [endHour, endMinute] = endTimeInput.value.split(':');
+
+            // Convert to total minutes from midnight
+            const startTotal = parseInt(startHour, 10) * 60 + parseInt(startMinute, 10);
+            const endTotal = parseInt(endHour, 10) * 60 + parseInt(endMinute, 10);
+
+            // Check if the end time is greater than the start time
+            if (endTotal <= startTotal) {
+                timeErrorDiv.textContent = 'End time must be later than start time.';
+            }
+        }
+
+        // Listen for changes on both inputs
+        startTimeInput.addEventListener('change', checkTimeValidation);
+        endTimeInput.addEventListener('change', checkTimeValidation);
+    });
+
+
+    document.getElementById('leaveForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        leaveSuccessMessage.style.display = 'block';
+        setTimeout(() => {
+            leaveRequestDialog.close();
+            leaveSuccessMessage.style.display = 'none';
+        }, 5000);
+    });
+
+    document.getElementById('overtimeForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        overtimeSuccessMessage.style.display = 'block';
+        setTimeout(() => {
+            overtimeRequestDialog.close();
+            overtimeSuccessMessage.style.display = 'none';
+        }, 5000);
+    });
 </script>
+
 
 </html>
