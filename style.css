@@ -1364,3 +1364,88 @@ display: block;
 	filter: none;
 	cursor: not-allowed;
 }
+
+body {
+	background-color: #f0f7f4;
+	font-family: Arial, sans-serif;
+  }
+  
+  .form-card {
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 0 20px rgba(0,0,0,0.1);
+	padding: 40px;
+	max-width: 500px;
+	margin: 50px auto;
+  }
+  
+  .form-card input,
+  .form-card select,
+  .form-card button {
+	width: 100%;
+	padding: 12px;
+	margin-top: 10px;
+	margin-bottom: 20px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	font-size: 14px;
+	box-sizing: border-box;
+  }
+  
+  .form-card button {
+	background-color: #007bff;
+	color: #fff;
+	font-weight: bold;
+	border: none;
+	cursor: pointer;
+	transition: background-color 0.3s;
+  }
+  
+  .form-card button:hover {
+	background-color: #0056b3;
+  }
+  
+  .dob-row {
+	display: flex;
+	gap: 10px;
+  }
+  
+  .dob-row input,
+  .dob-row select {
+	flex: 1;
+  }
+  
+  fieldset {
+	border: none;
+	margin-bottom: 20px;
+  }
+  
+  .gender-options {
+	display: flex;
+	gap: 20px;
+  }
+  
+  .gender-options label {
+	display: flex;
+	align-items: center;
+	font-size: 14px;
+  }
+  
+  .gender-options input {
+	margin-right: 8px;
+  }
+  
+  .message {
+	text-align: center;
+	margin-bottom: 16px;
+	font-weight: bold;
+  }
+  
+  .message.error {
+	color: #d9534f;
+  }
+  
+  .message.success {
+	color: #5cb85c;
+  }
+  
