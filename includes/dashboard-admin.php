@@ -4,9 +4,6 @@ if (empty($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit;
 }
 
-$user_account_id = $_SESSION['user_account_id'];
-$accountType = $_SESSION['account_type'];
-
 include 'includes/database.php';
 include 'config.php';
 
@@ -173,8 +170,11 @@ try {
                         <div class="today-event-details">
 
                             <div class="font-regular">
-                                <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>'s
-                                Birthday
+                                <?php echo htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>
+                            </div>
+
+                            <div class="font-regular">
+                                Her birthday is today
                             </div>
                         </div>
                     </div>

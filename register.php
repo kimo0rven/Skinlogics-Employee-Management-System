@@ -1,86 +1,99 @@
 <?php
 session_start();
 include('includes/database.php');
+include 'config.php';
 
 if (isset($_POST['registration'])) {
-    $first_name    = trim($_POST['firstName']);
-    $last_name     = trim($_POST['lastName']);
-    $username      = trim($_POST['username']);
-    $email         = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
-    $confirm_email = filter_var(trim($_POST['confirm_email']), FILTER_VALIDATE_EMAIL);
-    $pass          = $_POST['password'];
-    $confirm_pass  = $_POST['confirm_password'];
-    $year          = (int)$_POST['year'];
-    $month         = (int)$_POST['month'];
-    $day           = (int)$_POST['day'];
-    $birth_date    = sprintf('%04d-%02d-%02d', $year, $month, $day);
-    $mobile        = trim($_POST['mobile']);
-    $gender        = $_POST['gender'];
-    $accountType   = 'User';
+  $first_name = trim($_POST['firstName']);
+  $last_name = trim($_POST['lastName']);
+  $username = trim($_POST['username']);
+  $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
+  $confirm_email = filter_var(trim($_POST['confirm_email']), FILTER_VALIDATE_EMAIL);
+  $pass = $_POST['password'];
+  $confirm_pass = $_POST['confirm_password'];
+  $year = (int) $_POST['year'];
+  $month = (int) $_POST['month'];
+  $day = (int) $_POST['day'];
+  $birth_date = sprintf('%04d-%02d-%02d', $year, $month, $day);
+  $mobile = trim($_POST['mobile']);
+  $gender = $_POST['gender'];
+  $accountType = 'User';
 
-    if (!$email || !$confirm_email) {
-        $error = 'Please enter a valid email.';
-    } elseif ($email !== $confirm_email) {
-        $error = 'Emails do not match.';
-    } elseif ($pass !== $confirm_pass) {
-        $error = 'Passwords do not match.';
-    }
+  if (!$email || !$confirm_email) {
+    $error = 'Please enter a valid email.';
+  } elseif ($email !== $confirm_email) {
+    $error = 'Emails do not match.';
+  } elseif ($pass !== $confirm_pass) {
+    $error = 'Passwords do not match.';
+  }
 
-    if (empty($error)) {
-        try {
-            $sql  = "INSERT INTO user_account (username, email, pass, account_type) 
+  if (empty($error)) {
+    try {
+      $sql = "INSERT INTO user_account (username, email, pass, account_type) 
                      VALUES (:username, :email, :pass, :accountType)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':username', $username);
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':pass', $pass);
-            $stmt->bindParam(':accountType', $accountType);
-            $stmt->execute();
+      $stmt = $pdo->prepare($sql);
+      $stmt->bindParam(':username', $username);
+      $stmt->bindParam(':email', $email);
+      $stmt->bindParam(':pass', $pass);
+      $stmt->bindParam(':accountType', $accountType);
+      $stmt->execute();
 
-            if ($stmt->rowCount() > 0) {
-                $success = 'Registration successful!';
-                $userId  = $pdo->lastInsertId();
-                $_SESSION['employee_id'] = $userId;
+      if ($stmt->rowCount() > 0) {
+        $success = 'Registration successful!';
+        $userId = $pdo->lastInsertId();
+        $_SESSION['employee_id'] = $userId;
 
-                $sql2 = "INSERT INTO employee (user_account_id, first_name, last_name, dob, email, mobile, gender)
+        $sql2 = "INSERT INTO employee (user_account_id, first_name, last_name, dob, email, mobile, gender)
                          VALUES (:userId, :first_name, :last_name, :dob, :email, :mobile, :gender)";
-                $stmt2 = $pdo->prepare($sql2);
-                $stmt2->bindParam(':userId', $userId);
-                $stmt2->bindParam(':first_name', $first_name);
-                $stmt2->bindParam(':last_name', $last_name);
-                $stmt2->bindParam(':dob', $birth_date);
-                $stmt2->bindParam(':email', $email);
-                $stmt2->bindParam(':mobile', $mobile);
-                $stmt2->bindParam(':gender', $gender);
-                $stmt2->execute();
-            } else {
-                $error = 'Failed to create user account.';
-            }
-        } catch (PDOException $e) {
-            $error = 'Database error: ' . htmlspecialchars($e->getMessage());
-        }
+        $stmt2 = $pdo->prepare($sql2);
+        $stmt2->bindParam(':userId', $userId);
+        $stmt2->bindParam(':first_name', $first_name);
+        $stmt2->bindParam(':last_name', $last_name);
+        $stmt2->bindParam(':dob', $birth_date);
+        $stmt2->bindParam(':email', $email);
+        $stmt2->bindParam(':mobile', $mobile);
+        $stmt2->bindParam(':gender', $gender);
+        $stmt2->execute();
+      } else {
+        $error = 'Failed to create user account.';
+      }
+    } catch (PDOException $e) {
+      $error = 'Database error: ' . htmlspecialchars($e->getMessage());
     }
+  }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
-    <title>Register</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <title><?php echo $title; ?> | Create Account</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <div class="form-card">
+
+<body class="flex flex-column justify-center align-center"
+  style="height: 90%; background-color: var(--color-base-200);">
+  <div>
+    <img height="128px" src="assets/images/logo.png" alt="">
+  </div>
+
+  <div class="form-card font-medium gap-20" style="width: 700px">
+    <p class="font-size-40 font-bold" style="margin:0; padding-bottom: 20px">Create Account</p>
     <?php if (!empty($error)): ?>
       <div class="message error"><?php echo $error; ?></div>
     <?php elseif (!empty($success)): ?>
-      <div class="message success"><?php echo $success; ?></div>
+      <div class="message success"><?php echo $success;
+      header("Refresh: 5; url=index.php"); ?></div>
     <?php endif; ?>
-    <form action="" method="post">
-      <input type="text" name="firstName" placeholder="First Name" required>
-      <input type="text" name="lastName" placeholder="Last Name" required>
+    <form class="flex flex-column gap-20" action="" method="post">
+      <div clas="flex flex-column space-between" style="display:flex; justify-content: space-between; gap: 20px">
+        <input type="text" name="firstName" placeholder="First Name" style="width:50%" required>
+        <input type="text" name="lastName" placeholder="Last Name" style="width:50%" required>
+      </div>
       <input type="text" name="username" placeholder="Username" required>
       <input type="email" name="email" placeholder="Email" required>
       <input type="email" name="confirm_email" placeholder="Confirm Email" required>
@@ -118,4 +131,5 @@ if (isset($_POST['registration'])) {
     </form>
   </div>
 </body>
+
 </html>

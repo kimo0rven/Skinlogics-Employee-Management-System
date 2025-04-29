@@ -2,7 +2,6 @@
 session_start();
 include("includes/database.php");
 
-// Check if user is already logged in
 if (isset($_SESSION["user_account_id"], $_SESSION['username'])) {
     $_SESSION['loggedin'] = true;
 
@@ -14,7 +13,7 @@ if (isset($_SESSION["user_account_id"], $_SESSION['username'])) {
         $setup = $stmt->fetch(PDO::FETCH_ASSOC);
 
         echo "Value of \$setup: ";
-        var_dump($setup); // Or print_r($setup);
+        var_dump($setup);
         echo "<br>";
 
         $_SESSION['employee_id'] = $setup['employee_id'];
@@ -32,13 +31,20 @@ if (isset($_SESSION["user_account_id"], $_SESSION['username'])) {
     }
 }
 
-// Handle login form submission
 if (isset($_POST["submit"])) {
     $username = $_POST["username"];
     $pass = $_POST["pass"];
 
     try {
-        $sql = "SELECT * FROM user_account WHERE username = :username AND pass = :pass";
+        $sql = "
+            SELECT ua.*, e.*
+            FROM user_account AS ua
+            INNER JOIN employee AS e 
+                ON ua.user_account_id = e.user_account_id
+            WHERE ua.username = :username 
+                AND ua.pass = :pass 
+                AND e.status = 'Active'
+            ";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':pass', $pass);
@@ -65,7 +71,7 @@ if (isset($_POST["submit"])) {
                 $_SESSION['isTeamLeader'] = true;
             }
 
-            if ($setup['manager_id'] == $_SESSION['employee_id'] && $user['account_type']) {
+            if ($setup['manager_id'] == $_SESSION['employee_id'] && $user['roles_id']) {
                 $_SESSION['isHRManager'] = true;
             }
 

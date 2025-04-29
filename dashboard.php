@@ -3,11 +3,11 @@ session_start();
 if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     $user_account_id = $_SESSION["user_account_id"];
 
-    $accountType = $_SESSION["account_type"];
+    $accountType = $_SESSION["role_id"];
 
-    if ($accountType === "member") {
+    if ($accountType === 3) {
         echo '<style>.admin { display: none; }</style>';
-    } elseif ($accountType === "admin") {
+    } elseif ($accountType === 1) {
         echo '<style>.member { display: none; }</style>';
     } else {
 
@@ -92,10 +92,10 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     adminBody = document.getElementById('admin');
     memberBody = document.getElementById('member')
 
-    if (accountType == "Admin") {
+    if (accountType == "1") {
         adminBody.classList.remove('hidden');
         memberBody.classList.add('hidden');
-    } else if (accountType == "User") {
+    } else if (accountType == "3") {
         memberBody.classList.remove('hidden');
         adminBody.classList.add('hidden');
     }

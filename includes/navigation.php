@@ -2,9 +2,7 @@
 
 $currentPage = basename($_SERVER['PHP_SELF']);
 
-$accountType = $_SESSION["account_type"];
-
-if ($accountType == 'Admin') {
+if ($_SESSION['role_id'] == 1) {
     $navigationItems = [
         'dashboard.php' => 'Dashboard',
         'employees.php' => 'Employees',
@@ -12,7 +10,7 @@ if ($accountType == 'Admin') {
         'work.php' => 'Work',
         'departments.php' => 'Departments'
     ];
-} else if ($accountType == 'User') {
+} else if ($_SESSION['role_id'] == 2) {
     $navigationItems = [
         'dashboard.php' => 'Dashboard',
         'timer.php' => 'Timer',
