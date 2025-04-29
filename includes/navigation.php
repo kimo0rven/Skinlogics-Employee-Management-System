@@ -9,8 +9,8 @@ if ($accountType == 'Admin') {
         'dashboard.php' => 'Dashboard',
         'employees.php' => 'Employees',
         'payroll.php' => 'Payroll',
-        'timer.php' => 'Timer',
         'work.php' => 'Work',
+        'departments.php' => 'Departments'
     ];
 } else if ($accountType == 'User') {
     $navigationItems = [
@@ -18,6 +18,14 @@ if ($accountType == 'Admin') {
         'timer.php' => 'Timer',
 
     ];
+}
+
+if ($_SESSION['isHRManager']) {
+    $navigationItems['hr_manager_approve.php'] = 'HR_Manager_Approval';
+}
+
+if ($_SESSION['isTeamLeader']) {
+    $navigationItems['isTeamLeader.php'] = 'Team_Leader';
 }
 ?>
 
@@ -29,11 +37,7 @@ if ($accountType == 'Admin') {
                     alt="<?php echo $label; ?>">
             </a>
         </div>
-
     <?php endforeach; ?>
-    <!-- <div>
-        <a href="logout.php">
-            <img height="32px" width="32px" src="assets/images/icons/logout-icon.png">
-        </a>
-    </div> -->
+
+
 </div>

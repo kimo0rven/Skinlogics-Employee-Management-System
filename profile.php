@@ -2,7 +2,7 @@
 session_start();
 
 if (empty($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -42,6 +42,7 @@ try {
     <title><?php echo isset($title) ? $title : 'Admin'; ?> | Profile</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="profile.css" />
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 
 </head>
 

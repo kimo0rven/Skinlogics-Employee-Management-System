@@ -11,9 +11,8 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
         echo '<style>.member { display: none; }</style>';
     } else {
 
-        echo '<style>.admin, .member { display: none; }</style>'; // Or display both if no specific action desired.
+        echo '<style>.admin, .member { display: none; }</style>';
     }
-
 
     include 'includes/database.php';
     include 'config.php';
@@ -51,6 +50,7 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     <title><?php echo $title; ?> | Dashboard</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="user-side.css" />
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
 </head>
