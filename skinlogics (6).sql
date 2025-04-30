@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 26, 2025 at 01:11 AM
+-- Generation Time: Apr 30, 2025 at 06:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -139,14 +139,14 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`employee_id`, `user_account_id`, `first_name`, `last_name`, `middle_name`, `mobile`, `gender`, `street`, `barangay`, `city`, `province`, `status`, `email`, `dob`, `hire_date`, `civil_status`, `job_id`, `sss_number`, `philhealth_number`, `pagibig_number`, `tin_number`, `manager_id`, `team_leader_id`, `emergency_contact_name`, `emergency_contact_number`, `emergency_contact_relationship`, `date_created`, `date_modified`, `setup`) VALUES
-(1, 1, 'Test', 'Admin', 'Tester', '09355891758', 'Male', 'Test', 'Test', 'Iligan City', 'Lanao del Norte', 'Active', 'kimo0rven@gmail.com', '1999-03-30', '2025-03-01', 'Single', 5, '', '', 'asd', '', 1, 1, '', '', '', '2025-03-25 03:11:27', '2025-04-25 11:56:50', 1),
+(1, 1, 'Test', 'Admin', 'Tester', '', 'Male', 'Test', 'Test', 'Iligan City', 'Lanao del Norte', 'Active', 'kimo0rven@gmail.com', '1999-04-29', '2025-03-01', 'Single', 20, '', '', 'asd', '', 2, 5, '', '', '', '2025-03-25 03:11:27', '2025-04-29 02:15:57', 1),
 (2, 2, 'Peter', 'Griffin', '', '09355891759', 'Male', '123', '123', '123', '123', 'Active', 'kimorvenvalencia+resigned@gmail.com', '1999-07-18', '2025-03-01', 'Single', 14, '', '', '', '', NULL, NULL, 'Jollibee', '8700', 'Mother', '2025-03-24 19:11:27', '2025-04-25 11:56:12', 1),
-(3, 2, 'Joe', 'Standard', 'Tester', '09355891759', 'Female', 'Test', 'Test', 'Iligan City', 'Lanao del Norte', 'Active', 'kimorvenvalencia+inactive@gmail.com', '1999-07-18', '2025-03-01', 'Single', 8, '', '', '', '', NULL, NULL, '', '', '', '2025-03-24 19:11:27', '2025-04-09 17:05:03', 0),
+(3, 3, 'Judas1', 'Standard', '', '09355891759', 'Male', '123', '123', '123', '123', 'Active', 'kimorvenvalencia+terminated@gmail.com', '1999-07-18', '2025-03-01', NULL, 8, '', '', '', '', NULL, NULL, 'Jollibee', '8700', 'Mother', '2025-03-24 19:11:27', '2025-04-30 04:26:20', 1),
 (4, 2, 'Peter', 'Standard', 'Tester', '09355891759', 'Female', 'Test', 'Test', 'Iligan City', 'Lanao del Norte', 'Terminated', 'kimorvenvalencia+resigned@gmail.com', '1999-07-18', '2025-03-01', 'Single', 17, '', '', '', '', NULL, NULL, '', '', '', '2025-03-24 19:11:27', '2025-04-24 18:00:22', 0),
 (5, 3, 'Judas1', 'Standard', 'Tester', '09355891759', 'Female', 'Test', 'Test', 'Iligan City', 'Lanao del Norte', 'Inactive', 'kimorvenvalencia+terminated@gmail.com', '1999-07-18', '2025-03-01', 'Single', 8, '', '', '', '', NULL, NULL, '', '', '1', '2025-03-24 19:11:27', '2025-04-24 12:51:36', 0),
 (6, 32, '', 'Novablast Five', 'Novablast', '9355891759', 'Other', 'Purok 17, Hilltop', 'Tominobo Proper', 'Iligan City', 'Lanao del Norte', 'Resigned', 'test123@mail.com', '1999-03-29', '0000-00-00', 'Single', 5, '77-657567-56756', '', '4234-4-42-342344', '', NULL, NULL, 'McDO', '8700', 'Mother', '2025-03-28 07:25:57', '2025-04-25 11:55:14', 0),
-(7, 32, 'Kim', 'Valencia', 'asd', '1', 'Male', 'asdasd', 'asdasdasd', 'asdasd', 'asdasdasd', 'Active', 'kim+123321123@gmail.com', '1999-01-30', '2025-03-30', 'Married', 20, '', '', 'asdasd', '', NULL, NULL, 'asdas', 'dasd', 'as', '2025-03-30 05:22:09', '2025-04-24 12:48:17', 0),
-(8, 32, 'Jackson', 'SON', 'Nero', '', 'Male', 'asdasd', 'asdasd', 'asdasd', 'sadasd', 'Active', 'jackson@mail.com', '1993-03-30', '2025-03-30', 'Single', 20, 'asd', 'sad', 'dsad', '', NULL, NULL, 'sad', 'sdsad', 'sad1', '2025-03-30 05:26:27', '2025-04-24 12:51:45', 0),
+(7, 32, 'Kim', 'Valencia', 'asd', '', 'Male', 'asdasd', 'asdasdasd', 'asdasd', 'asdasdasd', 'Active', 'kim+123321123@gmail.com', '1999-01-30', '2025-03-30', 'Married', 20, '1', '', 'asdasd', '', NULL, NULL, 'asdas', 'dasd', 'as', '2025-03-30 05:22:09', '2025-04-26 13:12:04', 0),
+(8, 32, 'Jackson', 'SON1', 'Nero', '', 'Male', 'asdasd', 'asdasd', 'asdasd', 'sadasd', 'Active', 'jackson@mail.com', '1993-03-30', '2025-03-30', 'Single', 20, 'asd', 'sad', 'dsad', '', NULL, NULL, 'sad', 'sdsad', 'sad1', '2025-03-30 05:26:27', '2025-04-26 13:05:42', 0),
 (9, 32, 'asdasd', 'asdasd', 'asdasd', '', 'Male', 'asdasd', 'sadasd', 'sadsad', 'asdasd', 'Active', 'soap@mail.com', '1993-03-03', '2025-03-30', 'Married', 20, 'asd', 'sad', '', '', NULL, NULL, '', '1', '', '2025-03-30 05:28:43', '2025-04-24 12:51:49', 0),
 (10, 36, 'Duke1', 'Grey', 'Mann', '09355891759', 'Female', '', '', '', '', 'Active', 'asd2@mail.com', '0000-00-00', '0000-00-00', 'Single', 1, '', '', '', '', NULL, NULL, '', '', '', '2025-03-30 06:39:23', '2025-04-24 14:27:57', 0),
 (11, 37, 'John', 'Stewart', 'Brown', '09355891759', 'Male', 'fdasdasd', 'asdasd', 'sdasdsa', 'dsad', 'Inactive', 'john.stewart@skinlogics.com', '1987-03-30', '2025-03-30', 'Single', 11, '', '', '', '', NULL, NULL, '', '', '', '2025-03-30 06:40:24', '2025-04-25 10:53:31', 0),
@@ -154,7 +154,8 @@ INSERT INTO `employee` (`employee_id`, `user_account_id`, `first_name`, `last_na
 (13, 38, 'dsa', 'sadsad', 'asdasd', '09355891759', 'Male', 'asdasd', 'asdasd', 'asdas', 'dasdas', 'Active', 'sda1@mail.com', '1993-07-18', '2025-03-30', 'Single', NULL, 'sadsad', 'sad', '', NULL, NULL, NULL, '', '', '', '2025-03-30 06:46:09', '2025-03-30 06:46:09', 0),
 (14, 38, 'dsa', 'sadsad', 'asdasd', '09355891759', 'Male', 'asdasd', 'asdasd', 'asdas', 'dasdas', 'Active', 'sda1@mail.com', '1993-07-18', '2025-03-30', 'Single', NULL, 'sadsad', 'sad', '', NULL, NULL, NULL, '', '', '', '2025-03-30 06:46:09', '2025-03-30 06:46:09', 0),
 (15, 32, 'asdasd', 'asdasd', 'asdasd', '', 'Male', 'asdasd', 'sadasd', 'sadsad', 'asdasd', 'Active', 'soap@mail.com', '1993-03-03', '2025-03-30', 'Married', NULL, 'asd', 'sad', '', '', NULL, NULL, '', '', '', '2025-03-30 05:28:43', '2025-03-30 06:54:49', 0),
-(16, 32, 'Jackson', 'SON', 'Nero', NULL, 'Male', 'asdasd', 'asdasd', 'asdasd', 'sadasd', 'Active', 'jackson@mail.com', '1993-03-30', '2025-03-30', 'Single', 7, 'asd', 'sad', 'dsad', NULL, NULL, NULL, 'sad', 'sdsad', 'sad', '2025-03-30 05:26:27', '2025-04-09 16:53:37', 0);
+(16, 32, 'Jackson', 'SON', 'Nero', NULL, 'Male', 'asdasd', 'asdasd', 'asdasd', 'sadasd', 'Active', 'jackson@mail.com', '1993-03-30', '2025-03-30', 'Single', 7, 'asd', 'sad', 'dsad', NULL, NULL, NULL, 'sad', 'sdsad', 'sad', '2025-03-30 05:26:27', '2025-04-09 16:53:37', 0),
+(17, 39, 'Lonely', 'String', NULL, '09355891758', 'Male', NULL, NULL, 'Iligan City', 'Lanao del Norte', 'Active', 'lonelystring@gmail.com', '2000-05-02', '2025-04-29', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-04-29 00:47:49', '2025-04-29 00:47:49', 0);
 
 -- --------------------------------------------------------
 
@@ -267,7 +268,16 @@ INSERT INTO `leave_request` (`leave_id`, `leave_type`, `start_date`, `end_date`,
 (22, 'Sick', '2025-04-26', '2025-04-28', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-25 22:36:43', NULL, NULL),
 (23, 'Sick', '2025-04-26', '2025-04-28', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-25 22:36:52', NULL, NULL),
 (24, 'Sick', '2025-04-26', '2025-04-28', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-25 22:37:15', NULL, NULL),
-(25, 'Sick', '2025-04-26', '2025-04-28', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-25 22:37:33', NULL, NULL);
+(25, 'Sick', '2025-04-26', '2025-04-28', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-25 22:37:33', NULL, NULL),
+(26, 'Personal', '2025-04-29', '2025-04-30', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-27 23:23:09', NULL, NULL),
+(27, 'Personal', '2025-04-29', '2025-04-30', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-27 23:26:02', NULL, NULL),
+(28, 'Personal', '2025-04-29', '2025-04-30', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-27 23:27:40', NULL, NULL),
+(29, 'Personal', '2025-04-29', '2025-04-30', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-27 23:30:03', NULL, NULL),
+(30, 'Personal', '2025-04-29', '2025-04-30', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-27 23:38:31', NULL, NULL),
+(31, 'Personal', '2025-04-29', '2025-04-30', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-27 23:39:10', NULL, NULL),
+(32, 'Personal', '2025-04-29', '2025-04-30', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-27 23:43:09', NULL, NULL),
+(33, 'Personal', '2025-04-29', '2025-04-30', 'test', 1, NULL, 'Pending', 'Pending', NULL, '2025-04-27 23:43:49', NULL, NULL),
+(34, 'Personal', '2025-04-29', '2025-04-30', 'test', NULL, NULL, 'Pending', 'Pending', NULL, '2025-04-29 00:12:34', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -278,13 +288,12 @@ INSERT INTO `leave_request` (`leave_id`, `leave_type`, `start_date`, `end_date`,
 CREATE TABLE `overtime` (
   `overtime_id` int(11) NOT NULL,
   `date_created` date NOT NULL DEFAULT current_timestamp(),
-  `shift_for_the_day` enum('Morning','Afternoon','Night','Day Off') DEFAULT NULL,
   `start_time` date DEFAULT NULL,
   `end_time` date DEFAULT NULL,
   `ot_type` enum('Weekday','Weekend','Holiday') DEFAULT NULL,
   `ot_reason` text DEFAULT NULL,
   `employee_id` int(11) DEFAULT NULL,
-  `tl_remarks` text DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
   `tl_approval` enum('Pending','Approved','Rejected') DEFAULT NULL,
   `hr_manager_approval` enum('Pending','Approved','Rejected') DEFAULT NULL,
   `status` enum('Pending','Approved','Rejected') DEFAULT NULL,
@@ -338,6 +347,26 @@ CREATE TABLE `rates` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `roles`
+--
+
+CREATE TABLE `roles` (
+  `role_id` int(11) NOT NULL,
+  `role_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`role_id`, `role_name`) VALUES
+(1, 'Admin'),
+(3, 'Employee'),
+(2, 'HR');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user_account`
 --
 
@@ -346,7 +375,7 @@ CREATE TABLE `user_account` (
   `username` varchar(255) DEFAULT NULL,
   `email` varchar(64) DEFAULT NULL,
   `pass` varchar(255) NOT NULL,
-  `account_type` enum('Admin','User') DEFAULT NULL,
+  `role_id` int(8) DEFAULT NULL,
   `avatar` varchar(256) DEFAULT 'default.jpg',
   `date_modified` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -355,23 +384,24 @@ CREATE TABLE `user_account` (
 -- Dumping data for table `user_account`
 --
 
-INSERT INTO `user_account` (`user_account_id`, `username`, `email`, `pass`, `account_type`, `avatar`, `date_modified`) VALUES
-(1, 'admin', 'kimo0rven@gmail.com', 'admin', 'Admin', '1.jpg', '2025-04-15 09:08:17'),
-(2, 'user', 'kimorvenvalencia@gmail.com', 'user', 'User', '2.jpg', '2025-04-15 09:08:17'),
-(3, 'user1', 'kimorvenvalencia+user1@gmail.com', 'user1', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(4, 'Guideau_', 'test@mail.com', '$2y$10$FrgKmyfqP6M6uDNfFSKfDO/Iky3ooZh32IN2rFHdrRSMfyo6y6MlG', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(22, '123', 'test1@mail.com', '123', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(25, 'C23-0520', 'kimo0rven+zoro@gmail.com', '123', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(26, 'admin1', 'kimorvenvalencia+tester@gmail.com', '123', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(27, 'admin1', 'kimorvenvalencia+tester1@gmail.com', '123', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(29, '3312', 'kimo0rven+testing123123@gmail.com', '123', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(32, 'lol', 'test123@mail.com', 'lol', 'User', '321.png', '2025-04-15 09:08:17'),
-(33, 'kimklajda', 'kim@gmai.com', 'pilotmod', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(34, 'testxyz', 'xyz@mail.com', 'xyz', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(35, 'visit', 'visit@mail.com', '123', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(36, 'asdas', 'asd2@mail.com', 'asdasdasd', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(37, 'john', 'john.stewart@skinlogics.com', '123', 'User', 'default.jpg', '2025-04-15 09:08:17'),
-(38, 'asdasd', 'sda@mail.com', 'dsad', 'User', 'default.jpg', '2025-04-15 09:08:17');
+INSERT INTO `user_account` (`user_account_id`, `username`, `email`, `pass`, `role_id`, `avatar`, `date_modified`) VALUES
+(1, 'admin', 'kimo0rven@gmail.com', 'admin', 1, '1.jpg', '2025-04-15 09:08:17'),
+(2, 'user', 'kimorvenvalencia@gmail.com', 'user', 3, '2.jpg', '2025-04-30 04:23:24'),
+(3, 'human', 'kimorvenvalencia+user1@gmail.com', 'human', 2, '', '2025-04-30 04:26:20'),
+(4, 'Guideau_', 'test@mail.com', '$2y$10$FrgKmyfqP6M6uDNfFSKfDO/Iky3ooZh32IN2rFHdrRSMfyo6y6MlG', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(22, '123', 'test1@mail.com', '123', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(25, 'C23-0520', 'kimo0rven+zoro@gmail.com', '123', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(26, 'admin1', 'kimorvenvalencia+tester@gmail.com', '123', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(27, 'admin1', 'kimorvenvalencia+tester1@gmail.com', '123', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(29, '3312', 'kimo0rven+testing123123@gmail.com', '123', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(32, 'lol', 'test123@mail.com', 'lol', 2, '321.png', '2025-04-15 09:08:17'),
+(33, 'kimklajda', 'kim@gmai.com', 'pilotmod', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(34, 'testxyz', 'xyz@mail.com', 'xyz', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(35, 'visit', 'visit@mail.com', '123', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(36, 'asdas', 'asd2@mail.com', 'asdasdasd', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(37, 'john', 'john.stewart@skinlogics.com', '123', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(38, 'asdasd', 'sda@mail.com', 'dsad', 2, 'default.jpg', '2025-04-15 09:08:17'),
+(39, 'lonelystring', 'lonelystring@gmail.com', 'lonelystring@gmail.com', 2, 'default.jpg', '2025-04-29 00:47:49');
 
 --
 -- Indexes for dumped tables
@@ -428,9 +458,7 @@ ALTER TABLE `overtime`
 --
 ALTER TABLE `payroll`
   ADD PRIMARY KEY (`payroll_id`),
-  ADD KEY `employee_id` (`employee_id`),
-  ADD KEY `overtime_id` (`overtime_id`),
-  ADD KEY `rate_id` (`rate_id`);
+  ADD KEY `employee_id` (`employee_id`);
 
 --
 -- Indexes for table `rates`
@@ -439,11 +467,19 @@ ALTER TABLE `rates`
   ADD PRIMARY KEY (`rates_id`);
 
 --
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`role_id`),
+  ADD UNIQUE KEY `role_name` (`role_name`);
+
+--
 -- Indexes for table `user_account`
 --
 ALTER TABLE `user_account`
   ADD PRIMARY KEY (`user_account_id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_user_account_role` (`role_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -465,7 +501,7 @@ ALTER TABLE `department`
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `employee_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `employee_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `job`
@@ -477,7 +513,7 @@ ALTER TABLE `job`
 -- AUTO_INCREMENT for table `leave_request`
 --
 ALTER TABLE `leave_request`
-  MODIFY `leave_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `leave_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `overtime`
@@ -498,10 +534,16 @@ ALTER TABLE `rates`
   MODIFY `rates_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `user_account`
 --
 ALTER TABLE `user_account`
-  MODIFY `user_account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `user_account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- Constraints for dumped tables
@@ -559,6 +601,12 @@ ALTER TABLE `payroll`
   ADD CONSTRAINT `payroll_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`employee_id`),
   ADD CONSTRAINT `payroll_ibfk_2` FOREIGN KEY (`overtime_id`) REFERENCES `overtime` (`overtime_id`),
   ADD CONSTRAINT `payroll_ibfk_3` FOREIGN KEY (`rate_id`) REFERENCES `rates` (`rates_id`);
+
+--
+-- Constraints for table `user_account`
+--
+ALTER TABLE `user_account`
+  ADD CONSTRAINT `fk_user_account_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
