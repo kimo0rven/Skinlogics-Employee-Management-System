@@ -7,7 +7,7 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
 
     if ($accountType === 3) {
         echo '<style>.admin { display: none; }</style>';
-    } elseif ($accountType === 1) {
+    } elseif ($accountType === 1 || $accountType === 2) {
         echo '<style>.member { display: none; }</style>';
     } else {
 
@@ -92,7 +92,7 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     adminBody = document.getElementById('admin');
     memberBody = document.getElementById('member')
 
-    if (accountType == "1") {
+    if (accountType == "1" || accountType == "2") {
         adminBody.classList.remove('hidden');
         memberBody.classList.add('hidden');
     } else if (accountType == "3") {

@@ -8,9 +8,21 @@ if ($_SESSION['role_id'] == 1) {
         'employees.php' => 'Employees',
         'payroll.php' => 'Payroll',
         'work.php' => 'Work',
-        'departments.php' => 'Departments'
+        'departments.php' => 'Departments',
+        'timer.php' => 'Timer',
     ];
 } else if ($_SESSION['role_id'] == 2) {
+    $navigationItems = [
+        'dashboard.php' => 'Dashboard',
+        'employees.php' => 'Employees',
+        'payroll.php' => 'Payroll',
+        'work.php' => 'Work',
+        'departments.php' => 'Departments',
+        'timer.php' => 'Timer',
+
+
+    ];
+} else if ($_SESSION['role_id'] == 3) {
     $navigationItems = [
         'dashboard.php' => 'Dashboard',
         'timer.php' => 'Timer',
