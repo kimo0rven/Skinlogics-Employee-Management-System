@@ -7,7 +7,6 @@ if (empty($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 $user_account_id = (int) $_SESSION["user_account_id"];
-$accountType = $_SESSION["account_type"] ?? '';
 
 include 'includes/database.php';
 include 'config.php';
@@ -20,11 +19,15 @@ try {
     d.department_name,
     d.department_id,
     d.branch AS department_branch,
-    ua.avatar
+    ua.avatar,
+    ua.role_id,
+    r.role_name
 FROM employee e
 LEFT JOIN job j ON e.job_id = j.job_id
 LEFT JOIN department d ON j.department_id = d.department_id
-LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id;";
+LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id
+LEFT JOIN roles r ON ua.role_id = r.role_id;";
+
     $stmt_employees = $pdo->prepare($sql_employees);
     $stmt_employees->execute();
     $employees = $stmt_employees->fetchAll(PDO::FETCH_ASSOC);
@@ -58,7 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
         "emergency_contact_name",
         "emergency_contact_number",
         "emergency_contact_relationship",
-        "job_id"
+        "job_id",
+        "role_id"
     ];
 
     $formattedUpdate = [];
@@ -67,37 +71,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
     }
     extract($formattedUpdate);
 
+    echo "formatted: ";
+    print_r($formattedUpdate);
+
     if ($formattedUpdate['employee_id'] > 0 && !empty($formattedUpdate['last_name'])) {
         try {
-            $sql_update = "UPDATE employee 
-            SET 
-            first_name = :first_name, 
-            middle_name = :middle_name,
-            last_name = :last_name,
-            gender = :gender,
-            mobile = :mobile,
-            street = :street,
-            barangay = :barangay,
-            city = :city,
-            province = :province,
-            status = :status,
-            email = :email,
-            dob = :dob,
-            hire_date = :hire_date,
-            civil_status = :civil_status,
-            sss_number = :sss_number,
-            philhealth_number = :philhealth_number,
-            pagibig_number = :pagibig_number,
-            tin_number = :tin_number,
-            emergency_contact_name = :emergency_contact_name,
-            emergency_contact_number = :emergency_contact_number,
-            emergency_contact_relationship = :emergency_contact_relationship,
-            job_id = :job_id,
-            date_modified = NOW()
-            WHERE 
-            employee_id = :employee_id";
-            $stmt_update = $pdo->prepare($sql_update);
+            // Set the error mode on the PDO object immediately after creation.
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // Update the employee record.
+            $sql_update = "UPDATE employee 
+                SET 
+                    first_name = :first_name, 
+                    middle_name = :middle_name,
+                    last_name = :last_name,
+                    gender = :gender,
+                    mobile = :mobile,
+                    street = :street,
+                    barangay = :barangay,
+                    city = :city,
+                    province = :province,
+                    status = :status,
+                    email = :email,
+                    dob = :dob,
+                    hire_date = :hire_date,
+                    civil_status = :civil_status,
+                    sss_number = :sss_number,
+                    philhealth_number = :philhealth_number,
+                    pagibig_number = :pagibig_number,
+                    tin_number = :tin_number,
+                    emergency_contact_name = :emergency_contact_name,
+                    emergency_contact_number = :emergency_contact_number,
+                    emergency_contact_relationship = :emergency_contact_relationship,
+                    job_id = :job_id,
+                    date_modified = NOW()
+                WHERE 
+                    employee_id = :employee_id";
+
+            $stmt_update = $pdo->prepare($sql_update);
             $stmt_update->execute([
                 ':first_name' => $formattedUpdate['first_name'],
                 ':middle_name' => $formattedUpdate['middle_name'],
@@ -123,10 +134,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
                 ':job_id' => $formattedUpdate['job_id'],
                 ':employee_id' => $formattedUpdate['employee_id']
             ]);
+
+            // Fetch the user_account_id for the employee.
+            $sql = 'SELECT user_account_id FROM employee WHERE employee_id = :employee_id';
+            $employeeStmt = $pdo->prepare($sql);
+            $employeeStmt->execute([
+                ':employee_id' => $formattedUpdate['employee_id']
+            ]);
+            $user_account_id = $employeeStmt->fetchColumn();
+
+            // Debug: Ensure that a valid user_account_id was retrieved.
+            if (!$user_account_id) {
+                throw new Exception("No user_account_id found for employee_id: " . $formattedUpdate['employee_id']);
+            }
+
+            // Update the role_id in the user_account table.
+            $sql_update_role = "UPDATE user_account 
+                SET role_id = :role_id 
+                WHERE user_account_id = :user_account_id";
+            $stmt_update_role = $pdo->prepare($sql_update_role);
+            $stmt_update_role->execute([
+                ':role_id' => $formattedUpdate['role_id'],
+                ':user_account_id' => $user_account_id
+            ]);
+
+            // Optionally, check if the role update affected any rows.
+            if ($stmt_update_role->rowCount() > 0) {
+                // Success message or further action can go here.
+            } else {
+                // You might want to log or handle the case where no rows were updated.
+                // For example:
+                throw new Exception("User account update did not affect any rows. Check user_account_id and role_id.");
+            }
+
             header("Location: employees.php");
             exit();
+
         } catch (PDOException $e) {
             echo "Error updating employee data: " . $e->getMessage();
+        } catch (Exception $ex) {
+            echo "General error: " . $ex->getMessage();
         }
     } else {
         echo "Invalid input for editing employee.";
@@ -135,98 +182,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addEmployee'])) {
 
-    // $username = isset($_POST["username"]) ? trim($_POST["username"]) : '';
-    // $password = isset($_POST["pass"]) ? trim($_POST["pass"]) : '';
-    // $email = isset($_POST["email"]) ? trim($_POST["email"]) : '';
+    $username = isset($_POST["username"]) ? trim($_POST["username"]) : '';
+    $password = isset($_POST["password"]) ? trim($_POST["password"]) : '';
+    $email = isset($_POST["email"]) ? trim($_POST["email"]) : '';
+    $role_id = trim($_POST['role_id'] ?? '');
 
-    print_r($$_POST);
-    // if (!empty($username) && !empty($password) && !empty($email)) {
-    //     try {
-    //         $sql_insert_user = "INSERT INTO user_account (username, pass, email, account_type) 
-    //                             VALUES (:username, :password, :email, :account_type)";
-    //         $stmt_user = $pdo->prepare($sql_insert_user);
-    //         $stmt_user->execute([
-    //             ':username' => $username,
-    //             ':password' => $password,
-    //             ':email' => $email,
-    //             ':account_type' => 'User'
-    //         ]);
+    print_r($_POST);
+    if (!empty($username) && !empty($password) && !empty($email)) {
+        try {
+            $sql_insert_user = "INSERT INTO user_account (username, pass, email, role_id) 
+                                VALUES (:username, :password, :email, :role_id)";
+            $stmt_user = $pdo->prepare($sql_insert_user);
+            $stmt_user->execute([
+                ':username' => $username,
+                ':password' => $password,
+                ':email' => $email,
+                ':role_id' => $role_id
+            ]);
 
-    //         $user_account_id = $pdo->lastInsertId();
+            print_r($stmt_user);
 
-    //         $first_name = trim($_POST['first_name'] ?? '');
-    //         $middle_name = trim($_POST['middle_name'] ?? '');
-    //         $last_name = trim($_POST['last_name'] ?? '');
-    //         $gender = trim($_POST['gender'] ?? '');
-    //         $mobile = trim($_POST['mobile'] ?? '');
-    //         $dob = trim($_POST['dob'] ?? '');
+            $user_account_id = $pdo->lastInsertId();
 
-    //         $street = trim($_POST['street'] ?? '');
-    //         $barangay = trim($_POST['barangay'] ?? '');
-    //         $city = trim($_POST['city'] ?? '');
-    //         $province = trim($_POST['province'] ?? '');
+            $first_name = trim($_POST['first_name'] ?? '');
+            $middle_name = trim($_POST['middle_name'] ?? '');
+            $last_name = trim($_POST['last_name'] ?? '');
+            $gender = trim($_POST['gender'] ?? '');
+            $mobile = trim($_POST['mobile'] ?? '');
+            $dob = trim($_POST['dob'] ?? '');
 
-    //         $status = trim($_POST['status'] ?? '');
-    //         $hire_date = trim($_POST['hire_date'] ?? '');
-    //         $civil_status = trim($_POST['civil_status'] ?? '');
+            $street = trim($_POST['street'] ?? '');
+            $barangay = trim($_POST['barangay'] ?? '');
+            $city = trim($_POST['city'] ?? '');
+            $province = trim($_POST['province'] ?? '');
 
-    //         $sss_number = trim($_POST['sss_number'] ?? '');
-    //         $philhealth_number = trim($_POST['philhealth_number'] ?? '');
-    //         $pagibig_number = trim($_POST['pagibig_number'] ?? '');
+            $status = trim($_POST['status'] ?? '');
+            $hire_date = trim($_POST['hire_date'] ?? '');
+            $civil_status = trim($_POST['civil_status'] ?? '');
 
-    //         $emergency_contact_name = trim($_POST['emergency_contact_name'] ?? '');
-    //         $emergency_contact_number = trim($_POST['emergency_contact_number'] ?? '');
-    //         $emergency_contact_relationship = trim($_POST['emergency_contact_relationship'] ?? '');
+            $sss_number = trim($_POST['sss_number'] ?? '');
+            $philhealth_number = trim($_POST['philhealth_number'] ?? '');
+            $pagibig_number = trim($_POST['pagibig_number'] ?? '');
 
-    //         $sql_create_user = "INSERT INTO employee (
-    //             email, first_name, middle_name, last_name, gender, mobile, 
-    //             street, barangay, city, province, status, 
-    //             dob, hire_date, civil_status, sss_number, 
-    //             philhealth_number, pagibig_number, emergency_contact_name, 
-    //             emergency_contact_number, emergency_contact_relationship,
-    //             date_created, user_account_id
-    //         ) VALUES (
-    //             :email, :first_name, :middle_name, :last_name, :gender, :mobile, 
-    //             :street, :barangay, :city, :province, :status, 
-    //             :dob, :hire_date, :civil_status, :sss_number, 
-    //             :philhealth_number, :pagibig_number, :emergency_contact_name, 
-    //             :emergency_contact_number, :emergency_contact_relationship,
-    //             NOW(), :user_account_id
-    //         )";
+            $emergency_contact_name = trim($_POST['emergency_contact_name'] ?? '');
+            $emergency_contact_number = trim($_POST['emergency_contact_number'] ?? '');
+            $emergency_contact_relationship = trim($_POST['emergency_contact_relationship'] ?? '');
 
-    //         $stmt_employee = $pdo->prepare($sql_create_user);
-    //         $stmt_employee->execute([
-    //             ':email' => $email,
-    //             ':first_name' => $first_name,
-    //             ':middle_name' => $middle_name,
-    //             ':last_name' => $last_name,
-    //             ':gender' => $gender,
-    //             ':mobile' => $mobile,
-    //             ':street' => $street,
-    //             ':barangay' => $barangay,
-    //             ':city' => $city,
-    //             ':province' => $province,
-    //             ':status' => $status,
-    //             ':dob' => $dob,
-    //             ':hire_date' => $hire_date,
-    //             ':civil_status' => $civil_status,
-    //             ':sss_number' => $sss_number,
-    //             ':philhealth_number' => $philhealth_number,
-    //             ':pagibig_number' => $pagibig_number,
-    //             ':emergency_contact_name' => $emergency_contact_name,
-    //             ':emergency_contact_number' => $emergency_contact_number,
-    //             ':emergency_contact_relationship' => $emergency_contact_relationship,
-    //             ':user_account_id' => $user_account_id,
-    //         ]);
 
-    //         header("Location: employees.php");
-    //         exit();
-    //     } catch (PDOException $e) {
-    //         echo "Error inserting data: " . $e->getMessage();
-    //     }
-    // } else {
-    //     echo "Invalid input for adding employee.";
-    // }
+
+            $sql_create_user = "INSERT INTO employee (
+                email, first_name, middle_name, last_name, gender, mobile, 
+                street, barangay, city, province, status, 
+                dob, hire_date, civil_status, sss_number, 
+                philhealth_number, pagibig_number, emergency_contact_name, 
+                emergency_contact_number, emergency_contact_relationship,
+                date_created, user_account_id
+            ) VALUES (
+                :email, :first_name, :middle_name, :last_name, :gender, :mobile, 
+                :street, :barangay, :city, :province, :status, 
+                :dob, :hire_date, :civil_status, :sss_number, 
+                :philhealth_number, :pagibig_number, :emergency_contact_name, 
+                :emergency_contact_number, :emergency_contact_relationship,
+                NOW(), :user_account_id
+            )";
+
+            $stmt_employee = $pdo->prepare($sql_create_user);
+            $stmt_employee->execute([
+                ':email' => $email,
+                ':first_name' => $first_name,
+                ':middle_name' => $middle_name,
+                ':last_name' => $last_name,
+                ':gender' => $gender,
+                ':mobile' => $mobile,
+                ':street' => $street,
+                ':barangay' => $barangay,
+                ':city' => $city,
+                ':province' => $province,
+                ':status' => $status,
+                ':dob' => $dob,
+                ':hire_date' => $hire_date,
+                ':civil_status' => $civil_status,
+                ':sss_number' => $sss_number,
+                ':philhealth_number' => $philhealth_number,
+                ':pagibig_number' => $pagibig_number,
+                ':emergency_contact_name' => $emergency_contact_name,
+                ':emergency_contact_number' => $emergency_contact_number,
+                ':emergency_contact_relationship' => $emergency_contact_relationship,
+                ':user_account_id' => $user_account_id
+            ]);
+            print_r($stmt_employee);
+
+            header("Location: employees.php");
+            exit();
+        } catch (PDOException $e) {
+            echo "Error inserting data: " . $e->getMessage();
+        }
+    } else {
+        echo "Invalid input for adding employee.";
+    }
 }
 
 $searchTerm = '';
@@ -279,6 +332,15 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $jobs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    die("" . $e->getMessage());
+}
+
+try {
+    $sql = "SELECT * FROM roles";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     die("" . $e->getMessage());
 }
@@ -345,6 +407,7 @@ try {
                                         <th>Job Title</th>
                                         <th>Department</th>
                                         <th>Branch</th>
+                                        <th>Role</th>
                                         <th>Email</th>
                                         <th>Mobile</th>
                                         <th>Status</th>
@@ -369,6 +432,7 @@ try {
                                                 <td><?php echo htmlspecialchars($employee['job_name']); ?></td>
                                                 <td><?php echo htmlspecialchars($employee['department_name']); ?></td>
                                                 <td><?php echo htmlspecialchars($employee['department_branch']); ?></td>
+                                                <td><?php echo htmlspecialchars($employee['role_name']); ?></td>
                                                 <td>
                                                     <p><a id="mailto"
                                                             href="mailto:<?php echo htmlspecialchars($employee['email']); ?>"><?php echo htmlspecialchars($employee['email']); ?></a>
@@ -637,6 +701,19 @@ try {
                                         ?>
                                     </select>
                                 </div>
+
+                                <div class="employee-detail-fields">
+                                    <label for="role_id" style="display:block; margin-bottom: 5px;">Acount
+                                        Role</label>
+                                    <select name="role_id" id="role_id">
+                                        <option>No Role</option>
+                                        <?php
+                                        foreach ($roles as $role) {
+                                            echo '<option value="' . htmlspecialchars($role['role_id']) . '">' . htmlspecialchars($role['role_name']) . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
 
                         </div>
@@ -872,6 +949,18 @@ try {
                                         ?>
                                     </select>
                                 </div>
+
+                                <div class="employee-detail-fields">
+                                    <label for="role_id" style="display:block; margin-bottom: 5px;">Acount
+                                        Role</label>
+                                    <select name="role_id" id="role_id">
+                                        <?php
+                                        foreach ($roles as $role) {
+                                            echo '<option value="' . htmlspecialchars($role['role_id']) . '">' . htmlspecialchars($role['role_name']) . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
 
                         </div>
@@ -974,6 +1063,11 @@ try {
                 data.team_leader_id = 0;
             }
             teamLeaderSelect.value = data.team_leader_id;
+        }
+
+        const roleIdSelect = document.querySelector('select[name="role_id"]');
+        if (roleIdSelect && data.role_id) {
+            roleIdSelect.value = data.role_id;
         }
 
         modal.showModal();

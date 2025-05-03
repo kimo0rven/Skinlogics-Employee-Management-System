@@ -75,39 +75,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         1
     </div>
 </div>
-
-<script>
-    function displayCurrentTime12Hour() {
-        const now = new Date();
-        let hours = now.getHours();
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-
-        const timeString = `${hours}:${minutes}:${seconds} ${ampm}`;
-
-        document.getElementById('timeDisplay').textContent = timeString;
-    }
-
-    displayCurrentTime12Hour();
-    setInterval(displayCurrentTime12Hour, 1000);
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const dropdownContainer = document.querySelector('.profile-dropdown-container');
-        const dropdownTrigger = document.querySelector('.profile-dropdown-trigger');
-
-        dropdownTrigger.addEventListener('click', function (event) {
-            event.stopPropagation();
-            dropdownContainer.classList.toggle('show');
-        });
-
-        document.addEventListener('click', function (event) {
-            if (!event.target.closest('.profile-dropdown-container')) {
-                dropdownContainer.classList.remove('show');
-            }
-        });
-    });
-</script>

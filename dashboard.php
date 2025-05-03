@@ -17,25 +17,6 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     include 'includes/database.php';
     include 'config.php';
 
-    try {
-        $sql = "SELECT * FROM employee WHERE user_account_id = :user_account_id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':user_account_id', $user_account_id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if ($rows) {
-
-            foreach ($rows as $row) {
-                $first_name = $row['first_name'];
-                $last_name = $row['last_name'];
-            }
-        } else {
-            echo "No records found for user account ID: " . $user_account_id;
-        }
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-    }
 } else {
     header("Location: index.php");
 }
@@ -51,8 +32,6 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="user-side.css" />
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
 </head>
 
 <body>
@@ -88,7 +67,6 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
 
 
     let accountType = <?php echo json_encode($accountType); ?>;
-    console.log(accountType)
     adminBody = document.getElementById('admin');
     memberBody = document.getElementById('member')
 

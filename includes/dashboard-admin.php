@@ -237,23 +237,4 @@ try {
 </div>
 
 
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const dropdownContainer = document.querySelector('.profile-dropdown-container');
-        const dropdownTrigger = document.querySelector('.profile-dropdown-trigger');
-
-        dropdownTrigger.addEventListener('click', function (event) {
-            event.stopPropagation();
-            dropdownContainer.classList.toggle('show');
-        });
-
-        document.addEventListener('click', function (event) {
-            if (!event.target.closest('.profile-dropdown-container')) {
-                dropdownContainer.classList.remove('show');
-            }
-        });
-    });
-</script>
-
 </html>
