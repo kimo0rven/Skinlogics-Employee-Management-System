@@ -17,9 +17,12 @@ if (isset($_SESSION["user_account_id"]) && isset($_SESSION['username'])) {
     include 'includes/database.php';
     include 'config.php';
 
+
 } else {
     header("Location: index.php");
+    exit();
 }
+
 ?>
 
 <!DOCTYPE html>

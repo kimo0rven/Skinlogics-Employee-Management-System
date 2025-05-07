@@ -19,8 +19,9 @@ try {
 
 ?>
 <div id="profile-dropdown-trigger" class="flex flex-row flex-end gap-10 ">
+    <img class="dashboard-content-header-img" src="assets/images/avatars/<?php echo $_SESSION['avatar'] ?>"
+        alt="avatar">
 
-    <img class="dashboard-content-header-img" src="assets/images/avatars/<?php echo $_SESSION['avatar'] ?>" alt="">
     <div class="flex flex-row justify-center align-center gap-10">
         <div>
             <p><?php echo $first_name ?>

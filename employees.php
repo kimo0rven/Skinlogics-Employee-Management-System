@@ -70,16 +70,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
         $formattedUpdate["$field"] = isset($_POST[$field]) ? trim($_POST[$field]) : ($field === "employee_id" ? 0 : '');
     }
     extract($formattedUpdate);
-
+    echo 1;
     echo "formatted: ";
     print_r($formattedUpdate);
 
     if ($formattedUpdate['employee_id'] > 0 && !empty($formattedUpdate['last_name'])) {
         try {
-            // Set the error mode on the PDO object immediately after creation.
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Update the employee record.
             $sql_update = "UPDATE employee 
                 SET 
                     first_name = :first_name, 
@@ -135,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
                 ':employee_id' => $formattedUpdate['employee_id']
             ]);
 
-            // Fetch the user_account_id for the employee.
             $sql = 'SELECT user_account_id FROM employee WHERE employee_id = :employee_id';
             $employeeStmt = $pdo->prepare($sql);
             $employeeStmt->execute([
@@ -143,28 +140,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
             ]);
             $user_account_id = $employeeStmt->fetchColumn();
 
-            // Debug: Ensure that a valid user_account_id was retrieved.
             if (!$user_account_id) {
                 throw new Exception("No user_account_id found for employee_id: " . $formattedUpdate['employee_id']);
             }
 
-            // Update the role_id in the user_account table.
-            $sql_update_role = "UPDATE user_account 
-                SET role_id = :role_id 
-                WHERE user_account_id = :user_account_id";
-            $stmt_update_role = $pdo->prepare($sql_update_role);
-            $stmt_update_role->execute([
-                ':role_id' => $formattedUpdate['role_id'],
-                ':user_account_id' => $user_account_id
-            ]);
+            $sql_current_role = "SELECT role_id FROM user_account WHERE user_account_id = :user_account_id";
+            $stmt_current = $pdo->prepare($sql_current_role);
+            $stmt_current->execute([':user_account_id' => $user_account_id]);
+            $currentRole = $stmt_current->fetchColumn();
 
-            // Optionally, check if the role update affected any rows.
-            if ($stmt_update_role->rowCount() > 0) {
-                // Success message or further action can go here.
-            } else {
-                // You might want to log or handle the case where no rows were updated.
-                // For example:
-                throw new Exception("User account update did not affect any rows. Check user_account_id and role_id.");
+            if ($currentRole != $formattedUpdate['role_id']) {
+                $sql_update_role = "UPDATE user_account 
+                    SET role_id = :role_id 
+                    WHERE user_account_id = :user_account_id";
+                $stmt_update_role = $pdo->prepare($sql_update_role);
+                $stmt_update_role->execute([
+                    ':role_id' => $formattedUpdate['role_id'],
+                    ':user_account_id' => $user_account_id
+                ]);
+
+                if ($stmt_update_role->rowCount() == 0) {
+                    throw new Exception("User account update did not affect any rows. Check user_account_id and role_id.");
+                }
             }
 
             header("Location: employees.php");
