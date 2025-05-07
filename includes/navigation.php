@@ -26,16 +26,15 @@ if ($_SESSION['role_id'] == 1) {
     $navigationItems = [
         'dashboard.php' => 'Dashboard',
         'timer.php' => 'Timer',
-
     ];
 }
 
 if ($_SESSION['isHRManager']) {
-    $navigationItems['hr_manager_approve.php'] = 'HR_Manager_Approval';
+    $navigationItems['hr_manager_leave_requests.php'] = 'HR_Manager_Approval';
 }
 
 if ($_SESSION['isTeamLeader']) {
-    $navigationItems['isTeamLeader.php'] = 'Team_Leader';
+    $navigationItems['tl_leave_requests.php'] = 'Team_Leader';
 }
 ?>
 
