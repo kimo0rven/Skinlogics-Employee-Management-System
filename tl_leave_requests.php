@@ -35,22 +35,30 @@ try {
                         lr.*,
                         e.first_name,
                         e.middle_name,
-                        e.last_name
+                        e.last_name,
+                        e.job_id,
+                        j.job_name,
+                        j.department_id,
+                        d.department_name
                    FROM
                         leave_request lr
                    INNER JOIN
                         employee e ON lr.employee_id = e.employee_id
+                   INNER JOIN
+                        job j ON e.job_id = j.job_id
+                   INNER JOIN
+                        department d ON j.department_id = d.department_id
                    WHERE
-                        e.team_leader_id = :loggedInTeamLeaderId
+                        (lr.hr_manager_approval = 'Pending' AND lr.tl_approval= 'Approved') OR
+                        lr.status = 'Approved'
                    ORDER BY
                         lr.date_created DESC";
 
     $stmt_leaves = $pdo->prepare($sql_leaves);
-    $stmt_leaves->bindValue(':loggedInTeamLeaderId', $_SESSION['employee_id'], PDO::PARAM_INT);
     $stmt_leaves->execute();
     $leaveRequests = $stmt_leaves->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "Error fetching employee data: " . $e->getMessage();
+    echo "Error fetching leave request data: " . $e->getMessage();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -58,22 +66,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo $_POST['leave_id'];
         print_r($_POST);
 
-        $sql = "UPDATE leave_request SET tl_approval = :tl_approval WHERE leave_id = :leave_id";
+        $sql = "UPDATE leave_request SET hr_manager_approval = :hr_manager_approval WHERE leave_id = :leave_id";
         $stmt_update = $pdo->prepare($sql);
         if ($_POST['approval'] == 'approve') {
             $stmt_update->execute([
-                ':tl_approval' => 'Approved',
+                ':hr_manager_approval' => 'Approved',
                 ':leave_id' => $_POST['leave_id'],
             ]);
         } else {
             $stmt_update->execute([
-                ':tl_approval' => 'Rejected',
+                ':hr_manager_approval' => 'Rejected',
                 ':leave_id' => $_POST['leave_id'],
             ]);
         }
     }
 
-    header("Location: tl_leave_requests.php");
+    header("Location: hr_manager_leave_requests.php");
     exit();
 }
 
@@ -83,25 +91,31 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
 
     try {
         $sql_search = "SELECT
-                        lr.*,
-                        e.first_name,
-                        e.middle_name,
-                        e.last_name
-                    FROM
-                        leave_request lr
-                    INNER JOIN
-                        employee e ON lr.employee_id = e.employee_id
-                    WHERE
-                        e.team_leader_id = :loggedInTeamLeaderId
+                            lr.*,
+                            e.first_name,
+                            e.middle_name,
+                            e.last_name,
+                            e.job_id,
+                            j.job_name,
+                            j.department_id,
+                            d.department_name
+                        FROM leave_request lr
+                        INNER JOIN employee e ON lr.employee_id = e.employee_id
+                        INNER JOIN job j ON e.job_id = j.job_id
+                        INNER JOIN department d ON j.department_id = d.department_id
+                        WHERE ((lr.hr_manager_approval = 'Pending' AND lr.tl_approval = 'Approved')
+                            OR lr.status = 'Approved')
                         AND (
-                            e.first_name LIKE :searchQuery 
-                            OR e.middle_name LIKE :searchQuery 
-                            OR e.last_name LIKE :searchQuery 
-                            OR lr.leave_type LIKE :searchQuery 
-                            OR lr.status LIKE :searchQuery
+                            e.first_name LIKE :searchQuery OR
+                            e.middle_name LIKE :searchQuery OR
+                            e.last_name LIKE :searchQuery OR
+                            lr.leave_type LIKE :searchQuery OR
+                            lr.status LIKE :searchQuery OR
+                            j.job_name LIKE :searchQuery OR
+                            d.department_name LIKE :searchQuery
                         )
-                    ORDER BY
-                        lr.date_created DESC";
+                        ORDER BY lr.date_created DESC
+                        ";
 
         $stmt_search = $pdo->prepare($sql_search);
         $stmt_search->bindParam(':loggedInTeamLeaderId', $_SESSION['employee_id'], PDO::PARAM_INT);
@@ -172,10 +186,12 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                                 <thead class="font-bold">
                                     <tr>
                                         <th>Employee</th>
+                                        <th>Job</th>
+                                        <th>Department</th>
                                         <th>Type</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
-                                        <th>Duration</th>
+                                        <th>No. of Days</th>
                                         <th>Reason</th>
                                         <th>TL Approval</th>
                                         <th>Approval Date</th>
@@ -193,6 +209,12 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                                                 onclick="openModal(<?php echo $leaveRequest['employee_id'] ?>)">
                                                 <td style="text-align: center;">
                                                     <?php echo $leaveRequest['first_name'] . " " . $leaveRequest['last_name'] ?>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <?php echo $leaveRequest['job_name'] ?>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <?php echo $leaveRequest['department_name'] ?>
                                                 </td>
                                                 <td>
                                                     <?php echo htmlspecialchars($leaveRequest['leave_type']); ?>
@@ -307,7 +329,7 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
         </div>
 
         <dialog style="border-radius: 10px; border: 1px solid #D1D1D1;" id="myModal">
-            <form action="leave_requests.php" method="POST" class="flex flex-column gap-20">
+            <form action="hr_manager_leave_requests.php" method="POST" class="flex flex-column gap-20">
                 <div>
                     <div id="modal_close_btn" style="position: absolute; top: 10px; right: 10px; cursor: pointer;"
                         onclick="closeModal()">
@@ -337,37 +359,45 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                                 </div>
 
                                 <div class="employee-detail-fields">
-                                    <label for="lq_start_date">Start Date</label>
-                                    <input id="lq_start_date" type="text" name="lq_start_date" readonly>
+                                    <label for="job_name">Job</label>
+                                    <input id="job_name" type="text" name="job_name" readonly>
                                 </div>
 
                                 <div class="employee-detail-fields">
-                                    <label for="lq_end_date">End Date</label>
-                                    <input id="lq_end_date" type="text" name="lq_end_date" readonly>
+                                    <label for="department_name">Department</label>
+                                    <input id="department_name" type="text" name="department_name" readonly>
                                 </div>
 
                             </div>
 
                             <div class="flex flex-row gap-20 space-between">
 
+                                <div class="employee-detail-fields flex flex-column">
+                                    <label for="lq_start_date">Start Date</label>
+                                    <input id="lq_start_date" type="text" name="lq_start_date" readonly>
+                                </div>
+
+                                <div class="employee-detail-fields flex flex-column">
+                                    <label for="lq_end_date">End Date</label>
+                                    <input id="lq_end_date" type="text" name="lq_end_date" readonly>
+                                </div>
+
                                 <div class="employee-detail-fields">
-                                    <label for="duration">Duration</label>
+                                    <label for="duration">No. of Days</label>
                                     <input type="text" name="duration" readonly>
                                 </div>
 
+
+
+                            </div>
+
+                            <div class="flex flex-row gap-20">
                                 <div class="employee-detail-fields">
                                     <label for="lr_reason">Reason</label>
-                                    <textarea wrap="hard" rows="5"
-                                        style="width: 100%;padding: 7px 13.5px;border-radius: 8px;border: 1px solid var(--color-base-300); font-size: 16px;word-wrap: break-word;"
+                                    <textarea wrap="hard" rows="5" cols="65"
+                                        style="width: 100%;padding: 7px 5px;border-radius: 8px;border: 1px solid var(--color-base-300); font-size: 16px;word-wrap: break-word;"
                                         type="text" name="lr_reason" readonly></textarea>
                                 </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="status">Status</label>
-                                    <input type="text" id="status" name="status" readonly>
-
-                                </div>
-
                             </div>
 
                             <div class="flex flex-row gap-20 space-around">
@@ -376,14 +406,14 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                                 <div class="flex flex-column">
                                     <div class="employee-detail-fields">
                                         <label for="tl_approval">Team Leader Approval</label>
-                                        <input type="text" name="tl_approval">
+                                        <input type="text" name="tl_approval" readonly>
 
                                         </input>
                                     </div>
 
                                     <div class="employee-detail-fields">
-                                        <label for="dob">Approval Date</label>
-                                        <input type="text" name="dob">
+                                        <label for="tl_approval_date">Approval Date</label>
+                                        <input type="text" name="tl_approval_date" readonly>
                                     </div>
                                     <div class="vl"></div>
                                 </div>
@@ -391,14 +421,14 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                                 <div class="flex flex-column">
                                     <div class="employee-detail-fields">
                                         <label for="hr_manager_approval">HR Manager Approval</label>
-                                        <input type="text" name="hr_manager_approval">
+                                        <input type="text" name="hr_manager_approval" readonly>
 
                                         </input>
                                     </div>
 
                                     <div class="employee-detail-fields">
                                         <label for="hr_manager_approval_date">Approval Date</label>
-                                        <input type="text" name="hr_manager_approval_date">
+                                        <input type="text" name="hr_manager_approval_date" readonly>
                                     </div>
                                 </div>
 
