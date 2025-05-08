@@ -429,7 +429,7 @@ button:hover {
 	border-radius: 50%;
     max-width: 5%; 
     max-height: auto;
-	border: 1px solid var(--color-base-300);
+	border: 2px solid var(--color-base-300);
 }
 .dashboard-content-header > p {
 	flex-shrink: 0;
@@ -444,7 +444,7 @@ button:hover {
 
 .dashboard-main-content {
     max-height: 100%;
-    flex-basis: 75%;
+    flex-basis: 78%;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -461,7 +461,7 @@ button:hover {
 .dashboard-other-info {
 	flex: 1;
 	height: 100%;
-	flex-basis: 25%;
+	flex-basis: 22%;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
@@ -470,7 +470,7 @@ button:hover {
 }
 
 .dashboard-other-info > div {
-    border: 1px solid var(--color-base-300);
+    border: 3px solid var(--color-base-300);
 	border-radius: 8px;
 	padding: 25px;
 	height: 100%;
@@ -502,7 +502,6 @@ button:hover {
 	flex-direction: column;
 	gap: 20px;
 	background-color: var(--color-info);
-	border: 1px red solid;
 	color: var(--color-info-content);
 	max-height: 120px;
 	overflow-y: auto;
@@ -584,7 +583,7 @@ button:hover {
 
 .kpi-item {
     background: var(--color-base-100);
-    border: 1px solid var(--color-base-300);
+    border: 3px solid var(--color-base-300);
     border-radius: 8px;
     padding: 20px 30px;
     flex: 1; 
@@ -613,7 +612,7 @@ button:hover {
 }
 .dashboard-chart {
 	background: var(--color-base-100);
-	border: 1px solid var(--color-base-300);
+	border: 3px solid var(--color-base-300);
     border-radius: 8px;
 	max-height: 100%;
 	width: 100%;
@@ -642,7 +641,7 @@ button:hover {
 
 .dashboard-navigation .navigation-container > div {
     padding: 10px;
-    border: 2px solid var(--color-base-300);
+    border: 3px solid var(--color-base-300);
     border-radius: 50%;
     text-align: center;
     cursor: pointer;
@@ -755,7 +754,7 @@ button:hover {
     display: flex;
     flex-direction: column;
 	background: var(--color-base-100);
-	border: 1px solid var(--color-base-300);
+	border: 3px solid var(--color-base-300);
 	border-radius: 8px;
 	padding: 20px;
 	gap: 20px;
@@ -827,7 +826,7 @@ button:hover {
 }
 
 .employee-display-list {
-	border: #0056b3 solid 1px;
+	border: #0056b3 solid 10px;
 }
 
 .employee-display-list:hover {
@@ -1173,7 +1172,7 @@ dialog[open] {
 	gap: 20px;
 }
 .profile-display {
-	border: 1px solid var(--color-base-300);
+	border: 3px solid var(--color-base-300);
 	border-radius: 8px;
 	overflow-y: hidden;
 	height: 100%;
@@ -1574,7 +1573,7 @@ fieldset {
 	padding: 20px;
 	box-sizing: border-box;
 	border-radius: 8px;
-	border: 1px solid var(--color-base-300);
+	border: 3px solid var(--color-base-300);
 	flex-basis: 100%;
 	height: 100%;
 	flex-grow: 1;
@@ -1700,10 +1699,6 @@ fieldset {
 	color: red; */
 }
 
-.testst {
-	border: red 1px solid;
-}
-
 .department-info-row {
 	display: flex;
 	align-items: flex-start; 
@@ -1727,7 +1722,7 @@ fieldset {
 }
 
 #job-detail-dialog, #add-job-dialog {
-	border: 1px solid var(--color-base-300);
+	border: 3px solid var(--color-base-300);
 }
 
 #job-detail-dialog:-internal-dialog-in-top-layer::backdrop , #add-job-dialog:-internal-dialog-in-top-layer::backdrop {
@@ -1782,7 +1777,7 @@ cursor: pointer;
 	width: 50px;
 	height: 50px;
 	background-color: var(--color-base-100);
-	border: 2px solid var(--color-base-300);
+	border: 3px solid var(--color-base-300);
 	color: var(--color-base-content);
 	border-radius: 50%;
 	display: flex;
@@ -1820,7 +1815,7 @@ cursor: pointer;
 
 
 #leaveRequestModal {
-	border: 1px solid var(--color-base-300);
+	border: 3px solid var(--color-base-300);
 	text-align: left;
 }
 
@@ -1830,7 +1825,7 @@ cursor: pointer;
 }
 
 #overtimeRequeustModal {
-	border: 1px solid var(--color-base-300);
+	border: 3px solid var(--color-base-300);
 	text-align: left;
 }
 
