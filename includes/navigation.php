@@ -19,8 +19,6 @@ if ($_SESSION['role_id'] == 1) {
         'work.php' => 'Work',
         'departments.php' => 'Departments',
         'timer.php' => 'Timer',
-
-
     ];
 } else if ($_SESSION['role_id'] == 3) {
     $navigationItems = [
@@ -36,6 +34,7 @@ if ($_SESSION['isHRManager']) {
 if ($_SESSION['isTeamLeader']) {
     $navigationItems['tl_leave_requests.php'] = 'Team_Leader';
 }
+
 ?>
 
 <div class="navigation-container">
