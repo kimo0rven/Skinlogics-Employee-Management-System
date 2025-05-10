@@ -22,6 +22,8 @@ if ($_SESSION['role_id'] == 1) {
         'work.php' => 'Work',
         'departments.php' => 'Departments',
         'timer.php' => 'Timer',
+        'leave_requests.php' => "Leave_Requests",
+        'overtime.php' => 'Overtime'
 
 
     ];

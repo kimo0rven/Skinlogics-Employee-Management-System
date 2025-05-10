@@ -119,6 +119,7 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
 
 ?>
 
+<!DOCTYPE html>
 <html>
 
 <head>
