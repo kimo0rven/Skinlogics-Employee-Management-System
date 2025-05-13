@@ -1835,7 +1835,7 @@ cursor: pointer;
 .employee-detail-fields {
 	position: relative;
 	width: 300px; /* adjust as needed */
-  }
+}
 
 .dropdown-content {
 	border: 1px solid #ccc;
@@ -1847,13 +1847,17 @@ cursor: pointer;
 	max-height: 200px;
 	overflow-y: auto;
 	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
-  
-  /* Each result item */
-  .result-item {
-	padding: 8px;
+	padding: 10px;
+}
+
+
+.result-item {
+	position: relative;
+	padding: 10px;
+	background-color: grey;
 	cursor: pointer;
-  }
-  .result-item:hover {
+	z-index: 19999;
+}
+.result-item:hover {
 	background-color: #f1f1f1;
-  }
+}

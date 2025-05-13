@@ -13,6 +13,17 @@ include 'includes/database.php';
 include 'config.php';
 
 try {
+    $sql = 'SHOW CREATE TABLE attendance;';
+    $stmt_payroll = $pdo->prepare($sql);
+    $stmt_payroll->execute();
+    $attendance1 = $stmt_payroll->fetch(PDO::FETCH_ASSOC);
+
+    print_r($attendance1);
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
+
+try {
     $sql = 'SELECT * FROM payroll';
     $stmt_payroll = $pdo->prepare($sql);
     $stmt_payroll->execute();
@@ -243,7 +254,8 @@ try {
                             <div style="padding: 10px 0px">
                                 <div class="flex flex-row gap-20 space-between">
                                     <p style="margin:0px">Regular</p>
-                                    <button style="padding: 5px">Fetch Data</button>
+                                    <button id="fetch-attendance-btn" type="button" style="padding: 5px">Fetch
+                                        Data</button>
                                 </div>
                                 <div class="flex flex-row gap-20 space-between">
                                     <div class="employee-detail-fields flex flex-column">
@@ -302,15 +314,11 @@ try {
                 <div class="employee-detail-edit-button-container">
 
                     <div>
-                        <button class="employee-detail-edit-button" type="submit" value="approve"
-                            name="approval">Approve</button>
+                        <button class="employee-detail-edit-button" type="submit" value="approve" name="approval">Create
+                            Payroll</button>
                     </div>
 
-                    <div>
-                        <button style="background-color: var(--color-error)"
-                            class="employee-detail-edit-button cancel-button" type="submit" value="reject"
-                            name="approval">Reject</button>
-                    </div>
+
 
                 </div>
             </form>
@@ -380,6 +388,48 @@ try {
             .catch(error => {
                 console.error("Error fetching employee data", error);
                 resultsDiv.style.display = "none";
+            });
+    });
+
+    document.getElementById('fetch-attendance-btn').addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent any default action
+
+        // Grab the employee ID from the input field
+        const employeeId = document.getElementById('employee_id').value;
+        if (!employeeId) {
+            alert("Employee ID is missing. Please select an employee.");
+            return;
+        }
+
+        const start_date = document.getElementById('payroll_start_date').value;
+        if (!start_date) {
+            alert("Start Date is missing. Please select a start date");
+        }
+
+        const end_date = document.getElementById('payroll_end_date').value;
+        if (!start_date) {
+            alert("End Date is missing. Please select a start date");
+        }
+
+        const url = `includes/attendance_query.php?employee_id=${encodeURIComponent(employeeId)}&start_date=${encodeURIComponent(start_date)}&end_date=${encodeURIComponent(end_date)}`;
+        console.log(url);
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Attendance data:", data);
+                // Example: output the data to the container dedicated for attendance results
+                // const resultsContainer = document.getElementById('attendance-results');
+                // resultsContainer.innerHTML = data.length
+                //     ? `<pre>${JSON.stringify(data, null, 2)}</pre>`
+                //     : 'No attendance records found.';
+            })
+            .catch(error => {
+                console.error("Error fetching attendance data:", error);
             });
     });
 
