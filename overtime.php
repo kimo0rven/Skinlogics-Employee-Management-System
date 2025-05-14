@@ -11,8 +11,7 @@ $user_account_id = (int) $_SESSION["user_account_id"];
 include 'includes/database.php';
 include 'config.php';
 
-function formatDate($rawDate, $format = 'M d, Y h:i A')
-{
+function formatDate($rawDate, $format = 'M d, Y') {
     if (!empty($rawDate)) {
         try {
             $date = new DateTime($rawDate);
@@ -24,76 +23,70 @@ function formatDate($rawDate, $format = 'M d, Y h:i A')
     return 'N/A';
 }
 
-$overtimeRequests = [];
+$leaveRequests = [];
 try {
-    $sql_overtime = "SELECT ot.*, e.first_name, e.middle_name, e.last_name
-                   FROM overtime ot
-                   INNER JOIN employee e ON ot.employee_id = e.employee_id
-                   WHERE ot.employee_id = :loggedInId
-                   ORDER BY ot.date_created DESC";
-
-    $stmt_overtime = $pdo->prepare($sql_overtime);
-    $stmt_overtime->bindValue(':loggedInId', $_SESSION['employee_id'], PDO::PARAM_INT);
-    $stmt_overtime->execute();
-    $overtimeRequests = $stmt_overtime->fetchAll(PDO::FETCH_ASSOC);
+    $sql_leaves = "SELECT lr.*, e.first_name, e.middle_name, e.last_name
+                   FROM leave_request lr
+                   INNER JOIN employee e ON lr.employee_id = e.employee_id
+                   WHERE e.team_leader_id = :loggedInTeamLeaderId
+                   ORDER BY lr.date_created DESC";
+    $stmt_leaves = $pdo->prepare($sql_leaves);
+    $stmt_leaves->bindValue(':loggedInTeamLeaderId', $_SESSION['employee_id'], PDO::PARAM_INT);
+    $stmt_leaves->execute();
+    $leaveRequests = $stmt_leaves->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "Error fetching overtime data: " . $e->getMessage();
+    echo "Error fetching employee data: " . $e->getMessage();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['approval'])) {
+    $sql = "UPDATE leave_request SET tl_approval = :tl_approval WHERE leave_id = :leave_id";
+    $stmt_update = $pdo->prepare($sql);
+    $stmt_update->execute([
+        ':tl_approval' => $_POST['approval'] === 'approve' ? 'Approved' : 'Rejected',
+        ':leave_id' => $_POST['leave_id']
+    ]);
+    header("Location: tl_leave_requests.php");
+    exit();
 }
 
 $searchQuery = "";
 if (isset($_GET['search']) && !empty($_GET['search'])) {
     $searchQuery = trim($_GET['search']);
     try {
-        $sql_search = "SELECT ot.*, e.first_name, e.middle_name, e.last_name
-                       FROM overtime ot
-                       INNER JOIN employee e ON ot.employee_id = e.employee_id
-                       WHERE ot.employee_id = :loggedInId
+        $sql_search = "SELECT lr.*, e.first_name, e.middle_name, e.last_name
+                       FROM leave_request lr
+                       INNER JOIN employee e ON lr.employee_id = e.employee_id
+                       WHERE e.team_leader_id = :loggedInTeamLeaderId
                        AND (
                            e.first_name LIKE :searchQuery 
                            OR e.middle_name LIKE :searchQuery 
                            OR e.last_name LIKE :searchQuery 
-                           OR ot.ot_type LIKE :searchQuery 
-                           OR ot.status LIKE :searchQuery
+                           OR lr.leave_type LIKE :searchQuery 
+                           OR lr.status LIKE :searchQuery
                        )
                        ORDER BY lr.date_created DESC";
         $stmt_search = $pdo->prepare($sql_search);
-        $stmt_search->bindParam(':loggedInId', $_SESSION['employee_id'], PDO::PARAM_INT);
+        $stmt_search->bindParam(':loggedInTeamLeaderId', $_SESSION['employee_id'], PDO::PARAM_INT);
         $searchTerm = "%$searchQuery%";
         $stmt_search->bindParam(':searchQuery', $searchTerm, PDO::PARAM_STR);
         $stmt_search->execute();
-        $overtimeRequests = $stmt_search->fetchAll(PDO::FETCH_ASSOC);
+        $leaveRequests = $stmt_search->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         error_log("Database error: " . $e->getMessage());
         die("An error occurred. Please try again later.");
     }
-}
-
-function calculateHoursDifference($start_time, $end_time)
-{
-    $start = new DateTime($start_time);
-    $end = new DateTime($end_time);
-
-    $interval = $start->diff($end);
-    $hours = $interval->h + ($interval->days * 24) + ($interval->i / 60);
-
-    return round($hours, 2);
 }
 ?>
 
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($title) ? $title : 'Admin'; ?> | Overtime Requests</title>
+    <title>Team Leader | Leave Requests</title>
     <link rel="stylesheet" href="style.css" />
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
-
 </head>
-
-<body class="font-medium">
+<body>
     <div id="admin">
         <div class="dashboard-background">
             <div class="dashboard-container">
@@ -101,183 +94,120 @@ function calculateHoursDifference($start_time, $end_time)
                     <?php include('includes/navigation.php') ?>
                 </div>
                 <div class="dashboard-content">
-                    <div class="dashboard-content-item1">
-                        <div class="dashboard-content-header font-black">
-                            <h1>OVERTIME REQUESTS</h1>
-                        </div>
-                        <div id="logout-admin" class="dashboard-content-header font-medium">
-                            <?php include('includes/header-avatar.php') ?>
-                        </div>
+                    <div class="dashboard-content-header">
+                        <h1>LEAVE REQUESTS</h1>
+                        <?php include('includes/header-avatar.php') ?>
                     </div>
 
-                    <div class="employee-main-content">
-                        <div class="employee-header">
-                            <div class="employee-header-div">
-                                <form method="GET" action="overtime.php">
+                    <form method="GET" action="tl_leave_requests.php">
+                        <input type="text" id="employee_search" name="search" placeholder="Search leave requests" value="<?php echo htmlspecialchars($searchQuery); ?>">
+                        <button type="submit"><img src="assets/images/icons/search-icon.png" alt="Search" width="32" height="32"></button>
+                        <?php if (!empty($searchQuery)): ?>
+                            <a href="tl_leave_requests.php">Clear Search</a>
+                        <?php endif; ?>
+                    </form>
 
-                                    <input type="text" id="employee_search" type="employee_search" name="search"
-                                        placeholder="Search overtime requests"
-                                        value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
-                                    <button type="submit" style="margin: 0px">
-                                        <img class="img-resize" height="32px" width="32px"
-                                            src="assets/images/icons/search-icon.png" alt="Search">
-                                    </button>
-                                    <div> <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
-                                            <a href="overtime.php" class="clear-search">Clear Search</a>
-                                        <?php endif; ?>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-
-                        <div class="employee-display" style="overflow: auto;">
-                            <table class="employee-table">
-                                <thead class="font-bold">
-                                    <tr>
-
-                                        <th>Type</th>
-                                        <th>Start Date & Time</th>
-                                        <th>End Date & Time</th>
-                                        <th>Duration</th>
-                                        <th>Reason</th>
-                                        <th>TL Approval</th>
-                                        <th>Approval Date</th>
-                                        <th>HR Manager Approval</th>
-                                        <th>Approval Date</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="font-medium">
-                                    <?php if (!empty($overtimeRequests)): ?>
-                                        <?php foreach ($overtimeRequests as $overtimeRequest): ?>
-                                            <tr id="row-<?php echo $overtimeRequest['employee_id'] ?>"
-                                                style="white-space: nowrap;"
-                                                data-user='<?php echo json_encode($overtimeRequest); ?>'
-                                                class="employee-display-list text-center">
-                                                <!-- <td style="text-align: center;">
-                                                    <?php echo $overtimeRequest['first_name'] . " " . $overtimeRequest['last_name'] ?>
-                                                </td> -->
-                                                <td>
-                                                    <?php echo htmlspecialchars($overtimeRequest['ot_type']); ?>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <?php echo formatDate($overtimeRequest['start_time']); ?>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <?php echo formatDate($overtimeRequest['end_time']); ?>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <?php
-                                                    echo calculateHoursDifference($overtimeRequest['start_time'], $overtimeRequest['end_time']) . " hours";
-                                                    ?>
-                                                <td><?php echo htmlspecialchars($overtimeRequest['ot_reason']); ?></td>
-                                                <td style="text-align: center;">
-                                                    <?php
-                                                    $tl_status = htmlspecialchars($overtimeRequest['tl_approval']);
-                                                    switch ($tl_status) {
-                                                        case 'Approved':
-                                                            echo "<div style='width:80px; margin: 0 auto;' class='employee-status employee-status-active'>Approved</div>";
-                                                            break;
-                                                        case 'Rejected':
-                                                            echo "<div style='width:80px; margin: 0 auto;' class='employee-status employee-status-inactive'>Rejected</div>";
-                                                            break;
-                                                        case 'Pending':
-                                                            echo "<div style='width:80px; margin: 0 auto;' class='employee-status employee-status-resigned'>Pending</div>";
-                                                            break;
-                                                        default:
-                                                            echo "<div>Unknown Status</div>";
-                                                            break;
-                                                    }
-                                                    ?>
-                                                </td>
-
-                                                <td style="text-align: center;">
-                                                    <?php
-                                                    $rawDate = $overtimeRequest['tl_approval_date'];
-                                                    echo formatDate($rawDate);
-                                                    ?>
-                                                </td>
-
-                                                <td style="text-align: center;">
-                                                    <?php
-                                                    $hr_manager = htmlspecialchars($overtimeRequest['hr_manager_approval']);
-                                                    switch ($hr_manager) {
-                                                        case 'Approved':
-                                                            echo "<div style='width: 80px; margin: 0 auto;' class='employee-status employee-status-active'>Approved</div>";
-                                                            break;
-                                                        case 'Rejected':
-                                                            echo "<div style='width: 80px; margin: 0 auto;' class='employee-status employee-status-inactive'>Rejected</div>";
-                                                            break;
-                                                        case 'Pending':
-                                                            echo "<div style='width: 80px; margin: 0 auto;' class='employee-status employee-status-resigned'>Pending</div>";
-                                                            break;
-                                                        default:
-                                                            echo "<div>Unknown Status</div>";
-                                                            break;
-                                                    }
-                                                    ?>
-                                                </td>
-
-                                                <td style="text-align: center;">
-                                                    <?php
-                                                    $rawDate = $overtimeRequest['hr_manager_approval_date'];
-                                                    echo formatDate($rawDate);
-                                                    ?>
-                                                </td>
-
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <?php
-                                                    $status = htmlspecialchars($overtimeRequest['status']);
-                                                    switch ($status) {
-                                                        case 'Approved':
-                                                            echo "<div style='width: 80px; margin: 0 auto;' class='employee-status employee-status-active'>Approved</div>";
-                                                            break;
-                                                        case 'Rejected':
-                                                            echo "<div style='width: 80px; margin: 0 auto;' class='employee-status employee-status-inactive'>Rejected</div>";
-                                                            break;
-                                                        case 'Pending':
-                                                            echo "<div style='width: 80px; margin: 0 auto;' class='employee-status employee-status-resigned'>Pending</div>";
-                                                            break;
-                                                        default:
-                                                            echo "<div>Unknown Status</div>";
-                                                            break;
-                                                    }
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="9">No overtime requests found.</td>
+                    <div class="employee-display" style="overflow:auto;">
+                        <table class="employee-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th><th>Type</th><th>Start</th><th>End</th><th>Duration</th>
+                                    <th>Reason</th><th>TL Approval</th><th>TL Date</th><th>HR Approval</th><th>HR Date</th><th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($leaveRequests)): ?>
+                                    <?php foreach ($leaveRequests as $leaveRequest): ?>
+                                        <tr id="row-<?php echo $leaveRequest['employee_id']; ?>" onclick="openModal(<?php echo $leaveRequest['employee_id']; ?>)" data-user='<?php echo json_encode($leaveRequest); ?>'>
+                                            <td><?php echo $leaveRequest['first_name'] . ' ' . $leaveRequest['last_name']; ?></td>
+                                            <td><?php echo htmlspecialchars($leaveRequest['leave_type']); ?></td>
+                                            <td><?php echo formatDate($leaveRequest['start_date']); ?></td>
+                                            <td><?php echo formatDate($leaveRequest['end_date']); ?></td>
+                                            <td>
+                                                <?php
+                                                $start = new DateTime($leaveRequest['start_date']);
+                                                $end = new DateTime($leaveRequest['end_date']);
+                                                echo $start && $end ? $start->diff($end)->days + 1 . ' days' : 'N/A';
+                                                ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($leaveRequest['reason']); ?></td>
+                                            <td><?php echo $leaveRequest['tl_approval']; ?></td>
+                                            <td><?php echo formatDate($leaveRequest['tl_approval_date']); ?></td>
+                                            <td><?php echo $leaveRequest['hr_manager_approval']; ?></td>
+                                            <td><?php echo formatDate($leaveRequest['hr_manager_approval_date']); ?></td>
+                                            <td><?php echo $leaveRequest['status']; ?></td>
                                         </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-
-                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr><td colspan="11">No leave requests found.</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Modal Dialog -->
+        <dialog id="myModal">
+            <form method="POST" class="modal-form">
+                <button type="button" onclick="closeModal()">X</button>
+                <input type="hidden" name="leave_id">
 
-        <script>
+                <p>Employee: <input name="employee" readonly></p>
+                <p>Start Date: <input name="lq_start_date" readonly></p>
+                <p>End Date: <input name="lq_end_date" readonly></p>
+                <p>Duration: <input name="duration" readonly></p>
+                <p>Reason: <textarea name="lr_reason" readonly></textarea></p>
+                <p>Status: <input name="status" readonly></p>
+                <p>TL Approval: <input name="tl_approval" readonly></p>
+                <p>TL Date: <input name="tl_approval_date" readonly></p>
+                <p>HR Approval: <input name="hr_manager_approval" readonly></p>
+                <p>HR Date: <input name="hr_manager_approval_date" readonly></p>
 
+                <button type="submit" name="approval" value="approve">Approve</button>
+                <button type="submit" name="approval" value="reject">Reject</button>
+            </form>
+        </dialog>
+    </div>
 
-            function formatDate(dateStr) {
-                if (!dateStr) return "N/A";
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-            }
+<script>
+    const modal = document.getElementById('myModal');
 
-            function calcDuration(start, end) {
-                const s = new Date(start);
-                const e = new Date(end);
-                return ((e - s) / (1000 * 60 * 60 * 24)) + 1;
-            }
-        </script>
+    function openModal(id) {
+        const row = document.getElementById(`row-${id}`);
+        const data = JSON.parse(row.dataset.user);
+
+        document.querySelector('input[name="leave_id"]').value = data.leave_id;
+        document.querySelector('input[name="employee"]').value = data.first_name + ' ' + data.last_name;
+        document.querySelector('input[name="lq_start_date"]').value = formatDate(data.start_date);
+        document.querySelector('input[name="lq_end_date"]').value = formatDate(data.end_date);
+        document.querySelector('input[name="duration"]').value = calcDuration(data.start_date, data.end_date);
+        document.querySelector('textarea[name="lr_reason"]').value = data.reason;
+        document.querySelector('input[name="status"]').value = data.status;
+        document.querySelector('input[name="tl_approval"]').value = data.tl_approval;
+        document.querySelector('input[name="tl_approval_date"]').value = formatDate(data.tl_approval_date);
+        document.querySelector('input[name="hr_manager_approval"]').value = data.hr_manager_approval;
+        document.querySelector('input[name="hr_manager_approval_date"]').value = formatDate(data.hr_manager_approval_date);
+
+        modal.showModal();
+    }
+
+    function closeModal() {
+        modal.close();
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return "N/A";
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    function calcDuration(start, end) {
+        const s = new Date(start);
+        const e = new Date(end);
+        return ((e - s) / (1000 * 60 * 60 * 24)) + 1;
+    }
+</script>
 </body>
-
 </html>
