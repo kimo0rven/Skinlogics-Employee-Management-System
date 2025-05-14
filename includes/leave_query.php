@@ -3,7 +3,6 @@
 include 'database.php';
 header('Content-Type: application/json');
 
-// Validate that all required parameters have been provided
 if (!isset($_GET['employee_id']) || empty($_GET['employee_id'])) {
     echo json_encode(['error' => 'Employee ID is required']);
     exit;
@@ -23,8 +22,26 @@ $employee_id = $_GET['employee_id'];
 $start_date = $_GET['start_date'];
 $end_date = $_GET['end_date'];
 
+function calculateLeaveDays($start_date, $end_date)
+{
+    $start = new DateTime($start_date);
+    $end = new DateTime($end_date);
+
+    $interval = $start->diff($end);
+
+    return $interval->days + 1;
+}
+
 try {
-    $query = "SELECT * FROM attendance WHERE employee_id = :employee_id AND date_created BETWEEN :start_date AND :end_date";
+    $query = "SELECT * FROM leave_request 
+          WHERE employee_id = :employee_id 
+          AND status = 'Approved'
+          AND (
+              (start_date BETWEEN :start_date AND :end_date)
+              OR (end_date BETWEEN :start_date AND :end_date)
+              OR (:start_date BETWEEN start_date AND end_date)
+              OR (:end_date BETWEEN start_date AND end_date)
+          )";
     $stmt = $pdo->prepare($query);
     $stmt->execute([
         'employee_id' => $employee_id,
@@ -32,20 +49,20 @@ try {
         'end_date' => $end_date,
     ]);
 
-    $attendanceRecords = $stmt->fetchAll();
+    $Records = $stmt->fetchAll();
 
-    $totalWorkedHours = 0.00;
+    $totalDays = 0;
 
-    foreach ($attendanceRecords as $record) {
-        if (isset($record['worked_hours']) && is_numeric($record['worked_hours'])) {
-            $totalWorkedHours += floatval($record['worked_hours']);
+    foreach ($Records as $record) {
+        if (isset($record['start_date'], $record['end_date'])) {
+            $totalDays += calculateLeaveDays($record['start_date'], $record['end_date']);
         }
     }
 
     $result = [
-        'count' => count($attendanceRecords),
-        'records' => $attendanceRecords,
-        'totalHours' => $totalWorkedHours
+        'count' => count($Records),
+        // 'records' => $Records,
+        'totalDays' => $totalDays
     ];
     echo json_encode($result);
 } catch (PDOException $e) {

@@ -1854,7 +1854,6 @@ cursor: pointer;
 .result-item {
 	position: relative;
 	padding: 10px;
-	background-color: grey;
 	cursor: pointer;
 	z-index: 19999;
 }

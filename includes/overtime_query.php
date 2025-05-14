@@ -23,8 +23,23 @@ $employee_id = $_GET['employee_id'];
 $start_date = $_GET['start_date'];
 $end_date = $_GET['end_date'];
 
+function calculateDecimalHours($start_time, $end_time)
+{
+    $start_timestamp = strtotime($start_time);
+    $end_timestamp = strtotime($end_time);
+
+    $diff_seconds = $end_timestamp - $start_timestamp;
+
+    $hours = $diff_seconds / 3600;
+
+    return round($hours, 2);
+}
+
 try {
-    $query = "SELECT * FROM attendance WHERE employee_id = :employee_id AND date_created BETWEEN :start_date AND :end_date";
+    $query = "SELECT * FROM overtime 
+          WHERE employee_id = :employee_id 
+          AND overtime_date BETWEEN :start_date AND :end_date 
+          AND status = 'Approved'";
     $stmt = $pdo->prepare($query);
     $stmt->execute([
         'employee_id' => $employee_id,
@@ -32,20 +47,22 @@ try {
         'end_date' => $end_date,
     ]);
 
-    $attendanceRecords = $stmt->fetchAll();
+    $Records = $stmt->fetchAll();
 
-    $totalWorkedHours = 0.00;
+    $totalHours = 0.00;
 
-    foreach ($attendanceRecords as $record) {
-        if (isset($record['worked_hours']) && is_numeric($record['worked_hours'])) {
-            $totalWorkedHours += floatval($record['worked_hours']);
+    foreach ($Records as $record) {
+        if (isset($record['start_time'], $record['end_time'])) {
+
+            $totalHours += calculateDecimalHours($record['start_time'], $record['end_time']);
+
         }
     }
 
     $result = [
-        'count' => count($attendanceRecords),
-        'records' => $attendanceRecords,
-        'totalHours' => $totalWorkedHours
+        'count' => count($Records),
+        // 'records' => $Records,
+        'totalHours' => $totalHours
     ];
     echo json_encode($result);
 } catch (PDOException $e) {
