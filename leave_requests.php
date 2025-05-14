@@ -11,7 +11,7 @@ $user_account_id = (int) $_SESSION["user_account_id"];
 include 'includes/database.php';
 include 'config.php';
 
-function formatDate($rawDate, $format = 'M d, Y h:i A')
+function formatDate($rawDate, $format = 'M d, Y')
 {
     if (!empty($rawDate)) {
         try {
@@ -26,11 +26,11 @@ function formatDate($rawDate, $format = 'M d, Y h:i A')
 
 $overtimeRequests = [];
 try {
-    $sql_overtime = "SELECT ot.*, e.first_name, e.middle_name, e.last_name
-                   FROM overtime ot
-                   INNER JOIN employee e ON ot.employee_id = e.employee_id
-                   WHERE ot.employee_id = :loggedInId
-                   ORDER BY ot.date_created DESC";
+    $sql_overtime = "SELECT lr.*, e.first_name, e.middle_name, e.last_name
+                   FROM leave_request lr
+                   INNER JOIN employee e ON lr.employee_id = e.employee_id
+                   WHERE lr.employee_id = :loggedInId
+                   ORDER BY lr.date_created DESC";
 
     $stmt_overtime = $pdo->prepare($sql_overtime);
     $stmt_overtime->bindValue(':loggedInId', $_SESSION['employee_id'], PDO::PARAM_INT);
@@ -44,16 +44,16 @@ $searchQuery = "";
 if (isset($_GET['search']) && !empty($_GET['search'])) {
     $searchQuery = trim($_GET['search']);
     try {
-        $sql_search = "SELECT ot.*, e.first_name, e.middle_name, e.last_name
-                       FROM overtime ot
-                       INNER JOIN employee e ON ot.employee_id = e.employee_id
-                       WHERE ot.employee_id = :loggedInId
+        $sql_search = "SELECT lr.*, e.first_name, e.middle_name, e.last_name
+                       FROM leave_request lr
+                       INNER JOIN employee e ON lr.employee_id = e.employee_id
+                       WHERE lr.employee_id = :loggedInId
                        AND (
                            e.first_name LIKE :searchQuery 
                            OR e.middle_name LIKE :searchQuery 
                            OR e.last_name LIKE :searchQuery 
-                           OR ot.ot_type LIKE :searchQuery 
-                           OR ot.status LIKE :searchQuery
+                           OR lr.leave_type LIKE :searchQuery 
+                           OR lr.status LIKE :searchQuery
                        )
                        ORDER BY lr.date_created DESC";
         $stmt_search = $pdo->prepare($sql_search);
@@ -87,7 +87,7 @@ function calculateHoursDifference($start_time, $end_time)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($title) ? $title : 'Admin'; ?> | Overtime Requests</title>
+    <title><?php echo isset($title) ? $title : 'Admin'; ?> | Leave Requests</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 
@@ -103,7 +103,7 @@ function calculateHoursDifference($start_time, $end_time)
                 <div class="dashboard-content">
                     <div class="dashboard-content-item1">
                         <div class="dashboard-content-header font-black">
-                            <h1>OVERTIME REQUESTS</h1>
+                            <h1>LEAVE REQUESTS</h1>
                         </div>
                         <div id="logout-admin" class="dashboard-content-header font-medium">
                             <?php include('includes/header-avatar.php') ?>
@@ -113,17 +113,17 @@ function calculateHoursDifference($start_time, $end_time)
                     <div class="employee-main-content">
                         <div class="employee-header">
                             <div class="employee-header-div">
-                                <form method="GET" action="overtime.php">
+                                <form method="GET" action="leave_requests.php">
 
                                     <input type="text" id="employee_search" type="employee_search" name="search"
-                                        placeholder="Search overtime requests"
+                                        placeholder="Search leave requests"
                                         value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
                                     <button type="submit" style="margin: 0px">
                                         <img class="img-resize" height="32px" width="32px"
                                             src="assets/images/icons/search-icon.png" alt="Search">
                                     </button>
                                     <div> <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
-                                            <a href="overtime.php" class="clear-search">Clear Search</a>
+                                            <a href="leave_requests.php" class="clear-search">Clear Search</a>
                                         <?php endif; ?>
                                     </div>
                                 </form>
@@ -137,8 +137,8 @@ function calculateHoursDifference($start_time, $end_time)
                                     <tr>
 
                                         <th>Type</th>
-                                        <th>Start Date & Time</th>
-                                        <th>End Date & Time</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
                                         <th>Duration</th>
                                         <th>Reason</th>
                                         <th>TL Approval</th>
@@ -159,19 +159,27 @@ function calculateHoursDifference($start_time, $end_time)
                                                     <?php echo $overtimeRequest['first_name'] . " " . $overtimeRequest['last_name'] ?>
                                                 </td> -->
                                                 <td>
-                                                    <?php echo htmlspecialchars($overtimeRequest['ot_type']); ?>
+                                                    <?php echo htmlspecialchars($overtimeRequest['leave_type']); ?>
                                                 </td>
                                                 <td style="text-align: center;">
-                                                    <?php echo formatDate($overtimeRequest['start_time']); ?>
+                                                    <?php echo formatDate($overtimeRequest['start_date']); ?>
                                                 </td>
                                                 <td style="text-align: center;">
-                                                    <?php echo formatDate($overtimeRequest['end_time']); ?>
+                                                    <?php echo formatDate($overtimeRequest['end_date']); ?>
                                                 </td>
                                                 <td style="text-align: center;">
                                                     <?php
-                                                    echo calculateHoursDifference($overtimeRequest['start_time'], $overtimeRequest['end_time']) . " hours";
+                                                    if (!empty($overtimeRequest['start_date']) && !empty($overtimeRequest['end_date'])) {
+                                                        $startDate = new DateTime($overtimeRequest['start_date']);
+                                                        $endDate = new DateTime($overtimeRequest['end_date']);
+                                                        $interval = $startDate->diff($endDate);
+                                                        $days = $interval->days + 1;
+                                                        echo $days . ' ' . ($days === 1 ? 'day' : 'days');
+                                                    } else {
+                                                        echo 'N/A';
+                                                    }
                                                     ?>
-                                                <td><?php echo htmlspecialchars($overtimeRequest['ot_reason']); ?></td>
+                                                <td><?php echo htmlspecialchars($overtimeRequest['reason']); ?></td>
                                                 <td style="text-align: center;">
                                                     <?php
                                                     $tl_status = htmlspecialchars($overtimeRequest['tl_approval']);
