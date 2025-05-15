@@ -25,7 +25,6 @@ if ($_SESSION['role_id'] == 1) {
         'leave_requests.php' => "Leave_Requests",
         'overtime.php' => 'Overtime'
 
-
     ];
 } else if ($_SESSION['role_id'] == 3) {
     $navigationItems = [
@@ -47,6 +46,7 @@ if ($_SESSION['isTeamLeader'] || $_SESSION['role_id'] == 1) {
     $navigationItems['tl_overtime.php'] = 'Team_Leader_Overtime_Approval';
 
 }
+
 ?>
 
 <div class="navigation-container">

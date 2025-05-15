@@ -482,498 +482,496 @@ try {
                 </div>
             </div>
         </div>
-
-        <dialog style="border-radius: 10px; border: 1px solid #D1D1D1;" id="myModal">
-            <form action="" method="POST" class="flex flex-column gap-20">
-                <div>
-                    <div id="modal_close_btn" style="position: absolute; top: 10px; right: 10px; cursor: pointer;"
-                        onclick="closeModal()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18 6L6 18" stroke="#333" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <path d="M6 6L18 18" stroke="#333" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-capitalize font-bold" style="font-size: 32px;margin: 0">Edit Employee Details</p>
-                    </div>
-                </div>
-                <div id="modal-content" class="employee-detail-container">
-                    <div class="employee-detail-container-group gap-20 font-medium">
-                        <div clas="flex flex-row gap-20">
-                            <div class="flex flex-row gap-20">
-                                <div class="employee-detail-fields">
-                                    <label for="employee_id">Employee ID</label>
-                                    <input type="text" name="employee_id" readonly>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="first_name">First Name</label>
-                                    <input type="text" name="first_name">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="middle_name">Middle Name</label>
-                                    <input type="text" name="middle_name">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="last_name">Last Name</label>
-                                    <input type="text" name="last_name">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20">
-                                <div class="employee-detail-fields">
-                                    <label for="gender">Street</label>
-                                    <input type="text" name="street">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="barangay">Brangay</label>
-                                    <input type="text" name="barangay">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="city">City</label>
-                                    <input type="text" name="city">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="province">Province</label>
-                                    <input type="text" name="province">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20 space-between">
-                                <div class="employee-detail-fields">
-                                    <label for="mobile">Mobile</label>
-                                    <input type="text" name="mobile">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="email">Email</label>
-                                    <input type="email" name="email">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="dob">Date of Birth</label>
-                                    <input type="date" name="dob">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="civil_status">Civil Status</label>
-                                    <Select name="civil_status">
-                                        <option value="Single" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Single' ? 'selected' : ''; ?>>Single</option>
-                                        <option value="Married" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Married' ? 'selected' : ''; ?>>Married</option>
-                                        <option value="Widowed" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Widowed' ? 'selected' : ''; ?>>Widowed</option>
-                                        <option value="Seperated" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Seperated' ? 'selected' : ''; ?>>Seperated
-                                        </option>
-                                    </Select>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="gender">Gender</label>
-                                    <Select name="gender">
-                                        <option value="Male" <?php echo isset($employee['gender']) && $employee['gender'] == 'Male' ? 'selected' : ''; ?>>Male</option>
-                                        <option value="Female" <?php echo isset($employee['gender']) && $employee['gender'] == 'Female' ? 'selected' : ''; ?>>Female</option>
-                                        <option value="Other" <?php echo isset($employee['gender']) && $employee['gender'] == 'Other' ? 'selected' : ''; ?>>Other</option>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20 flex-start">
-
-                                <div class="employee-detail-fields">
-                                    <label for="status">Status</label>
-                                    <Select name="status">
-                                        <option value="Active" <?php echo isset($employee['status']) && $employee['status'] == 'Active' ? 'selected' : ''; ?>>Active</option>
-                                        <option value="Inactive" <?php echo isset($employee['status']) && $employee['status'] == 'Inactive' ? 'selected' : ''; ?>>Inactive</option>
-                                        <option value="Terminated" <?php echo isset($employee['status']) && $employee['status'] == 'Terminated' ? 'selected' : ''; ?>>Terminated</option>
-                                        <option value="Resigned" <?php echo isset($employee['status']) && $employee['status'] == 'Resigned' ? 'selected' : ''; ?>>Resigned</option>
-                                    </Select>
-                                </div>
-
-
-
-                                <div class="employee-detail-fields">
-                                    <label for="hire_date">Hire Date</label>
-                                    <input type="date" name="hire_date">
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="vl">
-                        </div>
-                        <div clas="flex flex-row">
-
-                            <div class="flex flex-row gap-20 space-between">
-                                <div class="employee-detail-fields">
-                                    <label for="sss_number">SSS No.</label>
-                                    <input type="text" name="sss_number">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="philhealth_number">Philhealth/Malasakit No.</label>
-                                    <input type="text" name="philhealth_number">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="tin_number">Tin Number</label>
-                                    <input type="text" name="tin_number">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="pagibig_number">Pagibig No.</label>
-                                    <input type="text" name="pagibig_number">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20 flex-start">
-                                <div class="employee-detail-fields">
-                                    <label for="emergency_contact_name">Emergency Contact Name</label>
-                                    <input type="text" name="emergency_contact_name">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="emergency_contact_number">Emergency Contact Number</label>
-                                    <input type="text" name="emergency_contact_number">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="emergency_contact_relationship">Emergency Contact Relationship</label>
-                                    <input type="text" name="emergency_contact_relationship">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20">
-                                <div class="employee-detail-fields">
-                                    <label for="job_id" style="display:block; margin-bottom: 5px;">Job</label>
-                                    <select name="job_id" id="job_id">
-                                        <?php
-                                        foreach ($jobs as $job) {
-                                            echo '<option value="' . htmlspecialchars($job['job_id']) . '">' . htmlspecialchars($job['job_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="department_id"
-                                        style="display:block; margin-bottom: 5px;">Department</label>
-                                    <select name="department_id" id="department_id">
-                                        <?php
-                                        foreach ($departments as $department) {
-                                            echo '<option value="' . htmlspecialchars($department['department_id']) . '">' . htmlspecialchars($department['department_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20">
-                                <div class="employee-detail-fields">
-                                    <label for="manager_id" style="display:block; margin-bottom: 5px;">Manager</label>
-                                    <select name="manager_id" id="manager_id" style="pointer-events: none;">
-                                        <option value="0">No Manager</option>
-                                        <?php
-                                        foreach ($employees as $employee) {
-                                            echo '<option value="' . htmlspecialchars($employee['employee_id']) . '">' . htmlspecialchars($employee['first_name'] . " " . $employee['last_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="team_leader_id" style="display:block; margin-bottom: 5px;">Team
-                                        Leader</label>
-                                    <select name="team_leader_id" id="team_leader_id" style="pointer-events: none;">
-                                        <option value="0">No Team Leader</option>
-
-                                        <?php
-                                        foreach ($employees as $employee) {
-                                            echo '<option value="' . htmlspecialchars($employee['employee_id']) . '">' . htmlspecialchars($employee['first_name'] . " " . $employee['last_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="role_id" style="display:block; margin-bottom: 5px;">Acount
-                                        Role</label>
-                                    <select name="role_id" id="role_id">
-                                        <option>No Role</option>
-                                        <?php
-                                        foreach ($roles as $role) {
-                                            echo '<option value="' . htmlspecialchars($role['role_id']) . '">' . htmlspecialchars($role['role_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                </div>
-                <div class="employee-detail-edit-button-container">
-
-                    <div><button class="employee-detail-edit-button" type="submit" name="editEmployee">Edit Employee
-                        </button></div>
-                </div>
-            </form>
-        </dialog>
-
-        <dialog style="border-radius: 10px; border: 1px solid #D1D1D1;" id="add_employee_modal">
-            <form action="" method="POST" class="flex flex-column gap-20">
-                <div>
-                    <div id="modal_close_btn" style="position: absolute; top: 10px; right: 10px; cursor: pointer;"
-                        onclick="closeModal()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18 6L6 18" stroke="#333" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <path d="M6 6L18 18" stroke="#333" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-capitalize font-bold" style="font-size: 32px;margin: 0">New Employee</p>
-                    </div>
-                </div>
-                <div id="modal-content" class="employee-detail-container">
-                    <div class="employee-detail-container-group gap-20 font-medium">
-                        <div clas="flex flex-row gap-20">
-                            <div class="flex flex-row gap-20">
-
-                                <div class="employee-detail-fields">
-                                    <label for="first_name">First Name</label>
-                                    <input type="text" name="first_name">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="middle_name">Middle Name</label>
-                                    <input type="text" name="middle_name">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="last_name">Last Name</label>
-                                    <input type="text" name="last_name">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20">
-                                <div class="employee-detail-fields">
-                                    <label for="gender">Street</label>
-                                    <input type="text" name="street">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="barangay">Brangay</label>
-                                    <input type="text" name="barangay">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="city">City</label>
-                                    <input type="text" name="city">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="province">Province</label>
-                                    <input type="text" name="province">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20 space-between">
-                                <div class="employee-detail-fields">
-                                    <label for="mobile">Mobile</label>
-                                    <input type="text" name="mobile">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="email">Email</label>
-                                    <input type="email" name="email">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="dob">Date of Birth</label>
-                                    <input type="date" name="dob">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="civil_status">Civil Status</label>
-                                    <Select name="civil_status">
-                                        <option value="Single" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Single' ? 'selected' : ''; ?>>Single</option>
-                                        <option value="Married" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Married' ? 'selected' : ''; ?>>Married</option>
-                                        <option value="Widowed" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Widowed' ? 'selected' : ''; ?>>Widowed</option>
-                                        <option value="Seperated" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Seperated' ? 'selected' : ''; ?>>Seperated
-                                        </option>
-                                    </Select>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="gender">Gender</label>
-                                    <Select name="gender">
-                                        <option value="Male" <?php echo isset($employee['gender']) && $employee['gender'] == 'Male' ? 'selected' : ''; ?>>Male</option>
-                                        <option value="Female" <?php echo isset($employee['gender']) && $employee['gender'] == 'Female' ? 'selected' : ''; ?>>Female</option>
-                                        <option value="Other" <?php echo isset($employee['gender']) && $employee['gender'] == 'Other' ? 'selected' : ''; ?>>Other</option>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20 flex-start">
-
-                                <div class="employee-detail-fields">
-                                    <label for="status">Status</label>
-                                    <Select name="status">
-                                        <option value="Active" <?php echo isset($employee['status']) && $employee['status'] == 'Active' ? 'selected' : ''; ?>>Active</option>
-                                        <option value="Inactive" <?php echo isset($employee['status']) && $employee['status'] == 'Inactive' ? 'selected' : ''; ?>>Inactive</option>
-                                        <option value="Terminated" <?php echo isset($employee['status']) && $employee['status'] == 'Terminated' ? 'selected' : ''; ?>>Terminated</option>
-                                        <option value="Resigned" <?php echo isset($employee['status']) && $employee['status'] == 'Resigned' ? 'selected' : ''; ?>>Resigned</option>
-                                    </Select>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="hire_date">Hire Date</label>
-                                    <input type="date" name="hire_date">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="username">Username</label>
-                                    <input type="text" name="username">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="password">Password</label>
-                                    <input type="password" name="password">
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="vl">
-                        </div>
-                        <div clas="flex flex-row">
-
-                            <div class="flex flex-row gap-20 space-between">
-                                <div class="employee-detail-fields">
-                                    <label for="sss_number">SSS No.</label>
-                                    <input type="text" name="sss_number">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="philhealth_number">Philhealth/Malasakit No.</label>
-                                    <input type="text" name="philhealth_number">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="tin_number">Tin Number</label>
-                                    <input type="text" name="tin_number">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="pagibig_number">Pagibig No.</label>
-                                    <input type="text" name="pagibig_number">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20 flex-start">
-                                <div class="employee-detail-fields">
-                                    <label for="emergency_contact_name">Emergency Contact Name</label>
-                                    <input type="text" name="emergency_contact_name">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="emergency_contact_number">Emergency Contact Number</label>
-                                    <input type="text" name="emergency_contact_number">
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="emergency_contact_relationship">Emergency Contact Relationship</label>
-                                    <input type="text" name="emergency_contact_relationship">
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20">
-                                <div class="employee-detail-fields">
-                                    <label for="job_id" style="display:block; margin-bottom: 5px;">Job</label>
-                                    <select name="job_id" id="job_id">
-                                        <?php
-                                        foreach ($jobs as $job) {
-                                            echo '<option value="' . htmlspecialchars($job['job_id']) . '">' . htmlspecialchars($job['job_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="department_id"
-                                        style="display:block; margin-bottom: 5px;">Department</label>
-                                    <select name="department_id" id="department_id">
-                                        <?php
-                                        foreach ($departments as $department) {
-                                            echo '<option value="' . htmlspecialchars($department['department_id']) . '">' . htmlspecialchars($department['department_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-row gap-20">
-                                <div class="employee-detail-fields">
-                                    <label for="manager_id" style="display:block; margin-bottom: 5px;">Manager</label>
-                                    <select name="manager_id" id="manager_id">
-                                        <option value="0">No Manager</option>
-                                        <?php
-                                        foreach ($employees as $employee) {
-                                            echo '<option value="' . htmlspecialchars($employee['employee_id']) . '">' . htmlspecialchars($employee['first_name'] . " " . $employee['last_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="team_leader_id" style="display:block; margin-bottom: 5px;">Team
-                                        Leader</label>
-                                    <select name="team_leader_id" id="team_leader_id">
-                                        <option value="0">No Team Leader</option>
-
-                                        <?php
-                                        foreach ($employees as $employee) {
-                                            echo '<option value="' . htmlspecialchars($employee['employee_id']) . '">' . htmlspecialchars($employee['first_name'] . " " . $employee['last_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-
-                                <div class="employee-detail-fields">
-                                    <label for="role_id" style="display:block; margin-bottom: 5px;">Acount
-                                        Role</label>
-                                    <select name="role_id" id="role_id">
-                                        <?php
-                                        foreach ($roles as $role) {
-                                            echo '<option value="' . htmlspecialchars($role['role_id']) . '">' . htmlspecialchars($role['role_name']) . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                </div>
-                <div class="employee-detail-edit-button-container">
-
-                    <div><button class="employee-detail-edit-button" type="submit" name="addEmployee">Add Employee
-                        </button></div>
-                </div>
-            </form>
-        </dialog>
     </div>
+
+    <dialog style="border-radius: 10px; border: 1px solid #D1D1D1;" id="myModal">
+        <form action="" method="POST" class="flex flex-column gap-20">
+            <div>
+                <div id="modal_close_btn" style="position: absolute; top: 10px; right: 10px; cursor: pointer;"
+                    onclick="closeModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18" stroke="#333" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M6 6L18 18" stroke="#333" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-capitalize font-bold" style="font-size: 32px;margin: 0">Edit Employee Details</p>
+                </div>
+            </div>
+            <div id="modal-content" class="employee-detail-container">
+                <div class="employee-detail-container-group gap-20 font-medium">
+                    <div clas="flex flex-row gap-20">
+                        <div class="flex flex-row gap-20">
+                            <div class="employee-detail-fields">
+                                <label for="employee_id">Employee ID</label>
+                                <input type="text" name="employee_id" readonly>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="first_name">First Name</label>
+                                <input type="text" name="first_name">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="middle_name">Middle Name</label>
+                                <input type="text" name="middle_name">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="last_name">Last Name</label>
+                                <input type="text" name="last_name">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20">
+                            <div class="employee-detail-fields">
+                                <label for="gender">Street</label>
+                                <input type="text" name="street">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="barangay">Brangay</label>
+                                <input type="text" name="barangay">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="city">City</label>
+                                <input type="text" name="city">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="province">Province</label>
+                                <input type="text" name="province">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20 space-between">
+                            <div class="employee-detail-fields">
+                                <label for="mobile">Mobile</label>
+                                <input type="text" name="mobile">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="email">Email</label>
+                                <input type="email" name="email">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" name="dob">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="civil_status">Civil Status</label>
+                                <Select name="civil_status">
+                                    <option value="Single" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Single' ? 'selected' : ''; ?>>Single</option>
+                                    <option value="Married" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Married' ? 'selected' : ''; ?>>Married</option>
+                                    <option value="Widowed" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Widowed' ? 'selected' : ''; ?>>Widowed</option>
+                                    <option value="Seperated" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Seperated' ? 'selected' : ''; ?>>Seperated
+                                    </option>
+                                </Select>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="gender">Gender</label>
+                                <Select name="gender">
+                                    <option value="Male" <?php echo isset($employee['gender']) && $employee['gender'] == 'Male' ? 'selected' : ''; ?>>Male</option>
+                                    <option value="Female" <?php echo isset($employee['gender']) && $employee['gender'] == 'Female' ? 'selected' : ''; ?>>Female</option>
+                                    <option value="Other" <?php echo isset($employee['gender']) && $employee['gender'] == 'Other' ? 'selected' : ''; ?>>Other</option>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20 flex-start">
+
+                            <div class="employee-detail-fields">
+                                <label for="status">Status</label>
+                                <Select name="status">
+                                    <option value="Active" <?php echo isset($employee['status']) && $employee['status'] == 'Active' ? 'selected' : ''; ?>>Active</option>
+                                    <option value="Inactive" <?php echo isset($employee['status']) && $employee['status'] == 'Inactive' ? 'selected' : ''; ?>>Inactive</option>
+                                    <option value="Terminated" <?php echo isset($employee['status']) && $employee['status'] == 'Terminated' ? 'selected' : ''; ?>>Terminated</option>
+                                    <option value="Resigned" <?php echo isset($employee['status']) && $employee['status'] == 'Resigned' ? 'selected' : ''; ?>>Resigned</option>
+                                </Select>
+                            </div>
+
+
+
+                            <div class="employee-detail-fields">
+                                <label for="hire_date">Hire Date</label>
+                                <input type="date" name="hire_date">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="vl">
+                    </div>
+                    <div clas="flex flex-row">
+
+                        <div class="flex flex-row gap-20 space-between">
+                            <div class="employee-detail-fields">
+                                <label for="sss_number">SSS No.</label>
+                                <input type="text" name="sss_number">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="philhealth_number">Philhealth/Malasakit No.</label>
+                                <input type="text" name="philhealth_number">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="tin_number">Tin Number</label>
+                                <input type="text" name="tin_number">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="pagibig_number">Pagibig No.</label>
+                                <input type="text" name="pagibig_number">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20 flex-start">
+                            <div class="employee-detail-fields">
+                                <label for="emergency_contact_name">Emergency Contact Name</label>
+                                <input type="text" name="emergency_contact_name">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="emergency_contact_number">Emergency Contact Number</label>
+                                <input type="text" name="emergency_contact_number">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="emergency_contact_relationship">Emergency Contact Relationship</label>
+                                <input type="text" name="emergency_contact_relationship">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20">
+                            <div class="employee-detail-fields">
+                                <label for="job_id" style="display:block; margin-bottom: 5px;">Job</label>
+                                <select name="job_id" id="job_id">
+                                    <?php
+                                    foreach ($jobs as $job) {
+                                        echo '<option value="' . htmlspecialchars($job['job_id']) . '">' . htmlspecialchars($job['job_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="department_id" style="display:block; margin-bottom: 5px;">Department</label>
+                                <select name="department_id" id="department_id">
+                                    <?php
+                                    foreach ($departments as $department) {
+                                        echo '<option value="' . htmlspecialchars($department['department_id']) . '">' . htmlspecialchars($department['department_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20">
+                            <div class="employee-detail-fields">
+                                <label for="manager_id" style="display:block; margin-bottom: 5px;">Manager</label>
+                                <select name="manager_id" id="manager_id" style="pointer-events: none;">
+                                    <option value="0">No Manager</option>
+                                    <?php
+                                    foreach ($employees as $employee) {
+                                        echo '<option value="' . htmlspecialchars($employee['employee_id']) . '">' . htmlspecialchars($employee['first_name'] . " " . $employee['last_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="team_leader_id" style="display:block; margin-bottom: 5px;">Team
+                                    Leader</label>
+                                <select name="team_leader_id" id="team_leader_id" style="pointer-events: none;">
+                                    <option value="0">No Team Leader</option>
+
+                                    <?php
+                                    foreach ($employees as $employee) {
+                                        echo '<option value="' . htmlspecialchars($employee['employee_id']) . '">' . htmlspecialchars($employee['first_name'] . " " . $employee['last_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="role_id" style="display:block; margin-bottom: 5px;">Acount
+                                    Role</label>
+                                <select name="role_id" id="role_id">
+                                    <option>No Role</option>
+                                    <?php
+                                    foreach ($roles as $role) {
+                                        echo '<option value="' . htmlspecialchars($role['role_id']) . '">' . htmlspecialchars($role['role_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div class="employee-detail-edit-button-container">
+
+                <div><button class="employee-detail-edit-button" type="submit" name="editEmployee">Edit Employee
+                    </button></div>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog style="border-radius: 10px; border: 1px solid #D1D1D1;" id="add_employee_modal">
+        <form action="" method="POST" class="flex flex-column gap-20">
+            <div>
+                <div id="modal_close_btn" style="position: absolute; top: 10px; right: 10px; cursor: pointer;"
+                    onclick="closeModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18" stroke="#333" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M6 6L18 18" stroke="#333" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-capitalize font-bold" style="font-size: 32px;margin: 0">New Employee</p>
+                </div>
+            </div>
+            <div id="modal-content" class="employee-detail-container">
+                <div class="employee-detail-container-group gap-20 font-medium">
+                    <div clas="flex flex-row gap-20">
+                        <div class="flex flex-row gap-20">
+
+                            <div class="employee-detail-fields">
+                                <label for="first_name">First Name</label>
+                                <input type="text" name="first_name">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="middle_name">Middle Name</label>
+                                <input type="text" name="middle_name">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="last_name">Last Name</label>
+                                <input type="text" name="last_name">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20">
+                            <div class="employee-detail-fields">
+                                <label for="gender">Street</label>
+                                <input type="text" name="street">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="barangay">Brangay</label>
+                                <input type="text" name="barangay">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="city">City</label>
+                                <input type="text" name="city">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="province">Province</label>
+                                <input type="text" name="province">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20 space-between">
+                            <div class="employee-detail-fields">
+                                <label for="mobile">Mobile</label>
+                                <input type="text" name="mobile">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="email">Email</label>
+                                <input type="email" name="email">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" name="dob">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="civil_status">Civil Status</label>
+                                <Select name="civil_status">
+                                    <option value="Single" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Single' ? 'selected' : ''; ?>>Single</option>
+                                    <option value="Married" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Married' ? 'selected' : ''; ?>>Married</option>
+                                    <option value="Widowed" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Widowed' ? 'selected' : ''; ?>>Widowed</option>
+                                    <option value="Seperated" <?php echo isset($employee['civil_status']) && $employee['civil_status'] == 'Seperated' ? 'selected' : ''; ?>>Seperated
+                                    </option>
+                                </Select>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="gender">Gender</label>
+                                <Select name="gender">
+                                    <option value="Male" <?php echo isset($employee['gender']) && $employee['gender'] == 'Male' ? 'selected' : ''; ?>>Male</option>
+                                    <option value="Female" <?php echo isset($employee['gender']) && $employee['gender'] == 'Female' ? 'selected' : ''; ?>>Female</option>
+                                    <option value="Other" <?php echo isset($employee['gender']) && $employee['gender'] == 'Other' ? 'selected' : ''; ?>>Other</option>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20 flex-start">
+
+                            <div class="employee-detail-fields">
+                                <label for="status">Status</label>
+                                <Select name="status">
+                                    <option value="Active" <?php echo isset($employee['status']) && $employee['status'] == 'Active' ? 'selected' : ''; ?>>Active</option>
+                                    <option value="Inactive" <?php echo isset($employee['status']) && $employee['status'] == 'Inactive' ? 'selected' : ''; ?>>Inactive</option>
+                                    <option value="Terminated" <?php echo isset($employee['status']) && $employee['status'] == 'Terminated' ? 'selected' : ''; ?>>Terminated</option>
+                                    <option value="Resigned" <?php echo isset($employee['status']) && $employee['status'] == 'Resigned' ? 'selected' : ''; ?>>Resigned</option>
+                                </Select>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="hire_date">Hire Date</label>
+                                <input type="date" name="hire_date">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="username">Username</label>
+                                <input type="text" name="username">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="password">Password</label>
+                                <input type="password" name="password">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="vl">
+                    </div>
+                    <div clas="flex flex-row">
+
+                        <div class="flex flex-row gap-20 space-between">
+                            <div class="employee-detail-fields">
+                                <label for="sss_number">SSS No.</label>
+                                <input type="text" name="sss_number">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="philhealth_number">Philhealth/Malasakit No.</label>
+                                <input type="text" name="philhealth_number">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="tin_number">Tin Number</label>
+                                <input type="text" name="tin_number">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="pagibig_number">Pagibig No.</label>
+                                <input type="text" name="pagibig_number">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20 flex-start">
+                            <div class="employee-detail-fields">
+                                <label for="emergency_contact_name">Emergency Contact Name</label>
+                                <input type="text" name="emergency_contact_name">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="emergency_contact_number">Emergency Contact Number</label>
+                                <input type="text" name="emergency_contact_number">
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="emergency_contact_relationship">Emergency Contact Relationship</label>
+                                <input type="text" name="emergency_contact_relationship">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20">
+                            <div class="employee-detail-fields">
+                                <label for="job_id" style="display:block; margin-bottom: 5px;">Job</label>
+                                <select name="job_id" id="job_id">
+                                    <?php
+                                    foreach ($jobs as $job) {
+                                        echo '<option value="' . htmlspecialchars($job['job_id']) . '">' . htmlspecialchars($job['job_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="department_id" style="display:block; margin-bottom: 5px;">Department</label>
+                                <select name="department_id" id="department_id">
+                                    <?php
+                                    foreach ($departments as $department) {
+                                        echo '<option value="' . htmlspecialchars($department['department_id']) . '">' . htmlspecialchars($department['department_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row gap-20">
+                            <div class="employee-detail-fields">
+                                <label for="manager_id" style="display:block; margin-bottom: 5px;">Manager</label>
+                                <select name="manager_id" id="manager_id">
+                                    <option value="0">No Manager</option>
+                                    <?php
+                                    foreach ($employees as $employee) {
+                                        echo '<option value="' . htmlspecialchars($employee['employee_id']) . '">' . htmlspecialchars($employee['first_name'] . " " . $employee['last_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="team_leader_id" style="display:block; margin-bottom: 5px;">Team
+                                    Leader</label>
+                                <select name="team_leader_id" id="team_leader_id">
+                                    <option value="0">No Team Leader</option>
+
+                                    <?php
+                                    foreach ($employees as $employee) {
+                                        echo '<option value="' . htmlspecialchars($employee['employee_id']) . '">' . htmlspecialchars($employee['first_name'] . " " . $employee['last_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="employee-detail-fields">
+                                <label for="role_id" style="display:block; margin-bottom: 5px;">Acount
+                                    Role</label>
+                                <select name="role_id" id="role_id">
+                                    <?php
+                                    foreach ($roles as $role) {
+                                        echo '<option value="' . htmlspecialchars($role['role_id']) . '">' . htmlspecialchars($role['role_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div class="employee-detail-edit-button-container">
+
+                <div><button class="employee-detail-edit-button" type="submit" name="addEmployee">Add Employee
+                    </button></div>
+            </div>
+        </form>
+    </dialog>
 
 
 </body>
