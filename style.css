@@ -1862,3 +1862,10 @@ cursor: pointer;
 .cancel-button:hover {
 	background-color: var(--color-error);
 }
+
+.dashboard-content-header h1 span {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 12px;
+    margin-left: 5px;
+}

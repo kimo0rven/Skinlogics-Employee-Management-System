@@ -136,7 +136,7 @@ function calculateHoursDifference($start_time, $end_time)
                                 <thead class="font-bold">
                                     <tr>
 
-                                        <th>Type</th>
+                                        <!-- <th>Type</th> -->
                                         <th>Start Date & Time</th>
                                         <th>End Date & Time</th>
                                         <th>Duration</th>
@@ -158,9 +158,9 @@ function calculateHoursDifference($start_time, $end_time)
                                                 <!-- <td style="text-align: center;">
                                                     <?php echo $overtimeRequest['first_name'] . " " . $overtimeRequest['last_name'] ?>
                                                 </td> -->
-                                                <td>
+                                                <!-- <td>
                                                     <?php echo htmlspecialchars($overtimeRequest['ot_type']); ?>
-                                                </td>
+                                                </td> -->
                                                 <td style="text-align: center;">
                                                     <?php echo formatDate($overtimeRequest['start_time']); ?>
                                                 </td>

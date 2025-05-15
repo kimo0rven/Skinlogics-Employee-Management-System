@@ -55,27 +55,29 @@ try {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['approval'])) {
-        echo $_POST['leave_id'];
         print_r($_POST);
-
         $sql = "UPDATE leave_request SET tl_approval = :tl_approval WHERE leave_id = :leave_id";
         $stmt_update = $pdo->prepare($sql);
         if ($_POST['approval'] == 'approve') {
+            echo 1;
             $stmt_update->execute([
                 ':tl_approval' => 'Approved',
                 ':leave_id' => $_POST['leave_id'],
             ]);
         } else {
+            echo 2;
             $stmt_update->execute([
                 ':tl_approval' => 'Rejected',
                 ':leave_id' => $_POST['leave_id'],
             ]);
         }
+
     }
 
     header("Location: tl_leave_requests.php");
     exit();
 }
+
 
 $searchQuery = "";
 if (isset($_GET['search']) && !empty($_GET['search'])) {
@@ -119,7 +121,6 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
 
 ?>
 
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -140,7 +141,7 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                 <div class="dashboard-content">
                     <div class="dashboard-content-item1">
                         <div class="dashboard-content-header font-black">
-                            <h1>LEAVE REQUESTS</h1>
+                            <h1>LEAVE REQUESTS - <span style="font-size: 12px;"> TEAM LEADER APPROVAL</span></h1>
                         </div>
                         <div id="logout-admin" class="dashboard-content-header font-medium">
                             <?php include('includes/header-avatar.php') ?>
@@ -188,10 +189,10 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                                 <tbody class="font-medium">
                                     <?php if (!empty($leaveRequests)): ?>
                                         <?php foreach ($leaveRequests as $leaveRequest): ?>
-                                            <tr id="row-<?php echo $leaveRequest['employee_id'] ?>" style="white-space: nowrap;"
+                                            <tr id="row-<?php echo $leaveRequest['leave_id'] ?>" style="white-space: nowrap;"
                                                 data-user='<?php echo json_encode($leaveRequest); ?>'
                                                 class="employee-display-list text-center"
-                                                onclick="openModal(<?php echo $leaveRequest['employee_id'] ?>)">
+                                                onclick="openModal(<?php echo $leaveRequest['leave_id'] ?>)">
                                                 <td style="text-align: center;">
                                                     <?php echo $leaveRequest['first_name'] . " " . $leaveRequest['last_name'] ?>
                                                 </td>
@@ -308,7 +309,7 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
         </div>
 
         <dialog style="border-radius: 10px; border: 1px solid #D1D1D1;" id="myModal">
-            <form action="leave_requests.php" method="POST" class="flex flex-column gap-20">
+            <form action="tl_leave_requests.php" method="POST" class="flex flex-column gap-20">
                 <div>
                     <div id="modal_close_btn" style="position: absolute; top: 10px; right: 10px; cursor: pointer;"
                         onclick="closeModal()">
@@ -325,7 +326,7 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                 </div>
                 <div id="modal-content" class="employee-detail-container">
                     <div class="employee-detail-container-group gap-20 font-medium">
-                        <div clas="flex flex-row gap-20">
+                        <div class="flex flex-column gap-20">
                             <div class="flex flex-row space-between">
                                 <div style="display: none" class="employee-detail-fields">
                                     <label for="leave_id">Leave ID</label>
@@ -372,19 +373,17 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                             </div>
 
                             <div class="flex flex-row gap-20 space-around">
-
-
                                 <div class="flex flex-column">
                                     <div class="employee-detail-fields">
                                         <label for="tl_approval">Team Leader Approval</label>
-                                        <input type="text" name="tl_approval">
+                                        <input type="text" name="tl_approval" readonly>
 
                                         </input>
                                     </div>
 
                                     <div class="employee-detail-fields">
-                                        <label for="dob">Approval Date</label>
-                                        <input type="text" name="dob">
+                                        <label for="tl_approval_date">Approval Date</label>
+                                        <input type="text" name="tl_approval_date" readonly>
                                     </div>
                                     <div class="vl"></div>
                                 </div>
@@ -392,14 +391,14 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                                 <div class="flex flex-column">
                                     <div class="employee-detail-fields">
                                         <label for="hr_manager_approval">HR Manager Approval</label>
-                                        <input type="text" name="hr_manager_approval">
+                                        <input type="text" name="hr_manager_approval" readonly>
 
                                         </input>
                                     </div>
 
                                     <div class="employee-detail-fields">
                                         <label for="hr_manager_approval_date">Approval Date</label>
-                                        <input type="text" name="hr_manager_approval_date">
+                                        <input type="text" name="hr_manager_approval_date" readonly>
                                     </div>
                                 </div>
 

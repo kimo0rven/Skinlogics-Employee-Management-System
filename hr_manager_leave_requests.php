@@ -42,7 +42,7 @@ try {
                         employee e ON lr.employee_id = e.employee_id
                    WHERE
                         (lr.hr_manager_approval = 'Pending' AND lr.tl_approval= 'Approved') OR
-                        lr.status = 'Approved'
+                        lr.status = 'Approved' OR lr.status = 'Rejected'
                    ORDER BY
                         lr.date_created DESC";
 
@@ -55,22 +55,23 @@ try {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['approval'])) {
-        echo $_POST['leave_id'];
-        print_r($_POST);
-
+        // print_r($_POST);
         $sql = "UPDATE leave_request SET hr_manager_approval = :hr_manager_approval WHERE leave_id = :leave_id";
         $stmt_update = $pdo->prepare($sql);
         if ($_POST['approval'] == 'approve') {
+            echo 1;
             $stmt_update->execute([
                 ':hr_manager_approval' => 'Approved',
                 ':leave_id' => $_POST['leave_id'],
             ]);
         } else {
+            echo 2;
             $stmt_update->execute([
                 ':hr_manager_approval' => 'Rejected',
                 ':leave_id' => $_POST['leave_id'],
             ]);
         }
+
     }
 
     header("Location: hr_manager_leave_requests.php");
@@ -142,7 +143,7 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                 <div class="dashboard-content">
                     <div class="dashboard-content-item1">
                         <div class="dashboard-content-header font-black">
-                            <h1>LEAVE REQUESTS</h1>
+                            <h1>LEAVE REQUESTS - <span style="font-size: 12px;"> HR MANAGER APPROVAL</span></h1>
                         </div>
                         <div id="logout-admin" class="dashboard-content-header font-medium">
                             <?php include('includes/header-avatar.php') ?>
@@ -374,8 +375,6 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                             </div>
 
                             <div class="flex flex-row gap-20 space-around">
-
-
                                 <div class="flex flex-column">
                                     <div class="employee-detail-fields">
                                         <label for="tl_approval">Team Leader Approval</label>
