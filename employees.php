@@ -14,19 +14,19 @@ include 'config.php';
 $employees = [];
 try {
     $sql_employees = "SELECT
-    e.*,
-    j.job_name,
-    d.department_name,
-    d.department_id,
-    d.branch AS department_branch,
-    ua.avatar,
-    ua.role_id,
-    r.role_name
-FROM employee e
-LEFT JOIN job j ON e.job_id = j.job_id
-LEFT JOIN department d ON j.department_id = d.department_id
-LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id
-LEFT JOIN roles r ON ua.role_id = r.role_id;";
+        e.*,
+        j.job_name,
+        d.department_name,
+        d.department_id,
+        d.branch AS department_branch,
+        ua.avatar,
+        ua.role_id,
+        r.role_name
+    FROM employee e
+    LEFT JOIN job j ON e.job_id = j.job_id
+    LEFT JOIN department d ON j.department_id = d.department_id
+    LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id
+    LEFT JOIN roles r ON ua.role_id = r.role_id;";
 
     $stmt_employees = $pdo->prepare($sql_employees);
     $stmt_employees->execute();
