@@ -915,6 +915,26 @@ visibility: visible;
 	color: var(--color-base-100)
 
 }
+.employee-role-employee {
+	background-color: #50C878;
+	color: #FFFFFF;
+}
+
+.employee-role-manager {
+	background-color: #800020;
+	color: #FFFFFF;
+}
+
+.employee-role-team-leader {
+	background-color: #008080;
+	color: #FFFFFF;
+}
+
+.employee-role-admin {
+	background-color: #5D3FD3;
+	color: #FFFFFF;
+
+}
 
 #mailto {
 	color: var(--color-primary);
@@ -1868,7 +1888,7 @@ cursor: pointer;
 
 .employee-detail-fields {
 	position: relative;
-	width: 300px;
+	/* width: 300px; */
 }
 
 .dropdown-content {
@@ -1895,3 +1915,10 @@ cursor: pointer;
 	background-color: #f1f1f1;
 }
 
+.delete-button {
+	background-color: var(--color-error);
+	color: var(--color-error-content)
+}
+.delete-button:hover {
+	background-color: #cc4f52;
+}

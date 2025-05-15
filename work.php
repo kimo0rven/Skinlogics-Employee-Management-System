@@ -103,7 +103,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':department_id' => $_POST['department_id']
         ]);
     }
-    // header("Location: work.php");
+
+    if (isset($_POST['delete'])) {
+        $sql = 'DELETE FROM job WHERE job_id = :job_id';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':job_id' => $_POST['job_id'],
+        ]);
+    }
+
+    header("Location: work.php");
 
 }
 
@@ -327,8 +336,11 @@ try {
                         </select>
                     </div>
                 </div>
-                <div>
-                    <button id="edit-job-detail" type="submit" style="padding: 20px 10px; width: 180px; height: 50px;"
+                <div class="flex flex-row gap-20">
+                    <button id="delete" type="submit" class="delete-button"
+                        style="padding: 10px 5px; width: 180px; height: 40px;" name="delete">Delete</button>
+
+                    <button id="edit-job-detail" type="submit" style="padding: 20px 10px; width: 180px; height: 40px;"
                         name="edit-job-detail">Edit</button>
                 </div>
             </form>

@@ -56,43 +56,118 @@ try {
         $stmt->bindValue(':search', "%" . $searchTerm . "%", PDO::PARAM_STR);
     } else {
         $sql = "SELECT
-    d.department_id,
-    d.department_name,
-    d.branch,
-    d.status AS department_status,
-    tl.employee_id AS team_leader_id,
-    tl.first_name AS team_leader_first_name,
-    tl.last_name AS team_leader_last_name,
-    m.employee_id AS manager_id,
-    m.first_name AS manager_first_name,
-    m.last_name AS manager_last_name,
-    (SELECT COUNT(*) 
-     FROM job j 
-     WHERE j.department_id = d.department_id 
-       AND j.status = 'Active') AS active_job_count,
-    (SELECT COUNT(*) 
-     FROM employee e
-     JOIN job j2 ON e.job_id = j2.job_id
-     WHERE j2.department_id = d.department_id
-       AND e.status = 'Active') AS active_employee_count
-FROM department d
-LEFT JOIN employee tl ON d.team_leader_id = tl.employee_id
-LEFT JOIN employee m ON d.manager_id = m.employee_id
-ORDER BY d.department_name;
-";
+                    d.department_id,
+                    d.department_name,
+                    d.branch,
+                    d.status AS department_status,
+                    tl.employee_id AS team_leader_id,
+                    tl.first_name AS team_leader_first_name,
+                    tl.last_name AS team_leader_last_name,
+                    m.employee_id AS manager_id,
+                    m.first_name AS manager_first_name,
+                    m.last_name AS manager_last_name,
+                    (SELECT COUNT(*) 
+                    FROM job j 
+                    WHERE j.department_id = d.department_id 
+                    AND j.status = 'Active') AS active_job_count,
+                    (SELECT COUNT(*) 
+                    FROM employee e
+                    JOIN job j2 ON e.job_id = j2.job_id
+                    WHERE j2.department_id = d.department_id
+                    AND e.status = 'Active') AS active_employee_count
+                FROM department d
+                LEFT JOIN employee tl ON d.team_leader_id = tl.employee_id
+                LEFT JOIN employee m ON d.manager_id = m.employee_id
+                ORDER BY d.department_name;
+                ";
         $stmt = $pdo->prepare($sql);
     }
 
     $stmt->execute();
     $departments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Output the results (for debugging)
-    // echo "<pre>";
-    // print_r($departments);
-    // echo "</pre>";
-
 } catch (Exception $e) {
     die("Error loading data: " . $e->getMessage());
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if (isset($_POST['edit-department-detail'])) {
+        print_r($_POST);
+        // $sql = 'SELECT * FROM department WHERE department_id = :department_id';
+        // $stmt = $pdo->prepare($sql);
+        // $stmt->execute([
+        //     ':department_id' => $_POST['department_id']
+        // ]);
+        // $dept = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // print_r($dept);
+
+        // $lastManager = '';
+        // $lastTL = '';
+
+        // foreach ($dept as $d) {
+        //     $lastManager = $d['team_leader_id'];
+        //     $lastTL = $d['manager_id'];
+        // }
+
+        $sql = 'UPDATE department
+        SET department_name = :department_name,
+            branch = :branch,
+            manager_id = :manager_id,
+            team_leader_id = :team_leader_id,
+            status = :status
+        WHERE department_id = :department_id';
+        $stmt = $pdo->prepare($sql);
+        // $stmt->execute([
+        //     ':department_name' => $_POST['department_name'],
+        //     ':branch' => $_POST['branch'],
+        //     ':manager_id' => $_POST['manager_id'],
+        //     ':team_leader_id' => $_POST['team_leader_id'],
+        //     ':status' => $_POST['status'],
+        //     ':department_id' => $_POST['department_id']
+        // ]);
+
+        // $sql = 'UPDATE employee
+        // SET team_leader_id = NULL,
+        // WHERE employee_id = :employee_id
+        // ';
+
+    }
+
+    if (isset($_POST['add-department'])) {
+        $sql = 'INSERT INTO department 
+        (department_name, manager_id, team_leader_id, branch, status) 
+        VALUES (:department_name, :manager_id, :team_leader_id, :branch, :status)';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':department_name' => $_POST['department_name'],
+            ':manager_id' => $_POST['manager_id'],
+            ':team_leader_id' => $_POST['team_leader_id'],
+            ':branch' => $_POST['branch'],
+            ':status' => $_POST['status']
+        ]);
+    }
+
+    if (isset($_POST['delete'])) {
+        $sql = 'DELETE FROM department WHERE department_id = :department_id';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':department_id' => $_POST['department_id'],
+        ]);
+    }
+
+    // header("Location: departments.php");
+
+}
+
+
+try {
+    $sql = "SELECT * FROM employee";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    die("" . $e->getMessage());
 }
 
 ?>
@@ -204,7 +279,7 @@ ORDER BY d.department_name;
                                                     </div>
 
                                                     <div class="flex flex-column justify-center align-center gap-10"
-                                                        style="flex-direction: row;">
+                                                        style="flex-direction: column;">
                                                         <div class="font-bold" style="text-align: center;">
                                                             <?= htmlspecialchars($department["department_name"]); ?>
                                                         </div>
@@ -252,13 +327,11 @@ ORDER BY d.department_name;
         </div>
     </div>
 
-
-
     <dialog id="job-detail-dialog" style="width: 500px; padding: 20px">
         <div class="dialog-content">
             <div class="flex flex-row space-between align-center">
                 <div>
-                    <h2>Job Details</h2>
+                    <h2>Department Details</h2>
                 </div>
                 <div>
                     <div id="modal-close-button" style="border: 1px solid black; border-radius: 50%"
@@ -270,50 +343,39 @@ ORDER BY d.department_name;
                 class="flex flex-column gap-20 justify-center align-center">
                 <div class="flex flex-row flex-wrap gap-20 space-between ">
                     <div>
-                        <label for="job_id" style="display:block; margin-bottom: 5px;">Job ID</label>
-                        <input class="font-size-16" type="text" id="job_id" name="job_id" disabled>
+                        <label for="department_id" style="display:block; margin-bottom: 5px;">Department ID</label>
+                        <input class="font-size-16" type="text" id="department_id" name="department_id" readonly>
                     </div>
 
                     <div>
-                        <label for="job_name" style="display:block; margin-bottom: 5px;">Job Name</label>
-                        <input class="font-size-16" type="text" id="job_name" name="job_name">
+                        <label for="department_name" style="display:block; margin-bottom: 5px;">Department Name</label>
+                        <input class="font-size-16" type="text" id="department_name" name="department_name">
                     </div>
 
                     <div>
-                        <label for="description" style="display:block; margin-bottom: 5px;">Description</label>
-                        <input class="font-size-16" type="text" id="description" name="description">
+                        <label for="branch" style="display:block; margin-bottom: 5px;">Branch</label>
+                        <input class="font-size-16" type="text" id="branch" name="branch">
                     </div>
 
                     <div>
-                        <label for="salary" style="display:block; margin-bottom: 5px;">Salary</label>
-                        <input class="font-size-16" type="text" id="salary" name="salary">
-                    </div>
-
-                    <div>
-                        <label for="salary_frequency" style="display:block; margin-bottom: 5px;">Salary
-                            Frequency</label>
-                        <select class="font-size-16" name="salary_frequency"
-                            style="width: 215px; margin: 0;font-size: 16px; padding: 12px">
-                            <option value=" Weekly">Weekly</option>
-                            <option value="Bi-Weekly">Bi-Weekly</option>
-                            <option value="Monthly">Monthly</option>
-                            <option value="Yearly">Yearly</option>
+                        <label for="team_leader_id" style="display:block; margin-bottom: 5px;">Team Leader</label>
+                        <select name="team_leader_id" style="width: 215px; margin: 0; font-size: 16px; padding: 12px">
+                            <?php foreach ($employees as $employee) { ?>
+                                <option value="<?= htmlspecialchars($employee['employee_id']) ?>">
+                                    <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']) ?>
+                                </option>
+                            <?php } ?>
                         </select>
                     </div>
 
                     <div>
-                        <label for="department_id" style="display:block; margin-bottom: 5px;">Department</label>
-                        <select name="department_id" id="department_id"
-                            style="width: 215px; margin: 0; font-size: 16px; padding: 12px">
-                            <?php
-
-                            $defaultDepartmentId = isset($jobs[0]['department_id']) ? $jobs[0]['department_id'] : null;
-
-                            foreach ($departments as $department) {
-                                $selected = ($department['department_id'] == $defaultDepartmentId) ? ' selected' : '';
-                                echo '<option value="' . htmlspecialchars($department['department_id']) . '"' . $selected . '>' . htmlspecialchars($department['department_name']) . '</option>';
-                            }
-                            ?>
+                        <label for="manager_id" style="display:block; margin-bottom: 5px;">Manager</label>
+                        <select name="manager_id" style="width: 215px; margin: 0; font-size: 16px; padding: 12px">
+                            <?php foreach ($employees as $employee) { ?>
+                                <option value="<?= htmlspecialchars($employee['employee_id']) ?>">
+                                    <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']) ?>
+                                </option>
+                            <?php } ?>
                         </select>
                     </div>
 
@@ -326,8 +388,12 @@ ORDER BY d.department_name;
                     </div>
                 </div>
                 <div>
-                    <button id="edit-job-detail" type="submit" style="padding: 20px 10px; width: 180px; height: 50px;"
-                        name="edit-job-detail">Edit</button>
+                    <button id="delete" type="submit" class="delete-button"
+                        style="padding: 10px 5px; width: 180px; height: 40px;" name="delete">Delete</button>
+
+                    <button id="edit-department-detail" type="submit"
+                        style="padding: 10px 5px; width: 180px; height: 40px;"
+                        name="edit-department-detail">Edit</button>
                 </div>
             </form>
         </div>
@@ -336,43 +402,40 @@ ORDER BY d.department_name;
     <dialog id="add-job-dialog" style="width: 500px; padding: 20px">
         <div class="flex flex-column flex-start">
             <div>
-                <h2>Job Details</h2>
+                <h2>Add Department</h2>
             </div>
-            <form action="work.php" method="POST">
-                <div class="flex flex-row flex-wrap space-between gap-20">
+            <form action="departments.php" method="POST">
+                <div class="flex flex-row flex-wrap gap-20 space-between ">
+
                     <div>
-                        <label for="job_name" style="display:block; margin-bottom: 5px;">Job Name</label>
-                        <input class="font-size-16" type="text" id="job_name" name="job_name">
+                        <label for="department_name" style="display:block; margin-bottom: 5px;">Department Name</label>
+                        <input class="font-size-16" type="text" id="department_name" name="department_name">
                     </div>
 
                     <div>
-                        <label for="description" style="display:block; margin-bottom: 5px;">Description</label>
-                        <input class="font-size-16" type="text" id="description" name="description">
+                        <label for="branch" style="display:block; margin-bottom: 5px;">Branch</label>
+                        <input class="font-size-16" type="text" id="branch" name="branch">
                     </div>
 
                     <div>
-                        <label for="salary" style="display:block; margin-bottom: 5px;">Salary</label>
-                        <input class="font-size-16" type="text" id="salary" name="salary">
-                    </div>
-
-                    <div>
-                        <label for="salary_frequency" style="display:block; margin-bottom: 5px;">Salary
-                            Frequency</label>
-                        <select class="font-size-16" name="salary_frequency"
-                            style="width: 215px; margin: 0;font-size: 16px; padding: 12px">
-                            <option value=" Weekly">Weekly</option>
-                            <option value="Bi-Weekly">Bi-Weekly</option>
-                            <option value="Monthly">Monthly</option>
-                            <option value="Yearly">Yearly</option>
+                        <label for="team_leader_id" style="display:block; margin-bottom: 5px;">Team Leader</label>
+                        <select name="team_leader_id" style="width: 215px; margin: 0; font-size: 16px; padding: 12px">
+                            <?php foreach ($employees as $employee) { ?>
+                                <option value="<?= htmlspecialchars($employee['employee_id']) ?>">
+                                    <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']) ?>
+                                </option>
+                            <?php } ?>
                         </select>
                     </div>
 
                     <div>
-                        <label for="status" style="display:block; margin-bottom: 5px;">Department</label>
-                        <select name="status" style="width: 215px; margin: 0; font-size: 16px; padding: 12px">
-                            <?php foreach ($departments as $department) {
-                                echo '<option value="' . htmlspecialchars($department['department_id']) . '">' . htmlspecialchars($department['department_name']) . '</option>';
-                            } ?>
+                        <label for="manager_id" style="display:block; margin-bottom: 5px;">Manager</label>
+                        <select name="manager_id" style="width: 215px; margin: 0; font-size: 16px; padding: 12px">
+                            <?php foreach ($employees as $employee) { ?>
+                                <option value="<?= htmlspecialchars($employee['employee_id']) ?>">
+                                    <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']) ?>
+                                </option>
+                            <?php } ?>
                         </select>
                     </div>
 
@@ -386,8 +449,9 @@ ORDER BY d.department_name;
                 </div>
         </div>
         <div class="flex justify-center align-center">
-            <button id="add-job" type="submit" style="padding: 20px 10px; width: 180px; height: 50px;"
-                name="add-job">Add Job</button>
+            <button id="add-department" type="submit" style="padding: 20px 10px; width: 180px; height: 50px;"
+                name="add-department">Add Department</button>
+
         </div>
         </form>
     </dialog>

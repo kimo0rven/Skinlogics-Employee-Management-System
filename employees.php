@@ -12,29 +12,6 @@ include 'includes/database.php';
 include 'config.php';
 
 $employees = [];
-try {
-    $sql_employees = "SELECT
-        e.*,
-        j.job_name,
-        d.department_name,
-        d.department_id,
-        d.branch AS department_branch,
-        ua.avatar,
-        ua.role_id,
-        r.role_name
-    FROM employee e
-    LEFT JOIN job j ON e.job_id = j.job_id
-    LEFT JOIN department d ON j.department_id = d.department_id
-    LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id
-    LEFT JOIN roles r ON ua.role_id = r.role_id;";
-
-    $stmt_employees = $pdo->prepare($sql_employees);
-    $stmt_employees->execute();
-    $employees = $stmt_employees->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    echo "Error fetching employee data: " . $e->getMessage();
-}
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
     $employee_id = isset($_POST["employee_id"]) ? (int) $_POST["employee_id"] : 0;
@@ -69,10 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
     foreach ($fields as $field) {
         $formattedUpdate["$field"] = isset($_POST[$field]) ? trim($_POST[$field]) : ($field === "employee_id" ? 0 : '');
     }
-    extract($formattedUpdate);
+    // extract($formattedUpdate);
     echo 1;
     echo "formatted: ";
-    print_r($formattedUpdate);
+    // print_r($formattedUpdate);
 
     if ($formattedUpdate['employee_id'] > 0 && !empty($formattedUpdate['last_name'])) {
         try {
@@ -132,6 +109,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editEmployee'])) {
                 ':job_id' => $formattedUpdate['job_id'],
                 ':employee_id' => $formattedUpdate['employee_id']
             ]);
+
+            $sql = 'SELECT * FROM job WHERE job_id = :job_id';
+            $jobStmt = $pdo->prepare($sql);
+            $jobStmt->execute([
+                ':job_id' => $formattedUpdate['job_id']
+            ]);
+            $fetchJob = $jobStmt->fetch(PDO::FETCH_ASSOC);
+
+            if (stripos($fetchJob['job_name'], 'leader') !== false) {
+                // Update team leader if found (covers both "Leader" and "team leader")
+                $sql = 'UPDATE department SET team_leader_id = :team_leader_id WHERE department_id = :department_id';
+                $update = $pdo->prepare($sql);
+                $update->execute([
+                    ':team_leader_id' => $formattedUpdate['employee_id'],
+                    ':department_id' => $_POST['department_id']
+                ]);
+            }
+
+            if (stripos($fetchJob['job_name'], 'manager') !== false) {
+                // Update manager if found (covers both "Manager" and variations in case)
+                $sql = 'UPDATE department SET manager_id = :manager_id WHERE department_id = :department_id';
+                $update = $pdo->prepare($sql);
+                $update->execute([
+                    ':manager_id' => $formattedUpdate['employee_id'],
+                    ':department_id' => $_POST['department_id']
+                ]);
+            }
+
 
             $sql = 'SELECT user_account_id FROM employee WHERE employee_id = :employee_id';
             $employeeStmt = $pdo->prepare($sql);
@@ -278,7 +283,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addEmployee'])) {
         echo "Invalid input for adding employee.";
     }
 }
+try {
+    $sql_employees = "SELECT
+        e.*,
+        j.job_name,
+        d.department_name,
+        d.department_id,
+        d.team_leader_id as d_team_leader_id,
+        d.manager_id as d_manager_id,
+        d.branch AS department_branch,
+        ua.avatar,
+        ua.role_id,
+        r.role_name
+    FROM employee e
+    LEFT JOIN job j ON e.job_id = j.job_id
+    LEFT JOIN department d ON j.department_id = d.department_id
+    LEFT JOIN user_account ua ON e.user_account_id = ua.user_account_id
+    LEFT JOIN roles r ON ua.role_id = r.role_id;";
 
+    $stmt_employees = $pdo->prepare($sql_employees);
+    $stmt_employees->execute();
+    $employees = $stmt_employees->fetchAll(PDO::FETCH_ASSOC);
+    // print_r($employees);
+} catch (PDOException $e) {
+    echo "Error fetching employee data: " . $e->getMessage();
+}
 $searchTerm = '';
 if (isset($_GET['search'])) {
     $searchTerm = '%' . trim($_GET['search']) . '%';
@@ -423,22 +452,47 @@ try {
                                                         src="assets/images/avatars/<?php echo !empty($employee['avatar']) ? htmlspecialchars($employee['avatar']) : 'default.png'; ?>"
                                                         alt="">
                                                 </td>
-                                                <td>
+                                                <td style="text-align: center;">
                                                     <?php echo htmlspecialchars($employee['first_name']) . " " . htmlspecialchars($employee['last_name']); ?>
                                                 </td>
-                                                <td><?php echo htmlspecialchars($employee['job_name']); ?></td>
-                                                <td><?php echo htmlspecialchars($employee['department_name']); ?></td>
-                                                <td><?php echo htmlspecialchars($employee['department_branch']); ?></td>
-                                                <td><?php echo htmlspecialchars($employee['role_name']); ?></td>
-                                                <td>
+                                                <td style="text-align: center;">
+                                                    <?php echo htmlspecialchars($employee['job_name']); ?>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <?php echo htmlspecialchars($employee['department_name']); ?>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <?php echo htmlspecialchars($employee['department_branch']); ?>
+                                                </td>
+                                                <td style="text-align: center;">
+                                                    <?php
+                                                    if ($employee['role_name'] == "Employee") {
+                                                        if ($employee['d_team_leader_id'] == $employee['employee_id']) {
+                                                            echo "<div class='employee-status employee-role-team-leader'>Team Leader</div>";
+                                                        } else if ($employee['d_manager_id'] == $employee['employee_id'])
+                                                            echo "<div class='employee-status employee-role-manager'>Manager</div>";
+                                                        else {
+                                                            echo "<div class='employee-status employee-role-employee'>Employee</div>";
+
+                                                        }
+                                                    } else {
+                                                        echo "<div class='employee-status employee-role-admin'>" . htmlspecialchars($employee['role_name']) . "</div>";
+
+                                                    } ?>
+
+                                                </td>
+
+                                                <td style="text-align: center;">
                                                     <p><a id="mailto"
                                                             href="mailto:<?php echo htmlspecialchars($employee['email']); ?>"><?php echo htmlspecialchars($employee['email']); ?></a>
                                                     </p>
                                                 </td>
 
-                                                <td><?php echo htmlspecialchars($employee['mobile']); ?></td>
+                                                <td style="text-align: center;">
+                                                    <?php echo htmlspecialchars($employee['mobile']); ?>
+                                                </td>
                                                 <!-- <td><?php echo htmlspecialchars($employee['status']); ?></td> -->
-                                                <td>
+                                                <td style="text-align: center;">
                                                     <?php
                                                     $status = htmlspecialchars($employee['status']); // Get the status from the PHP variable
                                             
@@ -484,8 +538,8 @@ try {
         </div>
     </div>
 
-    <dialog style="border-radius: 10px; border: 1px solid #D1D1D1;" id="myModal">
-        <form action="" method="POST" class="flex flex-column gap-20">
+    <dialog style="border-radius: 10px; border: 1px solid #D1D1D1; width: 1500px;" id="myModal">
+        <form action="" method="POST" class="flex flex-column gap-20 flex-wrap">
             <div>
                 <div id="modal_close_btn" style="position: absolute; top: 10px; right: 10px; cursor: pointer;"
                     onclick="closeModal()">
@@ -500,8 +554,9 @@ try {
                     <p class="text-capitalize font-bold" style="font-size: 32px;margin: 0">Edit Employee Details</p>
                 </div>
             </div>
+
             <div id="modal-content" class="employee-detail-container">
-                <div class="employee-detail-container-group gap-20 font-medium">
+                <div class="flex flex-row gap-20 font-medium">
                     <div clas="flex flex-row gap-20">
                         <div class="flex flex-row gap-20">
                             <div class="employee-detail-fields">
@@ -547,7 +602,7 @@ try {
                             </div>
                         </div>
 
-                        <div class="flex flex-row gap-20 space-between">
+                        <div class="flex flex-row gap-20 space-between flex-wrap">
                             <div class="employee-detail-fields">
                                 <label for="mobile">Mobile</label>
                                 <input type="text" name="mobile">
@@ -582,9 +637,6 @@ try {
                                     <option value="Other" <?php echo isset($employee['gender']) && $employee['gender'] == 'Other' ? 'selected' : ''; ?>>Other</option>
                                 </Select>
                             </div>
-                        </div>
-
-                        <div class="flex flex-row gap-20 flex-start">
 
                             <div class="employee-detail-fields">
                                 <label for="status">Status</label>
@@ -602,8 +654,12 @@ try {
                                 <label for="hire_date">Hire Date</label>
                                 <input type="date" name="hire_date">
                             </div>
-
                         </div>
+
+                        <!-- <div class="flex flex-row gap-20 flex-start"> -->
+
+
+                        <!-- </div> -->
                     </div>
                     <div class="vl">
                     </div>
