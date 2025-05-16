@@ -12,7 +12,7 @@
 
         <div class="floating-sub-container">
             <div class="floating-sub-button" id="leaveRequestModalBtn">
-                <img src="assets/images/icons/leave-request-icon2.png" alt="">
+                <img src="assets/images/icons/leave-request-icon.png" alt="">
             </div>
         </div>
 

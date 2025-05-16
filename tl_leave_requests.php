@@ -34,28 +34,29 @@ try {
     $sql_leaves = "SELECT
                         lr.*,
                         e.first_name,
-                        e.middle_name,
                         e.last_name,
-                        e.job_id,
+                        j.job_id,
                         j.job_name,
-                        j.department_id,
-                        d.department_name
-                   FROM
+                        d.department_id,
+                        d.department_name,
+                        d.department_id AS d_department_id
+                    FROM
                         leave_request lr
-                   INNER JOIN
+                    INNER JOIN
                         employee e ON lr.employee_id = e.employee_id
-                   INNER JOIN
+                    INNER JOIN
                         job j ON e.job_id = j.job_id
-                   INNER JOIN
+                    INNER JOIN
                         department d ON j.department_id = d.department_id
-                   WHERE
-                        (lr.hr_manager_approval = 'Pending' AND lr.tl_approval= 'Approved') OR
-                        lr.status = 'Approved'
-                   ORDER BY
-                        lr.date_created DESC";
+                    WHERE
+                        d.team_leader_id = :loggedInTeamLeaderId
+                    ORDER BY
+                        lr.date_created DESC;";
 
     $stmt_leaves = $pdo->prepare($sql_leaves);
+    $stmt_leaves->bindValue(':loggedInTeamLeaderId', $_SESSION['employee_id'], PDO::PARAM_INT);
     $stmt_leaves->execute();
+
     $leaveRequests = $stmt_leaves->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo "Error fetching leave request data: " . $e->getMessage();
@@ -70,20 +71,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($_POST['approval'] == 'approve') {
             echo 1;
             $stmt_update->execute([
-                ':hr_manager_approval' => 'Approved',
+                ':tl_approval' => 'Approved',
                 ':leave_id' => $_POST['leave_id'],
             ]);
         } else {
             echo 2;
             $stmt_update->execute([
-                ':hr_manager_approval' => 'Rejected',
+                ':tl_approval' => 'Rejected',
                 ':leave_id' => $_POST['leave_id'],
             ]);
         }
 
     }
 
-    header("Location: hr_manager_leave_requests.php");
+    header("Location: tl_leave_requests.php");
     exit();
 }
 
@@ -102,12 +103,16 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                             j.job_name,
                             j.department_id,
                             d.department_name
-                        FROM leave_request lr
-                        INNER JOIN employee e ON lr.employee_id = e.employee_id
-                        INNER JOIN job j ON e.job_id = j.job_id
-                        INNER JOIN department d ON j.department_id = d.department_id
-                        WHERE ((lr.hr_manager_approval = 'Pending' AND lr.tl_approval = 'Approved')
-                            OR lr.status = 'Approved')
+                        FROM
+                            leave_request lr
+                        INNER JOIN
+                            employee e ON lr.employee_id = e.employee_id
+                        INNER JOIN
+                            job j ON e.job_id = j.job_id
+                        INNER JOIN
+                            department d ON j.department_id = d.department_id
+                        WHERE
+                            d.team_leader_id = :loggedInTeamLeaderId
                         AND (
                             e.first_name LIKE :searchQuery OR
                             e.middle_name LIKE :searchQuery OR
@@ -117,8 +122,8 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
                             j.job_name LIKE :searchQuery OR
                             d.department_name LIKE :searchQuery
                         )
-                        ORDER BY lr.date_created DESC
-                        ";
+                        ORDER BY
+                            lr.date_created DESC";
 
         $stmt_search = $pdo->prepare($sql_search);
         $stmt_search->bindParam(':loggedInTeamLeaderId', $_SESSION['employee_id'], PDO::PARAM_INT);
@@ -133,7 +138,6 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
         die("An error occurred. Please try again later.");
     }
 }
-
 ?>
 
 <html>

@@ -258,7 +258,7 @@ function calculateHoursDifference($start_time, $end_time)
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="9">No overtime requests found.</td>
+                                            <td colspan="9">No leave requests found.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>

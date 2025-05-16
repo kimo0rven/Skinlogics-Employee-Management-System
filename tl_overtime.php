@@ -64,11 +64,13 @@ try {
         $stmt_search->execute();
         $overtimeRequests = $stmt_search->fetchAll(PDO::FETCH_ASSOC);
     } else {
-        $sql_overtime = "SELECT ot.*, e.first_name, e.last_name
-                         FROM overtime ot
-                         INNER JOIN employee e ON ot.employee_id = e.employee_id
-                         WHERE e.team_leader_id = :loggedInTeamLeaderId
-                         ORDER BY ot.date_created DESC";
+        $sql_overtime = "SELECT ot.*, e.first_name, e.last_name, j.job_id, j.department_id, d.department_id AS d_department_id
+                            FROM overtime ot
+                            INNER JOIN employee e ON ot.employee_id = e.employee_id
+                            INNER JOIN job j ON e.job_id = j.job_id
+                            INNER JOIN department d ON j.department_id = d.department_id
+                            WHERE d.team_leader_id = :loggedInTeamLeaderId
+                            ORDER BY ot.date_created DESC;";
         $stmt_overtime = $pdo->prepare($sql_overtime);
         $stmt_overtime->bindValue(':loggedInTeamLeaderId', $_SESSION['employee_id'], PDO::PARAM_INT);
         $stmt_overtime->execute();
@@ -158,7 +160,7 @@ try {
                                                     <?php echo formatDate($overtimeRequest['end_time']) ?>
                                                 </td>
 
-                                                <td style="text-align: center;">
+                                                <td style="text-align: center;" class="wrap-text">
                                                     <?php echo htmlspecialchars($overtimeRequest['ot_reason']) ?>
                                                 </td>
 

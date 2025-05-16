@@ -8,6 +8,70 @@ include 'includes/database.php';
 include 'config.php';
 
 try {
+    $stmt = $pdo->prepare("SELECT
+    COUNT(*) AS total_employees,
+    SUM(CASE WHEN gender = 'Male' THEN 1 ELSE 0 END) AS total_males,
+    SUM(CASE WHEN gender = 'Female' THEN 1 ELSE 0 END) AS total_females,
+    SUM(CASE WHEN gender = 'Other' THEN 1 ELSE 0 END) AS total_others
+FROM
+    employee;");
+    $stmt->execute();
+    $employeeByGender = $stmt->fetch(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    echo "Database error: " . $e->getMessage();
+    exit;
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+    exit;
+}
+
+try {
+    $stmt = $pdo->prepare("
+        WITH RECURSIVE MonthSeries AS (
+            SELECT
+                1 AS month_num,
+                DATE_FORMAT(CURDATE(), '%Y-01-01') AS month_start
+            UNION ALL
+            SELECT
+                month_num + 1,
+                DATE_ADD(month_start, INTERVAL 1 MONTH)
+            FROM
+                MonthSeries
+            WHERE
+                month_num < MONTH(CURDATE())
+        )
+        SELECT
+            DATE_FORMAT(ms.month_start, '%M') AS month_name,
+            SUM(p.net_pay) AS total_net_pay
+        FROM
+            MonthSeries ms
+        LEFT JOIN
+            payroll p ON YEAR(p.payroll_start_date) = YEAR(ms.month_start)
+            AND MONTH(p.payroll_start_date) = MONTH(ms.month_start)
+        GROUP BY
+            month_name
+        ORDER BY
+            ms.month_start
+    ");
+    $stmt->execute();
+
+    $netPayPerMonth = [];
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $netPayPerMonth[] = $row['total_net_pay'];
+    }
+
+    // print_r($netPayPerMonth);
+
+} catch (PDOException $e) {
+    echo "Database error: " . $e->getMessage();
+    exit;
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+    exit;
+}
+
+try {
 
     $stmt = $pdo->prepare("SELECT * FROM employee WHERE user_account_id = :user_account_id LIMIT 1");
     $stmt->execute([':user_account_id' => $user_account_id]);
@@ -98,6 +162,52 @@ try {
     echo "Error: " . $e->getMessage();
     exit;
 }
+
+try {
+    $sql = "
+    WITH RECURSIVE MonthSeries AS (
+        SELECT
+            1 AS month_num,
+            DATE_FORMAT(CURDATE(), '%Y-01-01') AS month_start
+        UNION ALL
+        SELECT
+            month_num + 1,
+            DATE_ADD(month_start, INTERVAL 1 MONTH)
+        FROM MonthSeries
+        WHERE month_num < MONTH(CURDATE())
+    )
+    SELECT
+        DATE_FORMAT(ms.month_start, '%M') AS month_name,
+        SUM(CASE WHEN at.status = 'Present' THEN 1 ELSE 0 END) AS total_present,
+        SUM(CASE WHEN at.status = 'Absent' THEN 1 ELSE 0 END) AS total_absent,
+        SUM(CASE WHEN at.status = 'Late' THEN 1 ELSE 0 END) AS total_late
+    FROM MonthSeries ms
+    LEFT JOIN attendance at ON YEAR(at.date_created) = YEAR(ms.month_start)
+        AND MONTH(at.date_created) = MONTH(ms.month_start)
+    GROUP BY month_name
+    ORDER BY ms.month_start;
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+
+    // Prepare separate arrays for each type of attendance
+    $presentTotals = [];
+    $absentTotals = [];
+    $lateTotals = [];
+
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $presentTotals[] = $row['total_present'];
+        $absentTotals[] = $row['total_absent'];
+        $lateTotals[] = $row['total_late'];
+    }
+} catch (PDOException $e) {
+    echo "Database error: " . $e->getMessage();
+    exit;
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+    exit;
+}
 ?>
 
 <div class="dashboard-content-item2">
@@ -132,8 +242,21 @@ try {
                 </div>
             </div>
         </div>
-        <div class="dashboard-chart">
-            1
+        <div style="min-height: 140%;" class="dashboard-chart flex flex-row align-center justify-center">
+            <div style="height: 10%;" style="padding: 20px;"
+                class="class-container chart-size flex flex-row space-evenly align-center gap-20">
+                <canvas id="myChart"></canvas>
+                <canvas style="height: 10%;" id="genderChart"></canvas>
+
+            </div>
+
+            <!-- <div style="height: 10%;" style="padding: 20px;"
+                class="class-container chart-size flex flex-row space-evenly gap-20">
+                <canvas id="presenteChart"></canvas>
+                <canvas id="lateChart"></canvas>
+                <canvas id="absentChart"></canvas>
+            </div> -->
+
         </div>
     </div>
     <div class="dashboard-other-info">
@@ -235,6 +358,110 @@ try {
         </div>
     </div>
 </div>
+
+<script>
+    const ctx = document.getElementById('myChart');
+    const genderChart = document.getElementById('genderChart');
+    const present = document.getElementById('presenteChart');
+    const late = document.getElementById('lateChart');
+    const absent = document.getElementById('absentChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Total Payroll Each Month',
+                data: <?php echo json_encode($netPayPerMonth) ?>,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                }
+            }
+        }
+    });
+
+    new Chart(genderChart, {
+        type: 'doughnut',
+        data: {
+            labels: ['Male', 'Female', 'Other'],
+            datasets: [{
+                label: 'Gender Distribution',
+                data: [<?php echo $employeeByGender['total_males']; ?>,
+                    <?php echo $employeeByGender['total_females']; ?>,
+                    <?php echo $employeeByGender['total_others']; ?>,],
+                backgroundColor: [
+                    'rgba(0, 123, 255, 0.7)',
+                    'rgba(255, 105, 180, 0.7)',
+                    'rgba(46, 139, 87, 0.7)',
+                ],
+                hoverOffset: 4,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const attendanceLabels = [];
+
+    for (let i = 0; i <= currentMonth; i++) {
+        const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(currentDate.getFullYear(), i, 1));
+        attendanceLabels.push(monthName);
+    }
+
+    new Chart(present, {
+        type: 'line',
+        data: {
+            labels: attendanceLabels,
+            datasets: [{
+                label: 'Attendance by Present',
+                data: <?php echo json_encode($presentTotals) ?>,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+    });
+
+    new Chart(late, {
+        type: 'line',
+        data: {
+            labels: attendanceLabels,
+            datasets: [{
+                label: 'Attendance by Late',
+                data: <?php echo json_encode($lateTotals) ?>,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+    });
+
+    new Chart(late, {
+        type: 'line',
+        data: {
+            labels: attendanceLabels,
+            datasets: [{
+                label: 'Attendance by Absent',
+                data: <?php echo json_encode($absentTotals) ?>,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+    });
+</script>
 
 
 </html>

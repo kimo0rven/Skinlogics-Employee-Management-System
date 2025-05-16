@@ -98,7 +98,7 @@ try {
                 <div class="dashboard-content">
                     <div class="dashboard-content-item1">
                         <div class="dashboard-content-header font-black">
-                            <h1>HR MANAGER OVERTIME REQUESTS</h1>
+                            <h1>OVERTIME REQUESTS - <span style="font-size: 12px;"> HR MANAGER APPROVAL</span></h1>
                         </div>
                         <div id="logout-admin" class="dashboard-content-header font-medium">
                             <?php include('includes/header-avatar.php') ?>

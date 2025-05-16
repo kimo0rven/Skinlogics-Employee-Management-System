@@ -283,7 +283,8 @@ $payrolls = $stmtRetrieval->fetchAll(PDO::FETCH_ASSOC);
                                     <button type="submit" style="margin: 0px">
                                         <img src="assets/images/icons/search-icon.png" alt="Search">
                                     </button>
-                                    <div> <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
+                                    <div>
+                                        <?php if (isset($_GET['search']) && !empty($_GET['search'])): ?>
                                             <a href="payroll.php" class="clear-search">Clear Search</a>
                                         <?php endif; ?>
                                     </div>
