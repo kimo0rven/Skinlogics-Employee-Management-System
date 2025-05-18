@@ -17,7 +17,7 @@ if (isset($_POST['registration'])) {
   $birth_date = sprintf('%04d-%02d-%02d', $year, $month, $day);
   $mobile = trim($_POST['mobile']);
   $gender = $_POST['gender'];
-  $accountType = 'User';
+  $accountType = 3;
 
   if (!$email || !$confirm_email) {
     $error = 'Please enter a valid email.';
@@ -29,13 +29,13 @@ if (isset($_POST['registration'])) {
 
   if (empty($error)) {
     try {
-      $sql = "INSERT INTO user_account (username, email, pass, account_type) 
-                     VALUES (:username, :email, :pass, :accountType)";
+      $sql = "INSERT INTO user_account (username, email, pass, role_id) 
+                     VALUES (:username, :email, :pass, :role_id)";
       $stmt = $pdo->prepare($sql);
       $stmt->bindParam(':username', $username);
       $stmt->bindParam(':email', $email);
       $stmt->bindParam(':pass', $pass);
-      $stmt->bindParam(':accountType', $accountType);
+      $stmt->bindParam(':role_id', $accountType);
       $stmt->execute();
 
       if ($stmt->rowCount() > 0) {
