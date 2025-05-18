@@ -48,7 +48,7 @@
                     <div>
                         <label class="profile-label" for="leave_type">Type of Leave</label>
                         <select name="leave_type" id="leave_type">
-                            <option value="Vacation">Vacation</option>
+                            <option value="Vacation" selected>Vacation</option>
                             <option value="Sick">Sick</option>
                             <option value="Personal">Personal</option>
                             <option value="Emergency">Emergency</option>
@@ -113,7 +113,7 @@
                 <div style="width:100%">
                     <label class="profile-label" for="ot_type">Overtime Type</label>
                     <select name="ot_type" id="ot_type" style="margin: 0; padding: 10px;">
-                        <option value="Morning">Weekday</option>
+                        <option value="Morning" selected>Weekday</option>
                         <option value="Afternoon">Weekend</option>
                         <option value="Night">Holiday</option>
                     </select>

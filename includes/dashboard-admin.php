@@ -243,10 +243,15 @@ try {
             </div>
         </div>
         <div style="min-height: 140%;" class="dashboard-chart flex flex-row align-center justify-center">
-            <div style="height: 10%;" style="padding: 20px;"
+            <div style="height: 45%;" style="padding: 20px;"
                 class="class-container chart-size flex flex-row space-evenly align-center gap-20">
-                <canvas id="myChart"></canvas>
-                <canvas style="height: 10%;" id="genderChart"></canvas>
+                <div>
+                    <canvas style="height: 100%;" id="myChart"></canvas>
+
+                </div>
+                <div>
+                    <canvas id="genderChart"></canvas>
+                </div>
 
             </div>
 

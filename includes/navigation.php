@@ -23,7 +23,8 @@ if ($_SESSION['role_id'] == 1) {
         'departments.php' => 'Departments',
         'timer.php' => 'Timer',
         'leave_requests.php' => "Leave_Requests",
-        'overtime.php' => 'Overtime'
+        'overtime.php' => 'Overtime',
+        'view_payroll.php' => 'View_Payrolls'
 
     ];
 } else if ($_SESSION['role_id'] == 3) {
@@ -31,7 +32,8 @@ if ($_SESSION['role_id'] == 1) {
         'dashboard.php' => 'Dashboard',
         'timer.php' => 'Timer',
         'leave_requests.php' => 'Leave_Requests',
-        'overtime.php' => 'Overtime'
+        'overtime.php' => 'Overtime',
+        'view_payroll.php' => 'View_Payroll'
     ];
 }
 
