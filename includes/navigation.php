@@ -2,6 +2,7 @@
 
 $currentPage = basename($_SERVER['PHP_SELF']);
 
+$navigationItems = [];
 if ($_SESSION['role_id'] == 1) {
     $navigationItems = [
         'dashboard.php' => 'Dashboard',
@@ -33,7 +34,7 @@ if ($_SESSION['role_id'] == 1) {
         'timer.php' => 'Timer',
         'leave_requests.php' => 'Leave_Requests',
         'overtime.php' => 'Overtime',
-        'view_payroll.php' => 'View_Payroll'
+        'view_payroll.php' => 'View_Payrolls'
     ];
 }
 
