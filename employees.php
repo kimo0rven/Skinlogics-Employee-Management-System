@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addEmployee'])) {
     $email = isset($_POST["email"]) ? trim($_POST["email"]) : '';
     $role_id = trim($_POST['role_id'] ?? '');
 
-    print_r($_POST);
+    // print_r($_POST);
     if (!empty($username) && !empty($password) && !empty($email)) {
         try {
             $sql_insert_user = "INSERT INTO user_account (username, pass, email, role_id) 
@@ -202,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addEmployee'])) {
                 ':role_id' => $role_id
             ]);
 
-            print_r($stmt_user);
+            // print_r($stmt_user);
 
             $user_account_id = $pdo->lastInsertId();
 
@@ -272,7 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addEmployee'])) {
                 ':emergency_contact_relationship' => $emergency_contact_relationship,
                 ':user_account_id' => $user_account_id
             ]);
-            print_r($stmt_employee);
+            // print_r($stmt_employee);
 
             header("Location: employees.php");
             exit();

@@ -79,7 +79,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                 'avatar' => $user['avatar'],
                 'loggedin' => true
             ]);
+            echo $user['user_account_id'];
+            print_r($pdo);
             if ($employee = getEmployeeDetails($pdo, $user['user_account_id'])) {
+                // print_r($employee);
                 setEmployeeSession($employee, $user['role_id']);
                 redirectUser((int) $employee['setup']);
             }
